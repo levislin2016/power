@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+        <title>电网system</title>
+        <link rel="stylesheet" type="text/css" href="__STATIC__/admin/layui/css/layui.css" />
+        <link rel="stylesheet" type="text/css" href="__STATIC__/admin/css/login.css" />
+    </head>
+
+    <body>
+        <div class="m-login-bg">
+            <div class="m-login">
+                <h3>电网system</h3>
+                <div class="m-login-warp">
+                    <form class="layui-form">
+                        <div class="layui-form-item">
+                            <input type="text" name="username" required lay-verify="required|username" lay-verType="tips" placeholder="用户名" autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-form-item">
+                            <input type="password" name="password" required lay-verify="required|password" lay-verType="tips" placeholder="密码" autocomplete="off" class="layui-input userpw password">
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <input type="text" name="captcha" required lay-verify="required|verity" lay-verType="tips" placeholder="验证码" autocomplete="off" class="layui-input captcha">
+                            </div>
+                            <div class="layui-inline">
+                                <img class="verifyImg" onclick="this.src=this.src+'?c='+Math.random();" src="{:captcha_src()}" />
+                            </div>
+                        </div>
+                        <div class="layui-form-item m-login-btn">
+                            <div class="layui-inline">
+                                <button class="layui-btn layui-btn-normal" lay-submit lay-filter="login" data-url="">登录</button>
+                            </div>
+                            <div class="layui-inline">
+                                <button type="reset" class="layui-btn layui-btn-primary">取消</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <p class="copyright">Copyright 2019 by XXXX</p>
+            </div>
+        </div>
+        <script src="__STATIC__/admin/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+        <script>
+            layui.use(['form', 'jquery', 'layer'], function(){
+                var form = layui.form,
+                    layer = layui.layer,
+                    $ = layui.jquery;
+              
+                //自定义验证规则
+                form.verify({
+                    username: function(value, item){ //value：表单的值、item：表单的DOM对象
+                        if(!new RegExp("^[a-zA-Z0-9_\u4e00-\u9fa5\\s·]+$").test(value)){
+                          return '用户名不能有特殊字符';
+                        }
+                        if(/(^\_)|(\__)|(\_+$)/.test(value)){
+                          return '用户名首尾不能出现下划线\'_\'';
+                        }
+                        if(/^\d+\d+\d$/.test(value)){
+                          return '用户名不能全为数字';
+                        }
+                    },
+                    password: [/(.+){6,12}$/, '密码必须6到12位'],
+                    verity: [/(.+){5}$/, '验证码必须是5位'],
+                    
+                });
+
+                form.on('submit(login)', function(data){
+                    //console.log(data.elem) //被执行事件的元素DOM对象，一般为button对象
+                    //console.log(data.form) //被执行提交的form对象，一般在存在form标签时才会返回
+                    //console.log(data.field) //当前容器的全部表单字段，名值对形式：{name: value}
+                    var param = data.field;
+                    $.post('{:url("login/gologin")}', param, function(data){ 
+                        console.dir(data);
+                        if(data.error_code){ 
+                            layer.msg(data.msg, {icon: 2, shade: 0.3, time: 1000}, function(){ 
+                                $('.verifyImg').click();
+                                $('.captcha').val('');
+                                $('.password').val('');
+                            });
+                            return false;
+                        }
+                        layer.msg(data.msg, {icon: 1, shade: 0.3, time: 1000}, function(){ 
+                            location.href = '{:url("index/index")}';
+                        });
+                    })
+                    return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+                });
+
+                
+            });
+        </script>
+    </body>
+
+</html>
