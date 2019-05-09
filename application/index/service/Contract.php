@@ -18,4 +18,34 @@ class Contract{
         ]);
         return $list;
     }
+
+    public function add_contract($data){ 
+        $data['company_id'] = session('power_user.company_id');
+        $user = ContractModel::create($data);
+        if(!$user){ 
+            throw new BaseException(
+            [
+                'msg' => '添加合同错误！',
+                'errorCode' => 30004
+            ]);
+        }
+        return [
+            'msg' => '添加合同成功',
+        ];
+    }
+
+    public function save_contract($id, $data){
+        $res = ContractModel::where('id', $id)->update($data);
+        if(!$res){ 
+            throw new BaseException(
+            [
+                'msg' => '修改合同错误！',
+                'errorCode' => 30005
+            ]);
+        }
+        return [
+            'msg' => '添加合同成功',
+        ];
+    }
+
 } 

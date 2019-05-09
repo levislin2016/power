@@ -30,5 +30,10 @@ Route::get('user_del', 'user/del');
 
 //合同列表页
 Route::get('contract', 'contract/index');
-
+//合同添加/修改页
+Route::get('contract_add', 'contract/add');
+//合同添加/修改操作
+Route::post('contract_save', 'contract/save');
+//合同删除操作
+Route::get('contract_del', 'contract/del');
 

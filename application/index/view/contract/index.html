@@ -17,8 +17,8 @@
 					<form class="layui-form" action="">
 						<div class="layui-form-item">
 							<div class="layui-inline tool-btn">
-								<button type="button" class="layui-btn layui-btn-sm layui-btn-normal addBtn btn_tips" data-title="创建合同" data-url="{:url('user/add')}" data-h="388px"><i class="layui-icon">&#xe654;</i></button>
-								<button type="button" class="layui-btn layui-btn-sm layui-btn-danger delBtn btn_tips" data-title="批量删除" data-url="{:url('user/del')}"><i class="layui-icon">&#xe640;</i></button>
+								<button type="button" class="layui-btn layui-btn-sm layui-btn-normal addBtn btn_tips" data-title="创建合同" data-url="{:url('contract/add')}" data-h="388px"><i class="layui-icon">&#xe654;</i></button>
+								<button type="button" class="layui-btn layui-btn-sm layui-btn-danger delBtn btn_tips" data-title="批量删除" data-url="{:url('contract/del')}"><i class="layui-icon">&#xe640;</i></button>
 								<!-- <button class="layui-btn layui-btn-sm layui-btn-warm listOrderBtn hidden-xs" data-url="article-add.html"><i class="iconfont">&#xe656;</i></button> -->
 							</div>
 							<div class="layui-inline">
@@ -44,18 +44,14 @@
 								<col>
 								<col>
 								<col>
-								<col>
-								<col class="hidden-xs">
-								<col class="hidden-xs">
-								<col>
 							</colgroup>
 							<thead>
 								<tr>
 									<th><input type="checkbox" name="" lay-skin="primary" lay-filter="allChoose"></th>
 									<th class="hidden-xs">编号</th>
-									<th>用户名</th>
-									<th>类型</th>
-
+									<th>合同编号</th>
+									<th>合同名称</th>
+									<th>业主</th>
 									<th>操作</th>
 								</tr>
 							</thead>
@@ -64,12 +60,13 @@
 								<tr>
 									<td><input type="checkbox" name="" lay-skin="primary" data-id="{$vo['id']}"></td>
 									<td class="hidden-xs">{$vo['id']}</td>									
-									<td>{$vo['username']}</td>
-									<td>{$vo['type_name']}</td>
+									<td>{$vo['number']}</td>
+									<td>{$vo['name']}</td>
+									<td>{$vo['owner']['name']}</td>
 									<td>
 										<div class="layui-inline">
-											<button class="layui-btn layui-btn-sm layui-btn-normal edit-btn btn_tips" data-title="修改管理员" data-id="{$vo['id']}" data-url="{:url('user/add')}" data-h="388px"><i class="layui-icon">&#xe642;</i></button>
-											<button class="layui-btn layui-btn-sm layui-btn-danger del-btn btn_tips" data-title="删除" data-id="{$vo['id']}" data-url="{:url('user/del')}"><i class="layui-icon">&#xe640;</i></button>
+											<button class="layui-btn layui-btn-sm layui-btn-normal edit-btn btn_tips" data-title="修改合同" data-id="{$vo['id']}" data-url="{:url('contract/add')}" data-h="388px"><i class="layui-icon">&#xe642;</i></button>
+											<button class="layui-btn layui-btn-sm layui-btn-danger del-btn btn_tips" data-title="删除" data-id="{$vo['id']}" data-url="{:url('contract/del')}"><i class="layui-icon">&#xe640;</i></button>
 										</div>
 									</td>
 								</tr>
