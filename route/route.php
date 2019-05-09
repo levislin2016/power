@@ -28,4 +28,7 @@ Route::post('user_save', 'user/save');
 //后台管理员删除操作
 Route::get('user_del', 'user/del');
 
+//合同列表页
+Route::get('contract', 'contract/index');
+
 
