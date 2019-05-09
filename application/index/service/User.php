@@ -33,6 +33,7 @@ class User{
             'id' => $user->id,
             'username' => $user->username,
             'type' => $user->type,
+            'company_id' => $user->company_id,
         ];
         session('power_user',$session_data);
 
