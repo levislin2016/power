@@ -37,3 +37,20 @@ Route::post('contract_save', 'contract/save');
 //合同删除操作
 Route::get('contract_del', 'contract/del');
 
+//工程列表页
+Route::get('project', 'project/index');
+//工程添加/修改页
+Route::get('project_add', 'project/add');
+//工程添加/修改操作
+Route::post('project_save', 'project/save');
+//工程删除操作
+Route::get('project_del', 'project/del');
+//工程需求列表页
+Route::get('need', 'need/index');
+//工程需求添加/修改页
+Route::get('need_add', 'need/add');
+//工程需求添加/修改操作
+Route::post('need_save', 'need/save');
+//工程需求删除操作
+Route::get('need_del', 'need/del');
+
