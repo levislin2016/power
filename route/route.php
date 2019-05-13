@@ -37,3 +37,40 @@ Route::post('contract_save', 'contract/save');
 //合同删除操作
 Route::get('contract_del', 'contract/del');
 
+//工程列表页
+Route::get('project', 'project/index');
+//工程添加/修改页
+Route::get('project_add', 'project/add');
+//工程添加/修改操作
+Route::post('project_save', 'project/save');
+//工程删除操作
+Route::get('project_del', 'project/del');
+//工程需求列表页
+Route::get('need', 'need/index');
+//工程需求添加/修改页
+Route::get('need_add', 'need/add');
+//工程需求添加/修改操作
+Route::post('need_save', 'need/save');
+//工程需求删除操作
+Route::get('need_del', 'need/del');
+
+//材料列表页
+Route::get('goods', 'goods/index');
+//材料添加页
+Route::get('goods_add', 'goods/add');
+//材料修改页
+Route::get('goods_edit', 'goods/edit');
+//材料修改操作
+Route::any('goods_save', 'goods/save');
+//合同删除操作
+Route::get('goods_del', 'goods/del');
+
+//业主列表页
+Route::get('owner', 'owner/index');
+//业主添加/修改页
+Route::get('owner_add', 'owner/add');
+//业主添加/修改操作
+Route::post('owner_save', 'owner/save');
+//业主删除操作
+Route::get('owner_del', 'owner/del');
+

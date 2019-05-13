@@ -1,38 +1,42 @@
 <?php
 namespace app\index\controller;
 
-use app\index\service\Contract as ContractService;
-use app\index\model\Contract as ContractModel;
-use app\index\model\Owner as OwnerModel;
+use app\index\service\Need as NeedService;
+use app\index\model\Project as ProjectModel;
+use app\index\model\Need as NeedModel;
+use app\index\model\Goods as GoodsModel;
 use app\lib\exception\BaseException;
-use app\index\validate\ContractValidate;
+use app\index\validate\NeedValidate;
 
-class Contract extends Base
+class Need extends Base
 {
     protected $beforeActionList = [
         'checkLogoin'
     ];
 
     public function index(){
-        $params = input('get.');
-        $list = (new ContractService)->select_list($params);
+        $params = input('param.');
+        $project_list = ProjectModel::get($params['id']);
+        $this->assign('project_list', $project_list);
+
+        $list = (new NeedService)->select_list($params);
         //dump($list->toArray());
     	$this->assign('list', $list);
         return $this->fetch();
     }
 
     public function add(){ 
-        $owner_list = OwnerModel::all();
-        $this->assign('owner_list', $owner_list);
+        $goods_list = GoodsModel::with(['supply'])->select();
+        $this->assign('goods_list', $goods_list);
 
         $id = input('get.id', '');
         if($id){
-            $list = ContractModel::get($id);
+            $list = NeedModel::get($id);
             if(!$list){ 
                 throw new BaseException(
                 [
                     'msg' => '非法错误，请重试！',
-                    'errorCode' => 30001
+                    'errorCode' => 50001
                 ]);
             }
             $this->assign('list', $list);
@@ -42,26 +46,26 @@ class Contract extends Base
 
     public function save(){ 
         $id = input('param.id', '');
-        $validate = new ContractValidate();
+        $validate = new NeedValidate();
         $validate->goCheck();
         $data = $validate->getDataByRule(input('post.'));
-        $contractService = new ContractService();
+        $needService = new NeedService();
         if($id){ 
-            $res = $contractService->save_contract($id, $data);
+            $res = $needService->save_need($id, $data);
         }else{ 
-            $res = $contractService->add_contract($data);
+            $res = $needService->add_need($data);
         }
         return $res;
     }
 
-    public function del($ids){
-    	$res = ContractModel::destroy(rtrim($ids, ','));
+    public function del($ids){ 
+    	$res = NeedModel::destroy(rtrim($ids, ','));
     		
     	if(!$res){ 
     		throw new BaseException(
 	            [
-	                'msg' => '删除合同错误！',
-	                'errorCode' => 30006
+	                'msg' => '删除需求材料错误！',
+	                'errorCode' => 50006
 	            ]);
     	}
 

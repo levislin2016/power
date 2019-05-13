@@ -1,13 +1,13 @@
 <?php
 namespace app\index\controller;
 
-use app\index\service\Contract as ContractService;
+use app\index\service\Project as ProjectService;
+use app\index\model\Project as ProjectModel;
 use app\index\model\Contract as ContractModel;
-use app\index\model\Owner as OwnerModel;
 use app\lib\exception\BaseException;
-use app\index\validate\ContractValidate;
+use app\index\validate\ProjectValidate;
 
-class Contract extends Base
+class Project extends Base
 {
     protected $beforeActionList = [
         'checkLogoin'
@@ -15,24 +15,24 @@ class Contract extends Base
 
     public function index(){
         $params = input('get.');
-        $list = (new ContractService)->select_list($params);
+        $list = (new ProjectService)->select_list($params);
         //dump($list->toArray());
     	$this->assign('list', $list);
         return $this->fetch();
     }
 
     public function add(){ 
-        $owner_list = OwnerModel::all();
-        $this->assign('owner_list', $owner_list);
+        $contract_list = ContractModel::all();
+        $this->assign('contract_list', $contract_list);
 
         $id = input('get.id', '');
         if($id){
-            $list = ContractModel::get($id);
+            $list = ProjectModel::get($id);
             if(!$list){ 
                 throw new BaseException(
                 [
                     'msg' => '非法错误，请重试！',
-                    'errorCode' => 30001
+                    'errorCode' => 40001
                 ]);
             }
             $this->assign('list', $list);
@@ -42,26 +42,26 @@ class Contract extends Base
 
     public function save(){ 
         $id = input('param.id', '');
-        $validate = new ContractValidate();
+        $validate = new ProjectValidate();
         $validate->goCheck();
         $data = $validate->getDataByRule(input('post.'));
-        $contractService = new ContractService();
+        $projectService = new ProjectService();
         if($id){ 
-            $res = $contractService->save_contract($id, $data);
+            $res = $projectService->save_project($id, $data);
         }else{ 
-            $res = $contractService->add_contract($data);
+            $res = $projectService->add_project($data);
         }
         return $res;
     }
 
-    public function del($ids){
-    	$res = ContractModel::destroy(rtrim($ids, ','));
+    public function del($ids){ 
+    	$res = ProjectModel::destroy(rtrim($ids, ','));
     		
     	if(!$res){ 
     		throw new BaseException(
 	            [
-	                'msg' => '删除合同错误！',
-	                'errorCode' => 30006
+	                'msg' => '删除工程错误！',
+	                'errorCode' => 40006
 	            ]);
     	}
 
