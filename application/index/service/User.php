@@ -11,7 +11,7 @@ class User{
         if(!$user){
             throw new BaseException(
             [
-                'msg' => '用户名不存在！',
+                'msg' => UserModel::getLastsql(),
                 'errorCode' => 20001
             ]);
         }

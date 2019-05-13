@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<title>电网system</title>
+	<link rel="stylesheet" type="text/css" href="__STATIC__/admin/layui/css/layui.css"/>
+	<link rel="stylesheet" type="text/css" href="__STATIC__/admin/css/admin.css"/>
+</head>
+<body>
+<form class="layui-form column-content-detail" enctype="multipart/form-data" method="post" action="{:url('goods/save',array('id'=>$Request.param.id))}">
+	<div class="layui-tab">
+		<div class="layui-tab-content">
+			<div class="layui-tab-item layui-show">
+				<div class="layui-form-item">
+					<label class="layui-form-label">材料编号：</label>
+					<div class="layui-input-block">
+						<input type="text" name="number" required lay-verify="required" lay-verType="tips" placeholder="请输入材料编号" autocomplete="off" class="layui-input" value="{$list['number']|default=''}">
+					</div>
+				</div>
+
+
+				<div class="layui-form-item">
+					<label class="layui-form-label">材料名称：</label>
+					<div class="layui-input-block">
+						<input type="text" name="name" required lay-verify="required" lay-verType="tips" placeholder="请输入材料名称" autocomplete="off" class="layui-input" value="{$list['name']|default=''}">
+					</div>
+				</div>
+
+				<div class="layui-form-item">
+					<label class="layui-form-label">材料图片：</label>
+					<div class="layui-input-block">
+						<img id=goods_image  style="height: 100px;width: 100px;display: none" src="">
+						<input type="file" id="goodsImg" name="image" value="" />
+					</div>
+				</div>
+
+				<div class="layui-form-item">
+					<label class="layui-form-label">进货价：</label>
+					<div class="layui-input-block">
+						<input type="text" name="price" required lay-verify="required" lay-verType="tips" placeholder="请输入进货价" autocomplete="off" class="layui-input" value="">
+					</div>
+				</div>
+
+
+				<div class="layui-form-item">
+					<label class="layui-form-label">供应商：</label>
+					<div class="layui-input-block">
+						<select name="supply_id" required lay-verify="required" lay-verType="tips" lay-verify="required">
+							<option value="">请选择供应商</option>
+							{volist name="supply_list" id="vo"}
+							<option value="{$vo['id']}" >{$vo['name']}</option>
+							{/volist}
+						</select>
+					</div>
+				</div>
+
+				<div class="layui-form-item">
+					<label class="layui-form-label">单位：</label>
+					<div class="layui-input-block">
+						<select name="unit_id" required lay-verify="required" lay-verType="tips" lay-verify="required">
+							<option value="">请选择材料单位</option>
+							{volist name="unit_list" id="vo"}
+							<option value="{$vo['id']}" >{$vo['name']}</option>
+							{/volist}
+						</select>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="layui-form-item" style="padding-left: 10px;">
+		<div class="layui-input-block">
+			<button class="layui-btn layui-btn-normal" lay-submit lay-filter="formDemo" id="btnUpload">立即提交</button>
+			<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+		</div>
+	</div>
+</form>
+<script src="__STATIC__/admin/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+<script src="__STATIC__/admin/js/common.js" type="text/javascript" charset="utf-8"></script>
+<script>
+    layui.use(['upload', 'form', 'jquery', 'laydate', 'layer', 'laypage', 'dialog', 'tool', 'element', 'layedit'], function() {
+        var form = layui.form,
+            layer = layui.layer,
+            upload = layui.upload,
+            $ = layui.jquery,
+            laypage = layui.laypage,
+            laydate = layui.laydate,
+            layedit = layui.layedit,
+            tool = layui.tool,
+            element = layui.element,
+            dialog = layui.dialog;
+        var uploadInst = upload.render({
+            elem: '#goodsImg'
+            ,url: "{:url('goods/upload')}"
+            ,accept:'file'  // 允许上传的文件类型
+            ,auto: true // 自动上传
+            ,done:function(res) {
+                if (res.code == 200) {
+                    $("#goodsImg").attr('value',res.data);
+                    $("#goods_image").css('display','inline-block');
+                    $("#goods_image").attr('src',"/static/upload/"+res.data);
+                    return res.data
+                }else{
+                    return 2
+                }
+            }
+            // 上传失败回调
+            ,error:function(index,upload) {
+                return layer.msg('失败');
+            }
+        });
+
+        form.on('submit(formDemo)', function (data) {
+            var url = data.form.action;
+            var param = data.field;
+            param.image=$("#goodsImg").attr('value');
+            loading = layer.load(2, {
+                shade: [0.2, '#000']
+            });
+
+            $.post(url, param, function (data) {
+                if(data.uploadInst){
+                    layer.msg(data.msg, {icon: 2, shade: 0.1, time: 1000}, function(){
+                    });
+                    return false;
+                }
+                layer.msg(data.msg, {icon: 1, shade: 0.1, time: 1000}, function () {
+                    parent.refresh();
+                });
+            });
+
+            return false;
+        });
+
+
+
+
+    });
+</script>
+</body>
+</html>
