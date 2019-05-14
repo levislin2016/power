@@ -15,7 +15,7 @@ class Login extends Base
     }
 
     public function gologin(){ 
-//    	(new LoginValidate())->goCheck();
+    	(new LoginValidate())->goCheck();
     	$data = $this->request->param();
     	$result = (new UserService)->logincheck($data);
     	return $result;
