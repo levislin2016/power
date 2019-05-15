@@ -26,7 +26,7 @@ class Project{
                 $query->where('c.company_id', session('power_user.company_id'));
                 $query->where('p.company_id', session('power_user.company_id'));
             })
-            ->field('p.id, p.company_id, p.contract_id, c.number as contract_number, p.name, p.status')
+            ->field('p.id, p.company_id, p.contract_id, c.number as contract_number, p.name, p.status, p.create_time')
             ->paginate(10, false, [
                 'query'     => $params,
             ]);

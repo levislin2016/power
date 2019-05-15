@@ -21,6 +21,7 @@
 					<form class="layui-form" action="">
 						<div class="layui-form-item">
 							<div class="layui-inline tool-btn">
+								<button type="button" class="layui-btn layui-btn-sm layui-btn-normal btn_tips" onclick="window.history.back();" data-title="返回"><i class="layui-icon">&#xe65c;</i></button>
 								<button type="button" class="layui-btn layui-btn-sm layui-btn-normal addBtn btn_tips" data-title="添加材料" data-url="{:url('need/add')}?project_id={$Request.param.id}" data-h="460px"><i class="layui-icon">&#xe654;</i></button>
 								<button type="button" class="layui-btn layui-btn-sm layui-btn-danger delBtn btn_tips" data-title="批量删除" data-url="{:url('need/del')}"><i class="layui-icon">&#xe640;</i></button>
 								<!-- <button class="layui-btn layui-btn-sm layui-btn-warm listOrderBtn hidden-xs" data-url="article-add.html"><i class="iconfont">&#xe656;</i></button> -->
@@ -51,6 +52,7 @@
 								<col>
 								<col>
 								<col>
+								<col>
 							</colgroup>
 							<thead>
 								<tr>
@@ -63,6 +65,7 @@
 									<th>购买数量</th>
 									<th>平衡利库数量</th>
 									<th>备注</th>
+									<th>创建时间</th>
 									<th>操作</th>
 								</tr>
 							</thead>
@@ -78,6 +81,7 @@
 									<td>{$vo['buy']}{$vo['unit']}</td>
 									<td>{$vo['have']}{$vo['unit']}</td>
 									<td>{$vo['note']}</td>
+									<td>{$vo['create_time']}</td>
 									<td>
 										<div class="layui-inline">
 											<button class="layui-btn layui-btn-sm layui-btn-normal edit-btn btn_tips" data-title="修改工程" data-id="{$vo['id']}&project_id={$Request.param.id}" data-url="{:url('need/add')}" data-h="460px"><i class="layui-icon">&#xe642;</i></button>

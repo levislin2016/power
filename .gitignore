@@ -5,4 +5,5 @@ Thumbs.db
 /phpunit.xml
 /.idea
 /.vscode
-vendor/
+config/database.php
+public/static/upload/

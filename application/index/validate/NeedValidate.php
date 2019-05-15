@@ -30,6 +30,11 @@ class NeedValidate extends BaseValidate
             if($need){ 
                 return '该材料已存在';
             }
+        }else{ 
+            $need = NeedModel::where('project_id', $data['project_id'])->where('goods_id', $value)->where('id', '<>', $id)->find();
+            if($need){ 
+                return '该材料已存在';
+            }
         }
         return true;
     }

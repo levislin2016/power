@@ -48,7 +48,7 @@
 				<div class="layui-form-item">
 					<label class="layui-form-label">供应商：</label>
 					<div class="layui-input-block">
-						<select name="supply_id" required lay-verify="required" lay-verType="tips" lay-verify="required">
+						<select name="supply_id" required lay-verify="required" lay-verType="tips" lay-verify="required" lay-search="">
 							<option value="">请选择供应商</option>
 							{volist name="supply_list" id="vo"}
 							<option value="{$vo['id']}" >{$vo['name']}</option>
@@ -60,7 +60,7 @@
 				<div class="layui-form-item">
 					<label class="layui-form-label">单位：</label>
 					<div class="layui-input-block">
-						<select name="unit_id" required lay-verify="required" lay-verType="tips" lay-verify="required">
+						<select name="unit_id" required lay-verify="required" lay-verType="tips" lay-verify="required" lay-search="">
 							<option value="">请选择材料单位</option>
 							{volist name="unit_list" id="vo"}
 							<option value="{$vo['id']}" >{$vo['name']}</option>
