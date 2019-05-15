@@ -10,14 +10,14 @@
 		<link rel="stylesheet" type="text/css" href="__STATIC__/admin/css/admin.css"/>
 	</head>
 	<body>
-	<form class="layui-form column-content-detail" method="post" action="{:url('unit/save',array('id'=>$Request.param.id))}">
+	<form class="layui-form column-content-detail" method="post" action="{:url('supply/save',array('id'=>$Request.param.id))}">
 					<div class="layui-tab">
 						<div class="layui-tab-content">
 							<div class="layui-tab-item layui-show">
 								<div class="layui-form-item">
 									<label class="layui-form-label">名称：</label>
 									<div class="layui-input-block">
-										<input type="text" name="name" required lay-verify="required" lay-verType="tips" placeholder="请输入计量单位名称" autocomplete="off" class="layui-input" value="{$list['name']|default=''}">
+										<input type="text" name="name" required lay-verify="required" lay-verType="tips" placeholder="请输入供应商名称" autocomplete="off" class="layui-input" value="{$list['name']|default=''}">
 									</div>
 								</div>
 							</div>
