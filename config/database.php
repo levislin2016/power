@@ -9,15 +9,15 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-//if ($_SERVER['SERVER_ADDR'] == '127.0.0.1'){
-//    $hostname = '127.0.0.1';
-//    $username = 'root';
-//    $password = 'root';
-//}else{
+if ($_SERVER['SERVER_ADDR'] == '127.0.0.1'){
+    $hostname = '127.0.0.1';
+    $username = 'root';
+    $password = 'root';
+}else{
     $hostname = '144.48.9.105';
     $username = 'power_rank666_co';
     $password = 'XHGH23cHYjsReFw2';
-//}
+}
 
 return [
     // 数据库类型
