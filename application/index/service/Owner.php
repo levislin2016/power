@@ -7,9 +7,7 @@ use app\lib\exception\BaseException;
 class Owner{
     //合同列表
     public function selectList($params){
-        $list = OwnerModel::with(['company'=>function($query){
-            $query->field('id,name');
-        }])->where(function ($query) use($params) {
+        $list = OwnerModel::where(function ($query) use($params) {
             if(!empty($params['search'])){ 
                 $query->where('name', 'like', '%'.$params['search'].'%');
             }
