@@ -83,3 +83,21 @@ Route::post('unit_save', 'unit/save');
 //计量单位删除操作
 Route::get('unit_del', 'unit/del');
 
+//供应商列表页
+Route::get('supply', 'supply/index');
+//供应商添加/修改页
+Route::get('supply_add', 'supply/add');
+//供应商添加/修改操作
+Route::post('supply_save', 'supply/save');
+//供应商删除操作
+Route::get('supply_del', 'supply/del');
+
+//计量单位列表页
+//Route::get('company', 'company/index');
+//计量单位添加/修改页
+//Route::get('company_add', 'company/add');
+//计量单位添加/修改操作
+//Route::post('company_save', 'company/save');
+//计量单位删除操作
+//Route::get('company_del', 'company/del');
+

@@ -15,7 +15,7 @@
 						<div class="layui-tab-content">
 							<div class="layui-tab-item layui-show">
 								<div class="layui-form-item">
-									<label class="layui-form-label">材料编号：</label>
+									<label class="layui-form-label">编号：</label>
 									<div class="layui-input-block">
 										<input type="text" name="number" required lay-verify="required" lay-verType="tips" placeholder="请输入材料编号" autocomplete="off" class="layui-input" value="{$list['number']|default=''}">
 									</div>
@@ -23,14 +23,14 @@
 
 
 								<div class="layui-form-item">
-									<label class="layui-form-label">材料名称：</label>
+									<label class="layui-form-label">名称：</label>
 									<div class="layui-input-block">
-										<input type="text" name="name" required lay-verify="required" lay-verType="tips" placeholder="请输入材料名称" autocomplete="off" class="layui-input" value="{$list['name']|default=''}">
+										<input type="text" name="name" required lay-verify="required" lay-verType="tips" placeholder="请输入名称" autocomplete="off" class="layui-input" value="{$list['name']|default=''}">
 									</div>
 								</div>
 
 								<div class="layui-form-item">
-									<label class="layui-form-label">材料图片：</label>
+									<label class="layui-form-label">图片：</label>
 									<div class="layui-input-block">
 										{if condition="$list['image'] != 0"}
 											<img id=goods_image style="height: 100px;width: 100px;" src="/static/upload/{$list['image']|default=''}">
