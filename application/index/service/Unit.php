@@ -11,7 +11,7 @@ class Unit{
             if(!empty($params['search'])){ 
                 $query->where('name', 'like', '%'.$params['search'].'%');
             }
-        })->field('id, company_id, name, create_time')->paginate(10, false, [
+        })->field('id, company_id, name, create_time')->order('create_time', 'desc')->paginate(10, false, [
             'query'     => $params,
         ]);
         return $list;
