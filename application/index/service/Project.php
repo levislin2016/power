@@ -19,6 +19,7 @@ class Project{
 
         $list = ProjectModel::useGlobalScope(false)->alias('p')
             ->leftJoin('contract c','p.contract_id = c.id')
+            ->leftJoin('owner o','c.owner_id = o.id')
             ->where(function ($query) use($params) {
                 if(!empty($params['search'])){ 
                     $query->where('c.number|p.name', 'like', '%'.$params['search'].'%');
@@ -26,7 +27,8 @@ class Project{
                 $query->where('c.company_id', session('power_user.company_id'));
                 $query->where('p.company_id', session('power_user.company_id'));
             })
-            ->field('p.id, p.company_id, p.contract_id, c.number as contract_number, p.name, p.status, p.create_time')
+            ->field('p.id, p.company_id, p.contract_id, c.number as contract_number, p.name, p.status, p.create_time, o.name as owner_name')
+            ->order('p.create_time', 'desc')
             ->paginate(10, false, [
                 'query'     => $params,
             ]);
