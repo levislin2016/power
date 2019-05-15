@@ -74,3 +74,12 @@ Route::post('owner_save', 'owner/save');
 //业主删除操作
 Route::get('owner_del', 'owner/del');
 
+//计量单位列表页
+Route::get('unit', 'unit/index');
+//计量单位添加/修改页
+Route::get('unit_add', 'unit/add');
+//计量单位添加/修改操作
+Route::post('unit_save', 'unit/save');
+//计量单位删除操作
+Route::get('unit_del', 'unit/del');
+

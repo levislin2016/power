@@ -37,14 +37,18 @@
 										{else}
 											<img id=goods_image  style="height: 100px;width: 100px;display: none" src="">
 										{/if}
-										<input type="file" id="goodsImg" name="image" value="" />
+										<!--<input type="file" id="goodsImg" name="image" value="" />-->
+										<button type="button" class="layui-btn" id="goodsImg">
+											<i class="layui-icon">&#xe67c;</i>上传图片
+										</button>
+										<!--<button class="layui-btn" id="goodsImg" lay-data="{:url('goods/upload')}">上传图片</button>-->
 									</div>
 								</div>
 
 								<div class="layui-form-item">
 									<label class="layui-form-label">进货价：</label>
 									<div class="layui-input-block">
-										<input type="text" name="price" required lay-verify="required" lay-verType="tips" placeholder="请输入进货价" autocomplete="off" class="layui-input" value="{$list['price']|default=''}">
+										<input type="text" name="price" required lay-verify="required|number" lay-verType="tips" placeholder="请输入进货价" autocomplete="off" class="layui-input" value="{$list['price']|default=''}">
 									</div>
 								</div>
 
@@ -52,7 +56,7 @@
 								<div class="layui-form-item">
 									<label class="layui-form-label">供应商：</label>
 									<div class="layui-input-block">
-										<select name="supply_id" required lay-verify="required" lay-verType="tips" lay-verify="required">
+										<select name="supply_id" required lay-verify="required" lay-verType="tips" lay-verify="required" lay-search="">
 									        <option value="">请选择供应商</option>
 									        {volist name="supply_list" id="vo"}
 									        	<option value="{$vo['id']}" {if condition="$vo.id eq $list.supply_id"}selected{/if}>{$vo['name']}</option>
@@ -64,7 +68,7 @@
 								<div class="layui-form-item">
 									<label class="layui-form-label">单位：</label>
 									<div class="layui-input-block">
-										<select name="unit_id" required lay-verify="required" lay-verType="tips" lay-verify="required">
+										<select name="unit_id" required lay-verify="required" lay-verType="tips" lay-verify="required" lay-search="">
 											<option value="">请选择材料单位</option>
 											{volist name="unit_list" id="vo"}
 											<option value="{$vo['id']}" {if condition="$vo.id eq $list.unit_id"}selected{/if}>{$vo['name']}</option>
