@@ -17,7 +17,7 @@ class Need{
                 $query->where('u.company_id', session('power_user.company_id'));
                 $query->where('s.company_id', session('power_user.company_id'));
             })
-            ->field('n.id, n.company_id, n.project_id, n.goods_id, n.need, n.buy, n.have, n.note, g.number, g.name, g.unit_id, g.supply_id, g.image, g.price, u.name as unit, s.name as supply_name')
+            ->field('n.id, n.company_id, n.project_id, n.goods_id, n.need, n.buy, n.have, n.note, n.create_time, g.number, g.name, g.unit_id, g.supply_id, g.image, g.price, u.name as unit, s.name as supply_name')
             ->select();
 
         return $list;
