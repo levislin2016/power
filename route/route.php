@@ -74,3 +74,11 @@ Route::post('owner_save', 'owner/save');
 //业主删除操作
 Route::get('owner_del', 'owner/del');
 
+
+//业主列表页
+Route::get('company', 'company/index');
+Route::get('company_list', 'company/getData');
+Route::get('company_add', 'company/add');
+Route::post('company_save', 'company/save');
+Route::get('company_del', 'company/del');
+
