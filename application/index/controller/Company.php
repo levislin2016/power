@@ -18,11 +18,19 @@ class Company extends Base
 
     public function getData(){ 
         $params = input('get.');
+
+        $field = input('get.field', 'create_time');
+        $order = input('get.order', 'desc');
+        if($order == 'null'){ 
+            $field = 'id';
+            $order = 'asc';
+        }
+
         $list = CompanyModel::where(function ($query) use($params) {
             if(!empty($params['search'])){ 
-                $query->where('name', 'like', '%'.$params['search'].'%');
+                $query->where('name', 'like', '%'.$params['search'].'%');    
             }
-        })->paginate($params['nums'], false);
+        })->order($field, $order)->paginate($params['nums'], false);
         $list = $list->toArray();
         $list['code'] = 200;
         $list['msg'] = '数据加载成功';
