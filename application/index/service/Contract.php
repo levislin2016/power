@@ -13,7 +13,9 @@ class Contract{
             if(!empty($params['search'])){ 
                 $query->where('number|name', 'like', '%'.$params['search'].'%');
             }
-        })->field('id, company_id, number, name, owner_id, create_time')->paginate(10, false, [
+        })->field('id, company_id, number, name, owner_id, create_time')
+        ->order('create_time', 'desc')
+        ->paginate(10, false, [
             'query'     => $params,
         ]);
         return $list;

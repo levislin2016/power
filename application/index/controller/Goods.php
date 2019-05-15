@@ -63,6 +63,7 @@ class Goods extends Base
         $validate = new GoodsValidate();
         $validate->goCheck();
         $data = input('post.');
+        unset($data['file']);
         $GoodsService = new GoodsService();
         if($id){
             $res = $GoodsService->save_contract($id, $data);
@@ -73,7 +74,7 @@ class Goods extends Base
     }
 
     public function upload(){
-        $file = request()->file('image');
+        $file = request()->file('file');
         $data = (new GoodsService)->upload($file);
         return $data;
     }

@@ -17,7 +17,7 @@
 		<form class="layui-form" action="">
 			<div class="layui-form-item">
 				<div class="layui-inline tool-btn">
-					<button type="button" class="layui-btn layui-btn-sm layui-btn-normal addBtn btn_tips" data-title="生成材料" data-url="{:url('goods/add')}" data-h="388px"><i class="layui-icon">&#xe654;</i></button>
+					<button type="button" class="layui-btn layui-btn-sm layui-btn-normal addBtn btn_tips" data-title="新增材料" data-url="{:url('goods/add')}" data-h="388px"><i class="layui-icon">&#xe654;</i></button>
 					<button type="button" class="layui-btn layui-btn-sm layui-btn-danger delBtn btn_tips" data-title="批量删除" data-url="{:url('goods/del')}"><i class="layui-icon">&#xe640;</i></button>
 					<!-- <button class="layui-btn layui-btn-sm layui-btn-warm listOrderBtn hidden-xs" data-url="article-add.html"><i class="iconfont">&#xe656;</i></button> -->
 				</div>
@@ -36,7 +36,7 @@
 			</div>
 		</form>
 		<div class="layui-form" id="table-list">
-			<table class="layui-table" lay-even lay-skin="nob">
+			<table class="layui-table" lay-skin="line">
 				<colgroup>
 					<col width="50">
 					<col class="hidden-xs" width="80">
@@ -52,7 +52,6 @@
 					<th>材料编号</th>
 					<th>材料图片</th>
 					<th>材料名称</th>
-					<th>业主</th>
 					<th>单位</th>
 					<th>进货价(元)</th>
 					<th>供应商</th>
@@ -71,14 +70,13 @@
 							<img id=goods_image style="height: 100px;width: 100px;" src="/static/upload/{$vo['image']|default=''}"></td>
 						{/if}
 					<td>{$vo['name']}</td>
-					<td>{$vo['company']['name']}</td>
 					<td>{$vo['unit']['name']}</td>
 					<td>{$vo['price']}</td>
 					<td>{$vo['supply']['name']}</td>
 					<td>{$vo['create_time']}</td>
 					<td>
 						<div class="layui-inline">
-							<button class="layui-btn layui-btn-sm layui-btn-normal edit-btn btn_tips" data-title="修改材料" data-id="{$vo['id']}" data-url="{:url('goods/edit')}" data-h="388px"><i class="layui-icon">&#xe642;</i></button>
+							<button class="layui-btn layui-btn-sm layui-btn-normal edit-btn btn_tips" data-title="修改材料" data-id="{$vo['id']}" data-url="{:url('goods/edit')}" data-h="588px"><i class="layui-icon">&#xe642;</i></button>
 							<button class="layui-btn layui-btn-sm layui-btn-danger del-btn btn_tips" data-title="删除" data-id="{$vo['id']}" data-url="{:url('goods/del')}"><i class="layui-icon">&#xe640;</i></button>
 						</div>
 					</td>

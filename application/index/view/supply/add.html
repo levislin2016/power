@@ -10,14 +10,14 @@
 		<link rel="stylesheet" type="text/css" href="__STATIC__/admin/css/admin.css"/>
 	</head>
 	<body>
-	<form class="layui-form column-content-detail" method="post" action="{:url('owner/save',array('id'=>$Request.param.id))}">
+	<form class="layui-form column-content-detail" method="post" action="{:url('supply/save',array('id'=>$Request.param.id))}">
 					<div class="layui-tab">
 						<div class="layui-tab-content">
 							<div class="layui-tab-item layui-show">
 								<div class="layui-form-item">
-									<label class="layui-form-label">业主名称：</label>
+									<label class="layui-form-label">名称：</label>
 									<div class="layui-input-block">
-										<input type="text" name="name" required lay-verify="required" lay-verType="tips" placeholder="请输入业主名称" autocomplete="off" class="layui-input" value="{$list['name']|default=''}">
+										<input type="text" name="name" required lay-verify="required" lay-verType="tips" placeholder="请输入供应商名称" autocomplete="off" class="layui-input" value="{$list['name']|default=''}">
 									</div>
 								</div>
 							</div>
@@ -48,13 +48,10 @@
                 form.verify({
                     name: function(value, item){ //value：表单的值、item：表单的DOM对象
                         if(!new RegExp("^[a-zA-Z0-9_\u4e00-\u9fa5\\s·]+$").test(value)){
-                          return '业主名不能有特殊字符';
+                          return '计量单位不能有特殊字符';
                         }
                         if(/(^\_)|(\__)|(\_+$)/.test(value)){
-                          return '业主名首尾不能出现下划线\'_\'';
-                        }
-                        if(/^\d+\d+\d$/.test(value)){
-                          return '业主名不能全为数字';
+                          return '计量单位名首尾不能出现下划线\'_\'';
                         }
                     },
                 });

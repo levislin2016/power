@@ -22,7 +22,9 @@ class Goods{
             if(!empty($params['id'])){
                 $query->where('id', $params['id']);
             }
-        })->field('id, company_id, number, name, unit_id, supply_id, image, price, create_time')->order('create_time', 'desc')->paginate(10, false, [
+        })->field('id, company_id, number, name, unit_id, supply_id, image, price, create_time')
+        ->order('create_time', 'desc')
+        ->paginate(10, false, [
             'query'     => $params,
         ]);
         return $list;
@@ -67,7 +69,7 @@ class Goods{
             ]);
         }
         return [
-            'msg' => '添加材料成功',
+            'msg' => '修改材料成功',
         ];
     }
 
