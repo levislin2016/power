@@ -101,6 +101,15 @@ Route::post('supply_save', 'supply/save');
 //供应商删除操作
 Route::get('supply_del', 'supply/del');
 
+//供应商材料列表页
+Route::get('supplyGoods', 'supply_goods/index');
+//供应商添加/修改材料页
+Route::get('supplyGoods_add', 'supply_goods/add');
+//供应商添加/修改材料操作
+Route::post('supplyGoods_save', 'supply_goods/save');
+//供应商材料删除操作
+Route::get('supplyGoods_del', 'supply_goods/del');
+
 //计量单位列表页
 //Route::get('company', 'company/index');
 //计量单位添加/修改页

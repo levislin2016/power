@@ -40,26 +40,6 @@
 				</div>
 
 				<div class="layui-form-item">
-					<label class="layui-form-label">进货价：</label>
-					<div class="layui-input-block">
-						<input type="text" name="price" required lay-verify="required" lay-verType="tips" placeholder="请输入进货价" autocomplete="off" class="layui-input" value="">
-					</div>
-				</div>
-
-
-				<div class="layui-form-item">
-					<label class="layui-form-label">供应商：</label>
-					<div class="layui-input-block">
-						<select name="supply_id" required lay-verify="required" lay-verType="tips" lay-verify="required" lay-search="">
-							<option value="">请选择供应商</option>
-							{volist name="supply_list" id="vo"}
-							<option value="{$vo['id']}" >{$vo['name']}</option>
-							{/volist}
-						</select>
-					</div>
-				</div>
-
-				<div class="layui-form-item">
 					<label class="layui-form-label">单位：</label>
 					<div class="layui-input-block">
 						<select name="unit_id" required lay-verify="required" lay-verType="tips" lay-verify="required" lay-search="">
