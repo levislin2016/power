@@ -5,6 +5,7 @@ use app\index\service\Need as NeedService;
 use app\index\model\Project as ProjectModel;
 use app\index\model\Need as NeedModel;
 use app\index\model\Goods as GoodsModel;
+// use app\index\model\SupplyGoods as SupplyGoodsModel;
 use app\lib\exception\BaseException;
 use app\index\validate\NeedValidate;
 
@@ -26,7 +27,8 @@ class Need extends Base
     }
 
     public function add(){ 
-        $goods_list = GoodsModel::with(['supply'])->select();
+        //$goods_list = SupplyGoodsModel::with(['supply', 'goods'])->select();
+        $goods_list = GoodsModel::all();
         $this->assign('goods_list', $goods_list);
 
         $id = input('get.id', '');
