@@ -10,16 +10,12 @@ class NeedValidate extends BaseValidate
         'goods_id' => 'require|isPositiveInteger|isGoodsId',
         'project_id' => 'require|isPositiveInteger',
         'need' => 'require|isPositiveInteger',
-        'buy' => 'require|isPositiveInteger',
-        'have' => 'require|isPositiveInteger',
         'note' => 'ok',
     ];
 
     protected $message = [
         'goods_id.require' => '材料编号不能为空',
         'need.require' => '需求数量不能为空',
-        'buy.require' => '购买数量不能为空',
-        'have.require' => '平衡利库数量不能为空',
     ];
 
     //材料是否已存在
