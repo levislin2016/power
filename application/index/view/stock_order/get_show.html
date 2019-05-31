@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+        content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>电网system</title>
+    <link rel="stylesheet" type="text/css" href="__STATIC__/admin/layui/css/layui.css" />
+    <link rel="stylesheet" type="text/css" href="__STATIC__/admin/css/admin.css" />
+</head>
+
+<body>
+    <form class="layui-form column-content-detail" method="post"
+        action="{:url('stock_order/create_get_order')}">
+        <div class="layui-tab">
+            <!-- <ul class="layui-tab-title">
+							<li class="layui-this">文章内容</li>
+							<li>SEO优化</li>
+						</ul> -->
+            <div class="layui-tab-content">
+                <div class="layui-tab-item layui-show">
+
+                    <!-- <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label" style="width: 55px;">工程：</label>
+                            <div class="layui-input-inline" style="width: 185px;">
+                                    <div class="layui-form-mid layui-word-aux">辅助文字</div>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">工程队：</label>
+                            <div class="layui-input-inline" style="width: 185px;">
+                                    <div class="layui-form-mid layui-word-aux">辅助文字</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label" style="width: 55px;">仓库：</label>
+                            <div class="layui-input-inline" style="width: 185px;">
+                                    <div class="layui-form-mid layui-word-aux">辅助文字</div>
+                            </div>
+                        </div>
+                    </div> -->
+
+                    <table class="layui-table stock_order_table" lay-size="sm" data-url="{:url('stock_order/get_woker_goods')}">
+                        <colgroup>
+                            <col>
+                            <col>
+                            <col>
+                            <col>
+                            <col>
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th>材料编号</th>
+                                <th>材料名称</th>
+                                <th>供应商</th>
+                                <th>价格(元)</th>
+                                <th>领取</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {volist name="list" id="vo"}
+                            <tr>
+                                <td>{$vo.number}</td>
+                                <td>{$vo.name}</td>
+                                <td>{$vo.supply_name}</td>
+                                <td>{$vo.price / 100}</td>
+                                <td>{$vo.num}</td>
+                            </tr>
+                            {/volist}
+                        </tbody>
+                    </table>
+
+                    <!-- <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label" style="width: 55px;">备注：</label>
+                            <div class="layui-input-inline" style="width: 500px;">
+                                    <div class="layui-form-mid layui-word-aux">辅助文字</div>
+                            </div>
+                        </div>
+                    </div> -->
+
+                </div>
+            </div>
+        </div>
+        <!-- <div style="padding-left: 10px; text-align: center;">
+
+            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="formDemo">立即提交</button>
+
+        </div> -->
+    </form>
+    <script src="__STATIC__/admin/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+    <script src="__STATIC__/admin/js/common.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+        layui.use(['form', 'jquery', 'laydate', 'layer', 'laypage', 'dialog', 'tool', 'element', 'layedit'], function () {
+            var form = layui.form,
+                layer = layui.layer,
+                $ = layui.jquery,
+                laypage = layui.laypage,
+                laydate = layui.laydate,
+                layedit = layui.layedit,
+                tool = layui.tool,
+                element = layui.element,
+                dialog = layui.dialog;
+
+            
+    </script>
+</body>
+
+</html>

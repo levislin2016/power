@@ -53,6 +53,14 @@ Route::get('need_add', 'need/add');
 Route::post('need_save', 'need/save');
 //工程需求删除操作
 Route::get('need_del', 'need/del');
+//工程开工
+Route::post('start_work', 'project/start_work');
+//工程工程队
+Route::get('project_woker', 'project/woker');
+//工程分配
+Route::get('project_woker_add', 'project/woker_add');
+Route::post('project_allot', 'project/allot');
+
 
 //材料列表页
 Route::get('goods', 'goods/index');
@@ -62,7 +70,7 @@ Route::get('goods_add', 'goods/add');
 Route::get('goods_edit', 'goods/edit');
 //材料修改操作
 Route::any('goods_save', 'goods/save');
-//合同删除操作
+//材料删除操作
 Route::get('goods_del', 'goods/del');
 
 //业主列表页
@@ -110,12 +118,27 @@ Route::post('supplyGoods_save', 'supply_goods/save');
 //供应商材料删除操作
 Route::get('supplyGoods_del', 'supply_goods/del');
 
-//计量单位列表页
-//Route::get('company', 'company/index');
-//计量单位添加/修改页
-//Route::get('company_add', 'company/add');
-//计量单位添加/修改操作
-//Route::post('company_save', 'company/save');
-//计量单位删除操作
-//Route::get('company_del', 'company/del');
+//仓库
+Route::get('stock', 'stock/index');
+Route::get('stock_add', 'stock/add');
+Route::post('stock_save', 'stock/save');
+Route::get('stock_del', 'stock/del');
 
+//库存
+Route::get('stock_num', 'stock_num/index');
+
+
+//工程队
+Route::get('woker', 'woker/index');
+Route::get('woker_add', 'woker/add');
+Route::post('woker_save', 'woker/save');
+Route::get('woker_del', 'woker/del');
+Route::post('project_to_woker', 'woker/project_to_woker');
+
+
+//领取材料
+Route::get('get_index', 'stock_order/get_index');
+Route::get('get_add', 'stock_order/get_add');
+Route::get('get_show', 'stock_order/get_show');
+Route::post('get_woker_goods', 'stock_order/get_woker_goods');
+Route::post('create_get_order', 'stock_order/create_get_order');
