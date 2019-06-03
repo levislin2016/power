@@ -19,19 +19,19 @@
 			<form class="layui-form" action="">
 				<div class="">
 					<div class="layui-inline">
-						<input type="text" name="search" placeholder="请输入用户名" autocomplete="off" class="layui-input"
+						<input type="text" name="search" placeholder="请输入用户名" autocomplete="off" class="layui-input search"
 							value="{$Think.get.search}" />
 					</div>
-					<button class="layui-btn layui-btn-normal" type="submit" lay-filter="form_search"
-						lay-submit="search">搜索</button>
+					<button class="layui-btn layui-btn-normal" type="submit" lay-filter="form_search" lay-submit="search">搜索</button>
+					<div class="layui-inline" style="float: right">
+						<select name="stock_type" lay-filter="stock_type" class="stock_type" lay-verify="">
+							<option value="1">仓库</option>
+							<option value="2">项目</option>
+						</select>
+					</div>
 				</div>
 			</form>
-			<script type="text/html" id="barDemo">
-				<div class="layui-inline">
-					<button class="layui-btn layui-btn-sm layui-btn-normal edit-btn btn_tips" data-title="修改合同" data-id="{{d.id}}" data-url="{:url('company/add')}" data-h="388px"><i class="layui-icon">&#xe642;</i></button>
-					<button class="layui-btn layui-btn-sm layui-btn-danger del-btn-table btn_tips" data-title="删除" data-id="{{d.id}}" data-url="{:url('company/del')}"><i class="layui-icon">&#xe640;</i></button>
-				</div>
-			</script>
+			
 			<div class="layui-form" id="table-list">
 				<table id="demo" lay-filter="test"></table>
 			</div>
@@ -49,11 +49,36 @@
 				layer = layui.layer,
 				table = layui.table;
 
+			var stock_cols = [[
+				{ field: 'number', title: '商品编号' },
+				{ field: 'name', title: '商品名称' },
+				{ field: 'supply_name', title: '供应商' },
+				{ field: 'stock_name', title: '仓库' },
+				{ field: 'num', title: '库存', sort: true },
+				{ field: 'freeze', title: '冻结', sort: true },
+				{ field: 'have', title: '结余', sort: true},
+			]];
+
+			var project_cols = [[
+				{ field: 'number', title: '商品编号' },
+				{ field: 'name', title: '商品名称' },
+				{ field: 'supply_name', title: '供应商' },
+				{ field: 'stock_name', title: '仓库' },
+				{ field: 'project_name', title: '项目' },
+				{ field: 'num', title: '库存', sort: true },
+				{ field: 'in', title: '已分配', sort: true },
+				{ field: 'freeze', title: '未分配', sort: true },
+				{ field: 'have', title: '结余', sort: true},
+				{ field: 'extra', title: '材料补充', sort: true},
+			]];
+
+			var cols = stock_cols;
+
 			tableIns = table.render({
 				elem: '#demo'
 				, id: 'idTest'
 				, height: 'full-100'
-				, url: "{:Url('company/getData')}" //数据接口
+				, url: "{:Url('stock_all/get_data')}" //数据接口
 				// , parseData: function (res) { //res 即为原始返回的数据
 				// 	return {
 				// 		"code": res.code, //解析接口状态
@@ -74,13 +99,7 @@
 					, dataName: 'data' //规定数据列表的字段名称，默认：data
 				}
 				, page: { theme: '#1E9FFF' } //开启分页
-				, cols: [[ //表头
-					{ checkbox: true }
-					, { field: 'id', title: 'ID', width: 80, sort: true }
-					, { field: 'name', title: '公司名称' }
-					, { field: 'create_time', title: '创建时间', width: 200, sort: true }
-					, { field: '', title: '操作', width: 150, toolbar: '#barDemo' }
-				]]
+				, cols: cols
 				, autoSort: false
 				// , initSort: {
 				// 	field: 'create_time' //排序字段，对应 cols 设定的各字段名
@@ -114,14 +133,31 @@
 			form.on('submit(form_search)', function (data) {
 				var param = data.field;
 				console.dir(param);
+				save_table(param);
+				return false;
+			});
+
+			form.on('select(stock_type)', function(data){
+				var stock_type = data.value;
+				var search = $('.search').val();
+				save_table({search: search, stock_type: stock_type});
+			});  
+
+			function save_table(param){
+				if(param.stock_type == 1){
+					cols = stock_cols;
+				}else{
+					cols = project_cols;
+				}
 				tableIns.reload({
 					where: param
 					, page: {
 						curr: 1 //重新从第 1 页开始
 					}
+					, cols: cols
 				});
-				return false;
-			});
+			}
+
 
 			//顶部批量删除
 			$('.delBtnTable').click(function () {

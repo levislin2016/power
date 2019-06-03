@@ -11,17 +11,18 @@ use app\lib\exception\BaseException;
 
 class StockOrder{
     
-    public function get_list($params){ 
+    public function order_list($params, $type){ 
         $list = StockOrderModel::useGlobalScope(false)->alias('so')
             ->leftJoin('Stock s','so.stock_id = s.id')
             ->leftJoin('project p','so.project_id = p.id')
             ->leftJoin('woker w','so.woker_id = w.id')
             ->leftJoin('user u','so.user_id = u.id')
-            ->where(function ($query) use($params) {
+            ->where(function ($query) use($params, $type) {
                 if(!empty($params['search'])){ 
                     $query->where('so.number|s.name|p.name|w.name|u.name', 'like', '%'.$params['search'].'%');
                 }
                 $query->where('so.company_id', session('power_user.company_id'));
+                $query->where('so.type', $type);
             })
             ->field('so.*, s.name as stock_name, p.name as project_name, w.name as woker_name, u.name as user_name')
             ->order('so.create_time', 'desc')
@@ -35,27 +36,8 @@ class StockOrder{
 
     public function create_get_order($params){ 
         StockOrderModel::startTrans();
-        $stockOrder = StockOrderModel::create([
-            'company_id'        =>  session('power_user.company_id'),
-            'number'            =>  $this->create_order_no(),
-            'stock_id'          =>  $params['stock_id'],
-            'project_id'        =>  $params['project_id'],
-            'woker_id'          =>  $params['woker_id'],
-            'user_id'           =>  session('power_user.id'),
-            'type'              =>  7,
-            'status'            => 2,
-            'note'              => $params['note']
-        ]);
-
-        if(!$stockOrder){
-            StockOrderModel::rollback();
-            throw new BaseException(
-                [
-                    'msg' => '材料领取创建错误！',
-                    'errorCode' => 51001
-                ]);
-        }
-
+        
+        $stockOrder = $this->create_order($params, 7, 2);
         
         foreach($params['num'] as $num){
             //扣减分配表
@@ -159,8 +141,40 @@ class StockOrder{
         ];
     }
 
+    public function create_back_order($params){
+        StockOrderModel::startTrans();
+        $stockOrder = $this->create_order($params, 8, 2);
+    }
+
+    //创建订单号
     protected function create_order_no($str = 'G'){
         return $str .''. date('Ymd').substr(implode(NULL, array_map('ord', str_split(substr(uniqid(), 7, 13), 1))), 0, 8);
+    }
+
+    //创建订单
+    protected function create_order($params, $type = 7, $status = 2){
+        $stockOrder = StockOrderModel::create([
+            'company_id'        =>  session('power_user.company_id'),
+            'number'            =>  $this->create_order_no(),
+            'stock_id'          =>  $params['stock_id'],
+            'project_id'        =>  $params['project_id'],
+            'woker_id'          =>  $params['woker_id'],
+            'user_id'           =>  session('power_user.id'),
+            'type'              =>  $type,
+            'status'            =>  $status,
+            'note'              =>  $params['note']
+        ]);
+        
+        if(!$stockOrder){
+            StockOrderModel::rollback();
+            throw new BaseException(
+                [
+                    'msg' => '订单创建错误！',
+                    'errorCode' => 51001
+                ]);
+        }
+
+        return $stockOrder;
     }
 
 }

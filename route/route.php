@@ -125,7 +125,8 @@ Route::post('stock_save', 'stock/save');
 Route::get('stock_del', 'stock/del');
 
 //库存
-Route::get('stock_num', 'stock_num/index');
+Route::get('stock_all', 'stock_all/index');
+Route::get('stock_all_data', 'stock_all/get_data');
 
 
 //工程队
@@ -142,3 +143,11 @@ Route::get('get_add', 'stock_order/get_add');
 Route::get('get_show', 'stock_order/get_show');
 Route::post('get_woker_goods', 'stock_order/get_woker_goods');
 Route::post('create_get_order', 'stock_order/create_get_order');
+
+
+//材料退还
+Route::get('back_index', 'stock_order/back_index');
+Route::get('back_add', 'stock_order/back_add');
+Route::get('back_show', 'stock_order/back_show');
+Route::post('back_woker_goods', 'stock_order/back_woker_goods');
+Route::post('create_back_order', 'stock_order/create_back_order');
