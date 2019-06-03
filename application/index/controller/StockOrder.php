@@ -80,4 +80,8 @@ class StockOrder extends Base
         return $res;
     }
 
+    public function back_index(){
+        
+    }
+
 }
