@@ -151,3 +151,10 @@ Route::get('back_add', 'stock_order/back_add');
 Route::get('back_show', 'stock_order/back_show');
 Route::post('back_woker_goods', 'stock_order/back_woker_goods');
 Route::post('create_back_order', 'stock_order/create_back_order');
+
+
+//导入采购
+Route::get('purchase', 'purchase/index');
+Route::get('purchase_add', 'purchase/add');
+Route::get('purchase_info', 'purchase/info');
+Route::post('purchase_excel', 'purchase/excel_purchase');

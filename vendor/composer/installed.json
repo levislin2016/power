@@ -12,7 +12,13 @@
             "type": "zip",
             "url": "https://api.github.com/repos/MarkBaker/PHPComplex/zipball/1ea674a8308baf547cbcbd30c5fcd6d301b7c000",
             "reference": "1ea674a8308baf547cbcbd30c5fcd6d301b7c000",
-            "shasum": ""
+            "shasum": "",
+            "mirrors": [
+                {
+                    "url": "https://dl.laravel-china.org/%package%/%reference%.%type%",
+                    "preferred": true
+                }
+            ]
         },
         "require": {
             "php": "^5.6.0|^7.0.0"
@@ -109,7 +115,13 @@
             "type": "zip",
             "url": "https://api.github.com/repos/MarkBaker/PHPMatrix/zipball/6ea97472b5baf12119b4f31f802835b820dd6d64",
             "reference": "6ea97472b5baf12119b4f31f802835b820dd6d64",
-            "shasum": ""
+            "shasum": "",
+            "mirrors": [
+                {
+                    "url": "https://dl.laravel-china.org/%package%/%reference%.%type%",
+                    "preferred": true
+                }
+            ]
         },
         "require": {
             "php": "^5.6.0|^7.0.0"
@@ -170,18 +182,24 @@
     },
     {
         "name": "phpoffice/phpspreadsheet",
-        "version": "1.6.0",
-        "version_normalized": "1.6.0.0",
+        "version": "1.7.0",
+        "version_normalized": "1.7.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/PHPOffice/PhpSpreadsheet.git",
-            "reference": "bf00f0cc5f55c354018f9a9ef15e6e3e1a229051"
+            "reference": "84e09df79855ed3da84e2eab6850eb7741d8cbda"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/PHPOffice/PhpSpreadsheet/zipball/bf00f0cc5f55c354018f9a9ef15e6e3e1a229051",
-            "reference": "bf00f0cc5f55c354018f9a9ef15e6e3e1a229051",
-            "shasum": ""
+            "url": "https://api.github.com/repos/PHPOffice/PhpSpreadsheet/zipball/84e09df79855ed3da84e2eab6850eb7741d8cbda",
+            "reference": "84e09df79855ed3da84e2eab6850eb7741d8cbda",
+            "shasum": "",
+            "mirrors": [
+                {
+                    "url": "https://dl.laravel-china.org/%package%/%reference%.%type%",
+                    "preferred": true
+                }
+            ]
         },
         "require": {
             "ext-ctype": "*",
@@ -219,7 +237,7 @@
             "mpdf/mpdf": "Option for rendering PDF with PDF Writer",
             "tecnickcom/tcpdf": "Option for rendering PDF with PDF Writer"
         },
-        "time": "2019-01-02T04:42:54+00:00",
+        "time": "2019-05-26T02:50:36+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -277,7 +295,13 @@
             "type": "zip",
             "url": "https://api.github.com/repos/php-fig/simple-cache/zipball/408d5eafb83c57f6365a3ca330ff23aa4a5fa39b",
             "reference": "408d5eafb83c57f6365a3ca330ff23aa4a5fa39b",
-            "shasum": ""
+            "shasum": "",
+            "mirrors": [
+                {
+                    "url": "https://dl.laravel-china.org/%package%/%reference%.%type%",
+                    "preferred": true
+                }
+            ]
         },
         "require": {
             "php": ">=5.3.0"
@@ -327,7 +351,13 @@
             "type": "zip",
             "url": "https://api.github.com/repos/top-think/framework/zipball/135eee67ce9ee0b07da201f743d7dd88ec431abb",
             "reference": "135eee67ce9ee0b07da201f743d7dd88ec431abb",
-            "shasum": ""
+            "shasum": "",
+            "mirrors": [
+                {
+                    "url": "https://dl.laravel-china.org/%package%/%reference%.%type%",
+                    "preferred": true
+                }
+            ]
         },
         "require": {
             "php": ">=5.6.0",
@@ -380,7 +410,13 @@
             "type": "zip",
             "url": "https://api.github.com/repos/top-think/think-captcha/zipball/54c8a51552f99ff9ea89ea9c272383a8f738ceee",
             "reference": "54c8a51552f99ff9ea89ea9c272383a8f738ceee",
-            "shasum": ""
+            "shasum": "",
+            "mirrors": [
+                {
+                    "url": "https://dl.laravel-china.org/%package%/%reference%.%type%",
+                    "preferred": true
+                }
+            ]
         },
         "require": {
             "topthink/framework": "5.1.*"
@@ -421,7 +457,13 @@
             "type": "zip",
             "url": "https://api.github.com/repos/top-think/think-image/zipball/8586cf47f117481c6d415b20f7dedf62e79d5512",
             "reference": "8586cf47f117481c6d415b20f7dedf62e79d5512",
-            "shasum": ""
+            "shasum": "",
+            "mirrors": [
+                {
+                    "url": "https://dl.laravel-china.org/%package%/%reference%.%type%",
+                    "preferred": true
+                }
+            ]
         },
         "require": {
             "ext-gd": "*"
@@ -463,7 +505,13 @@
             "type": "zip",
             "url": "https://api.github.com/repos/top-think/think-installer/zipball/f5400a12c60e513911aef41fe443fa6920952675",
             "reference": "f5400a12c60e513911aef41fe443fa6920952675",
-            "shasum": ""
+            "shasum": "",
+            "mirrors": [
+                {
+                    "url": "https://dl.laravel-china.org/%package%/%reference%.%type%",
+                    "preferred": true
+                }
+            ]
         },
         "require": {
             "composer-plugin-api": "^1.0"
