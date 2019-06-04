@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html class="iframe-h">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title>电网system</title>
+		<link rel="stylesheet" type="text/css" href="__STATIC__/admin/layui/css/layui.css" />
+		<link rel="stylesheet" type="text/css" href="__STATIC__/admin/css/admin.css" />
+	</head>
+
+	<body>
+		<div class="wrap-container clearfix">
+				<div class="column-content-detail">
+					<form class="layui-form" action="">
+						<div class="layui-form-item">
+							<div class="layui-inline tool-btn">
+								<button type="button" class="layui-btn layui-btn-sm layui-btn-normal addBtn btn_tips" data-title="领取材料" data-url="{:url('stock_order/get_add')}" data-h="500px"><i class="layui-icon">&#xe654;</i></button>
+							</div>
+							<div class="layui-inline">
+								<input type="text" name="search" placeholder="请输入搜索内容" autocomplete="off" class="layui-input" value="{$Think.get.search}" />
+							</div>
+							<div class="layui-inline">
+								<select name="type" lay-filter="status">
+									<option value="">请选择一个类型</option>
+									<option {eq name="Think.get.type" value="7"}selected{/eq} value="7">领取出库</option>
+									<option {eq name="Think.get.type" value="8"}selected{/eq} value="8">归还入库</option>
+								</select>
+                            </div>
+                            <div class="layui-inline">
+                                <input type="text" name="time" class="layui-input" id="time" placeholder="选择时间">
+                            </div>
+							<button class="layui-btn layui-btn-normal" type="submit" lay-submit="search">搜索</button>
+						</div>
+					</form>
+					<div class="layui-form" id="table-list">
+						<table class="layui-table" lay-skin="line">
+							<colgroup>
+								<col>
+								<col>
+								<col>
+								<col>
+								<col>
+								<col>
+								<col>
+								<col>
+								<col>
+							</colgroup>
+							<thead>
+								<tr>
+									<th>订单号</th>
+									<th>项目</th>
+									<th>工程队</th>
+									<th>仓库</th>
+									<th>类型</th>
+									<th>操作人</th>
+									<th>备注</th>
+									<th>创建时间</th>
+									<th>操作</th>
+								</tr>
+							</thead>
+							<tbody>
+							{volist name="list" id="vo"}
+								<tr>								
+									<td>{$vo['number']}</td>
+									<td>{$vo['project_name']}</td>
+									<td>{$vo['woker_name']}</td>
+									<td>{$vo['stock_name']}</td>
+									<td><span class="layui-badge {eq name='vo.type' value='7'}layui-bg-green{/eq}{eq name='vo.status' value='8'}layui-bg-orange{/eq}">{$vo['type_name']}</span></td>
+									<td>{$vo['user_name']}</td>
+									<td>{$vo['note']}</td>
+									<td>{$vo['create_time']}</td>
+									<td>
+										<div class="layui-inline">
+                                            
+											<button class="layui-btn layui-btn-sm layui-btn-normal edit-btn btn_tips" data-title="查看详情" data-id="{$vo['id']}" data-url="{:url('stock_order/get_show')}" data-h="388px"><i class="layui-icon">&#xe63c;</i></button>
+                                                
+                                        </div>
+									</td>
+								</tr>
+							{/volist}	
+							</tbody>
+						</table>
+						<div class="page-wrap">
+							{$list->render()}
+						</div>
+					</div>
+				</div>
+		</div>
+		<script src="__STATIC__/admin/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+		<script src="__STATIC__/admin/js/common.js" type="text/javascript" charset="utf-8"></script>
+		<script>
+			layui.use(['form', 'jquery', 'element'], function() { 
+				var form = layui.form,
+					$ = layui.jquery,
+                    laydate = layui.laydate,
+					element = layui.element;
+
+                laydate.render({
+                    elem: '#time'
+                    ,type: 'datetime'
+                    ,value: '{$Think.get.time}'
+                    ,isInitValue: true
+                    ,range: '~'
+                });
+			})
+		</script>
+	</body>
+
+</html>

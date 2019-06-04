@@ -27,10 +27,10 @@
                         <div class="layui-inline">
                             <label class="layui-form-label" style="width: 55px;">工程：</label>
                             <div class="layui-input-inline" style="width: 185px;">
-                                <select name="project_id" class="project_id" data-url="{:url('woker/project_to_woker')}" required lay-verify="required" lay-filter="project_id" lay-verType="tips" lay-search="">
+                                <select name="project_id" {notempty name="Request.param.pid"}disabled="true"{/notempty} data-pid="{$Request.param.pid}" class="project_id" data-url="{:url('woker/project_to_woker')}" required lay-verify="required" lay-filter="project_id" lay-verType="tips" lay-search="">
                                     <option value="">请选择工程</option>
                                     {volist name="project_list" id="project"}
-                                    <option value="{$project.id}">{$project.name}</option>
+                                    <option {eq name="project.id" value="$Request.param.pid"} selected {/eq} value="{$project.id}">{$project.name}</option>
                                     {/volist}
                                 </select>
                             </div>
@@ -141,6 +141,14 @@
             form.on('select(project_id)', function (data) {
                 var project_id = data.value;
                 var url = $(data.elem).data('url');
+                get_work_data(url, project_id);
+            });
+
+            if($('.project_id').data('pid')){
+                get_work_data($('.project_id').data('url'), $('.project_id').data('pid'))
+            }
+
+            function get_work_data(url, project_id){
                 loading = layer.load(2, {
                     shade: [0.2, '#000']
                 });
@@ -155,7 +163,7 @@
                     form.render('select');
                     empty_table();
                 })
-            });
+            }
 
             form.on('select(get_woker_goods)', function (elem){ 
                 //console.log(elem.value);

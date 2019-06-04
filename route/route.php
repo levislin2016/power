@@ -158,3 +158,6 @@ Route::get('purchase', 'purchase/index');
 Route::get('purchase_add', 'purchase/add');
 Route::get('purchase_info', 'purchase/info');
 Route::post('purchase_excel', 'purchase/excel_purchase');
+
+//领取和退还记录
+Route::get('order_get_back', 'stock_order/order_get_back');

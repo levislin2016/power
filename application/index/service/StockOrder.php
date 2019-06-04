@@ -8,6 +8,7 @@ use app\index\model\ProjectStock as ProjectStockModel;
 use app\index\model\Contract as ContractModel;
 use app\index\model\StockAll as StockAllModel;
 use app\index\model\SupplyGoods as SupplyGoodsModel;
+use app\index\model\Project as ProjectModel;
 use app\lib\exception\BaseException;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use Samples\Sample10\MyReadFilter;
@@ -26,7 +27,18 @@ class StockOrder{
                     $query->where('so.number|s.name|p.name|w.name|u.name', 'like', '%'.$params['search'].'%');
                 }
                 $query->where('so.company_id', session('power_user.company_id'));
-                $query->where('so.type', $type);
+                if(!empty($params['type'])){
+                    $query->where('so.type', $params['type']);
+                }else{
+                    if(is_array($type)){
+                        $query->where('so.type', 'in', $type);
+                    }else{
+                        $query->where('so.type', $type);
+                    }
+                }
+                if(!empty($params['time'])){
+                    $query->where('so.create_time', 'between time', explode(' ~ ', $params['time']));
+                }
             })
             ->field('so.*, s.name as stock_name, p.name as project_name, w.name as woker_name, u.name as user_name')
             ->order('so.create_time', 'desc')
@@ -169,7 +181,134 @@ class StockOrder{
 
     public function create_back_order($params){
         StockOrderModel::startTrans();
-        $stockOrder = $this->create_order($params, 8, 2);
+        //创建订单
+        $stockOrder = $this->create_order($params, 8, 2, 'B');
+        foreach($params['num'] as $num){
+            //修改分配表
+            $projectWoker = ProjectWokerModel::get($num['id']);
+            if(!$projectWoker){
+                StockOrderModel::rollback();
+                throw new BaseException(
+                    [
+                        'msg' => '非法操作！',
+                        'errorCode' => 51002
+                    ]);
+            }
+            $projectWoker->back = $projectWoker->back + $num['val'];
+            if($projectWoker->back > $projectWoker->get){
+                StockOrderModel::rollback();
+                throw new BaseException(
+                    [
+                        'msg' => '非法操作！',
+                        'errorCode' => 51003
+                    ]);
+            }
+            $res = $projectWoker->save();
+            if(!$res){
+                StockOrderModel::rollback();
+                throw new BaseException(
+                    [
+                        'msg' => '修改分配数量错误！',
+                        'errorCode' => 51004
+                    ]);
+            }
+
+            //修改库存
+            $projectStock = ProjectStockModel::where('stock_id', $params['stock_id'])->where('project_id', $params['project_id'])->where('supply_goods_id', $projectWoker->supply_goods_id)->find();
+            if(!$projectStock){
+                //新建库存
+                $projectStock = ProjectStockModel::create([
+                    'stock_id'          =>  $params['stock_id'],
+                    'project_id'        =>  $params['project_id'],
+                    'supply_goods_id'   =>  $projectWoker->supply_goods_id,
+                    'num'               =>  $num['val'],
+                    'in'                =>  0,
+                    'freeze'            =>  0,
+                    'have'              =>  $num['val'],
+                    'extra'             =>  0,
+                    
+                ]);
+                if(!$projectStock){
+                    StockOrderModel::rollback();
+                    throw new BaseException(
+                        [
+                            'msg' => '修改库存错误！',
+                            'errorCode' => 51005
+                        ]);
+                }
+            }else{
+                $projectStock->num = $projectStock->num + $num['val'];
+                $projectStock->have = $projectStock->have + $num['val'];
+                $res = $projectStock->save();
+                if(!$res){
+                    StockOrderModel::rollback();
+                    throw new BaseException(
+                        [
+                            'msg' => '修改库存错误！',
+                            'errorCode' => 51006
+                        ]);
+                }
+            }
+            //修改总库存
+            $stockAll = StockAllModel::where('stock_id', $params['stock_id'])->where('supply_goods_id', $projectWoker->supply_goods_id)->find();
+            if(!$stockAll){
+                $stockAll = StockAllModel::create([
+                    'company_id'    =>  session('power_user.company_id'),
+                    'stock_id'    =>  $params['stock_id'],
+                    'supply_goods_id'    =>  $projectWoker->supply_goods_id,
+                    'num'    =>  $num['val'],
+                    'freeze'    =>  0,
+                    'have'    =>  $num['val'],
+                ]);
+                if(!$stockAll){
+                    StockOrderModel::rollback();
+                    throw new BaseException(
+                        [
+                            'msg' => '修改总库存错误！',
+                            'errorCode' => 51007
+                        ]);
+                }
+            }else{
+                $stockAll->num = $stockAll->num + $num['val'];
+                $stockAll->have = $stockAll->have + $num['val'];
+                $res = $stockAll->save();
+                if(!$res){
+                    StockOrderModel::rollback();
+                    throw new BaseException(
+                        [
+                            'msg' => '修改总库存错误！',
+                            'errorCode' => 51008
+                        ]);
+                }
+            }
+
+            $supplyGoods = SupplyGoodsModel::get($projectWoker->supply_goods_id);
+
+            //创建订单详情
+            $stockOrderInfo = StockOrderInfoModel::create([
+                'stock_order_id'    =>  $stockOrder->id,
+                'supply_goods_id'   =>  $projectWoker->supply_goods_id,
+                'woker_id'          =>  $params['woker_id'],
+                'price'             =>  $supplyGoods->price,
+                'num'               =>  $num['val'],
+                
+            ]);
+            if(!$stockOrderInfo){
+                StockOrderModel::rollback();
+                throw new BaseException(
+                    [
+                        'msg' => '创建详情错误！',
+                        'errorCode' => 51009
+                    ]);
+            }
+
+        }
+
+        StockOrderModel::commit();
+        return [
+            'msg' => '退还材料成功',
+        ];
+
     }
 
     //创建订单号
@@ -178,10 +317,11 @@ class StockOrder{
     }
 
     //创建订单
-    protected function create_order($params, $type = 7, $status = 2){
+    protected function create_order($params, $type = 7, $status = 2, $no = 'G'){
         $stockOrder = StockOrderModel::create([
+            'contract_id'       =>  ProjectModel::where('id', $params['project_id'])->value('contract_id'),
             'company_id'        =>  session('power_user.company_id'),
-            'number'            =>  $this->create_order_no(),
+            'number'            =>  $this->create_order_no($no),
             'stock_id'          =>  $params['stock_id'],
             'project_id'        =>  $params['project_id'],
             'woker_id'          =>  $params['woker_id'],

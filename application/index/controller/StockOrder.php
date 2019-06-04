@@ -123,4 +123,11 @@ class StockOrder extends Base
         
     }
 
+    public function order_get_back(){
+        $params = input('get.');
+        $list = (new StockOrderService)->order_list($params, array(7,8));
+    	$this->assign('list', $list);
+        return $this->fetch();
+    }
+
 }
