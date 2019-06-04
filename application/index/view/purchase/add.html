@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+        content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>电网system</title>
+    <link rel="stylesheet" type="text/css" href="__STATIC__/admin/layui/css/layui.css" />
+    <link rel="stylesheet" type="text/css" href="__STATIC__/admin/css/admin.css" />
+</head>
+<style>
+    /*样式1*/
+    .a-upload {
+        padding: 4px 10px;
+        height: 20px;
+        line-height: 20px;
+        position: relative;
+        cursor: pointer;
+        color: #888;
+        background: #fafafa;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        overflow: hidden;
+        display: inline-block;
+        *display: inline;
+        *zoom: 1
+    }
+
+    .a-upload  input {
+        position: absolute;
+        font-size: 100px;
+        right: 0;
+        top: 0;
+        opacity: 0;
+        filter: alpha(opacity=0);
+        cursor: pointer
+    }
+
+    .a-upload:hover {
+        color: #444;
+        background: #eee;
+        border-color: #ccc;
+        text-decoration: none
+    }
+    /*样式2*/
+    .file {
+        position: relative;
+        display: inline-block;
+        background: #D0EEFF;
+        border: 1px solid #99D3F5;
+        border-radius: 4px;
+        padding: 4px 12px;
+        overflow: hidden;
+        color: #1E88C7;
+        text-decoration: none;
+        text-indent: 0;
+        line-height: 20px;
+    }
+    .file input {
+        position: absolute;
+        font-size: 100px;
+        right: 0;
+        top: 0;
+        opacity: 0;
+    }
+    .file:hover {
+        background: #AADFFD;
+        border-color: #78C3F3;
+        color: #004974;
+        text-decoration: none;
+    }
+</style>
+<body>
+    <form id="submits" class="layui-form column-content-detail" method="post" enctype="multipart/form-data"
+        action="{:url('purchase/excel_purchase')}">
+        <div class="layui-tab">
+            <div class="layui-tab-content">
+                <div class="layui-tab-item layui-show">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">仓库：</label>
+                            <div class="layui-input-block">
+                                <select name="stock_id" class="stock_id" required lay-verify="required" lay-filter="get_woker_goods" lay-verType="tips" lay-search="">
+                                    {volist name="stock_list" id="stock"}
+                                    <option value="{$stock.id}">{$stock.name}</option>
+                                    {/volist}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">采购单：</label>
+                            <div class="layui-input-block">
+                                <a href="javascript:;" class="a-upload">
+                                    <input type="file" name="purchase" id="p">点击这里上传文件
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div style="padding-left: 10px; text-align: center;">
+
+            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="formDemo">立即提交</button>
+
+        </div>
+    </form>
+    <script src="__STATIC__/admin/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+    <script src="__STATIC__/admin/js/common.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+        layui.use(['form', 'jquery', 'laydate', 'layer', 'laypage', 'dialog', 'tool', 'element', 'layedit'], function () {
+            var form = layui.form,
+                layer = layui.layer,
+                $ = layui.jquery,
+                laypage = layui.laypage,
+                laydate = layui.laydate,
+                layedit = layui.layedit,
+                tool = layui.tool,
+                element = layui.element,
+                dialog = layui.dialog;
+//            form.on('submit(formDemo)', function (data) {
+//
+//                var url = data.form.action;
+//                var param = data.field;
+//
+//                loading = layer.load(2, {
+//                    shade: [0.2, '#000']
+//                });
+//
+//                $.post(url, param, function (data) {
+//                    layer.close(loading);
+//                    console.dir(data);
+//                    if(data.error_code){
+//                        layer.msg(data.msg, {icon: 2, shade: 0.1, time: 1000}, function(){
+//
+//                        });
+//                        return false;
+//                    }
+//                    layer.msg(data.msg, {icon: 1, shade: 0.1, time: 1000}, function () {
+//                        parent.refresh();
+//                    });
+//                });
+//
+//                return false;
+//            });
+        });
+    </script>
+</body>
+
+</html>
