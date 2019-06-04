@@ -205,6 +205,11 @@ class StockOrder{
             $woker_names        = array_flip(array_flip(array_column($list_data, '3')));
             $supply_names       = array_flip(array_flip(array_column($list_data, '4')));
             $supply_goods_names = array_flip(array_flip(array_column($list_data, '5')));
+            $contract_ids = [];
+            $project_ids  = [];
+            $woker_ids    = [];
+            $s_ids        = [];
+            $g_ids        = [];
             if($contract_names){
                 $contract_ids = \Db::table('pw_contract')->where('name', 'in', $contract_names)->column('id', 'name');
             }
