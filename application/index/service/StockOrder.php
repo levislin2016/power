@@ -239,7 +239,7 @@ class StockOrder{
                     ];
                     $purchase_id = \Db::table('pw_stock_order')->alias('so')
                         ->leftjoin('stock_order_info soi', 'so.id = soi.stock_order_id')
-                        ->where(['so.type' => 1, 'so.number' => $v['0'], 'soi.supply_id' => $s_ids[$v['4']], 'soi.supply_goods_id' => $g_ids[$v['5']], 'so.delete_time' => 0])
+                        ->where(['so.type' => 1, 'so.number' => $v['0'], 'soi.supply_goods_id' => $supply_goods_id, 'so.delete_time' => 0])
                         ->value('so.id');
 
                     if ($purchase_id) {
@@ -259,7 +259,7 @@ class StockOrder{
                     ]);
                     $stock_list_id = \Db::table('pw_stock_all')->where(['supply_goods_id' => $supply_goods_id,'stock_id' => $stock_id])->value('id');
                     if($stock_list_id){
-                        \Db::table('pw_stock_all')->where(['supply_goods_id' => $stock_list_id])->setInc('num', $v['7'])
+                        \Db::table('pw_stock_all')->where(['supply_goods_id' => $stock_list_id])->setInc('num', $v['7']);
                     }else{
                         \Db::table('pw_stock_all')->insert([
                             'company_id'      => '',
