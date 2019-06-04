@@ -120,6 +120,7 @@ class StockOrder extends Base
         $params['num'] = json_decode($params['num'], true);
         $res = (new StockOrderService)->create_back_order($params);
         return $res;
+        
     }
 
 }
