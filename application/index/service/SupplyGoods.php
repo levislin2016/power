@@ -14,9 +14,8 @@ class SupplyGoods{
             if(!empty($params['search'])){ 
                 $query->where('s.name|g.name', 'like', '%'.$params['search'].'%');
             }
-        })->field('sg.id, s.name as supply_name, s.phone as supply_phone, g.name as goods_name, g.image as goods_image, sg.price, sg.note, sg.create_time')->order('sg.create_time', 'desc')->paginate(10, false, [
-            'query'     => $params,
-        ]);
+        })
+            ->where(['s_id' => $params['id']])->field('sg.id, s.name as supply_name, s.phone as supply_phone, g.name as goods_name, g.image as goods_image, sg.price, sg.note, sg.create_time')->order('sg.create_time', 'desc')->select();
         return $list;
     }
 
