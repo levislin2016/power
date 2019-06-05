@@ -74,6 +74,7 @@
 												{case 1}
 													<button class="layui-btn layui-btn-sm layui-btn-normal edit-btn btn_tips" data-title="修改工程" data-id="{$vo['id']}" data-url="{:url('project/add')}" data-h="388px"><i class="layui-icon">&#xe642;</i></button>
 													<a class="layui-btn layui-btn-sm layui-btn-primary btn_tips" data-title="需求" href="{:url('need/index', array('id'=>$vo['id']))}"><i class="layui-icon">&#xe63c;</i></a>
+													<button class="layui-btn layui-btn-sm edit-btn btn_tips" data-title="采购" data-id="{$vo['id']}" data-url="{:url('buy/add')}" data-h="500px"><i class="layui-icon">&#xe657;</i></button>
 													<button class="layui-btn layui-btn-sm layui-btn-normal start_work btn_tips" data-title="开始工程" data-url="{:url('project/start_work', array('id'=>$vo['id']))}"><i class="layui-icon">&#xe66c;</i></button>											
 													<button class="layui-btn layui-btn-sm layui-btn-danger del-btn btn_tips" data-title="删除" data-id="{$vo['id']}" data-url="{:url('project/del')}"><i class="layui-icon">&#xe640;</i></button>
 												{/case}

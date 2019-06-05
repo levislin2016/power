@@ -314,17 +314,12 @@ class StockOrder{
 
     }
 
-    //创建订单号
-    protected function create_order_no($str = 'G'){
-        return $str .''. date('Ymd').substr(implode(NULL, array_map('ord', str_split(substr(uniqid(), 7, 13), 1))), 0, 8);
-    }
-
     //创建订单
     protected function create_order($params, $type = 7, $status = 2, $no = 'G'){
         $stockOrder = StockOrderModel::create([
             'contract_id'       =>  ProjectModel::where('id', $params['project_id'])->value('contract_id'),
             'company_id'        =>  session('power_user.company_id'),
-            'number'            =>  $this->create_order_no($no),
+            'number'            =>  create_order_no($no),
             'stock_id'          =>  $params['stock_id'],
             'project_id'        =>  $params['project_id'],
             'woker_id'          =>  $params['woker_id'],

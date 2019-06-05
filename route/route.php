@@ -161,3 +161,10 @@ Route::post('purchase_excel', 'purchase/excel_purchase');
 
 //领取和退还记录
 Route::any('order_get_back', 'stock_order/order_get_back');
+
+//创建采购订单页面
+Route::get('buy_add', 'buy/add');
+Route::post('get_need', 'buy/get_need');
+Route::post('create_buy', 'buy/create_buy');
+
+
