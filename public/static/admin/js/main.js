@@ -1,6 +1,7 @@
+var element;
 layui.use(['layer', 'form', 'element', 'jquery', 'dialog'], function() {
 	var layer = layui.layer;
-	var element = layui.element;
+	element = layui.element;
 	var form = layui.form;
 	var $ = layui.$;
 	var dialog = layui.dialog;

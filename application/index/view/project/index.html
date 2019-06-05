@@ -79,6 +79,7 @@
 												{/case}
 												{case 2}
 													<a class="layui-btn layui-btn-sm layui-btn-primary btn_tips" data-title="分配材料" href="{:url('project/woker', array('id'=>$vo['id']))}"><i class="layui-icon">&#xe656;</i></a>
+													<button class="layui-btn layui-btn-sm layui-btn-normal btn_tips tab_btn" data-tab="61" data-title="领退记录" data-url="{:url('stock_order/order_get_back')}?pid={$vo['id']}"><i class="layui-icon">&#xe63c;</i></button>
 													<button class="layui-btn layui-btn-sm layui-btn-warm btn_tips" data-title="工程完成" data-url=""><i class="layui-icon">&#xe66c;</i></button>											
 												{/case}
 												{case 3}
@@ -136,6 +137,8 @@
 					})
 					return false;
 				})
+
+				
 			})
 		</script>
 	</body>

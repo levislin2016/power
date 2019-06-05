@@ -177,6 +177,28 @@ layui.use(['form', 'jquery', 'laydate', 'layer', 'laypage', 'dialog',   'element
             });
 		});
 	}
+
+	$('#table-list').on('click', '.tab_btn', function() {
+		var id = $(this).data('tab');
+		var title = $(this).data('title');
+		var url = $(this).data('url');
+		var isActive = $('.main-layout-tab .layui-tab-title', parent.document).find("li[lay-id=" + id + "]");
+		console.log(isActive.length);
+		if(isActive.length > 0) {
+			//切换到选项卡
+			parent.element.tabChange('tab', id);
+			$('#iframe'+id, parent.document).attr('src', url);
+		} else {
+			parent.element.tabAdd('tab', {
+				title: title,
+				content: '<iframe src="' + url + '" name="iframe' + id + '" class="iframe" framborder="0" id="iframe' + id + '" data-id="' + id + '" scrolling="auto" width="100%"  height="100%"></iframe>',
+				id: id
+			});
+			parent.element.tabChange('tab', id);
+		}
+		$('#main-layout', parent.document).removeClass('hide-side');
+	});
+
 });
 
 /**

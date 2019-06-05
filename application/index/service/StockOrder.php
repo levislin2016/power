@@ -39,6 +39,9 @@ class StockOrder{
                 if(!empty($params['time'])){
                     $query->where('so.create_time', 'between time', explode(' ~ ', $params['time']));
                 }
+                if(!empty($params['pid'])){
+                    $query->where('so.project_id', $params['pid']);
+                }
             })
             ->field('so.*, s.name as stock_name, p.name as project_name, w.name as woker_name, u.name as user_name')
             ->order('so.create_time', 'desc')
