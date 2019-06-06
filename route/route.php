@@ -166,5 +166,10 @@ Route::any('order_get_back', 'stock_order/order_get_back');
 Route::get('buy_add', 'buy/add');
 Route::post('get_need', 'buy/get_need');
 Route::post('create_buy', 'buy/create_buy');
+Route::any('buy', 'buy/index');
+Route::get('buy_show', 'buy/show');
+Route::get('buy_put', 'buy/put');
+Route::post('create_put', 'buy/create_put');
+Route::get('buy_cancel', 'buy/cancel');
 
 

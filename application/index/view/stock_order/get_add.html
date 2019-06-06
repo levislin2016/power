@@ -230,7 +230,7 @@
                     shade: [0.2, '#000']
                 });
 
-                $.post(url, {project_id: project_id, woker_id: woker_id, stock_id: stock_id, num, note: note}, function (data) {
+                $.post(url, {project_id: project_id, woker_id: woker_id, stock_id: stock_id, num: num, note: note}, function (data) {
                     layer.close(loading);
                     console.dir(data);
                     if (data.error_code) {

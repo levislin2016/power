@@ -31,10 +31,11 @@
 								</select>
 							</div>
 							<div class="layui-inline">
-								<select name="type" lay-filter="status">
-									<option value="">请选择一个类型</option>
-									<option {eq name="Request.param.type" value="7"}selected{/eq} value="7">领取出库</option>
-									<option {eq name="Request.param.type" value="8"}selected{/eq} value="8">归还入库</option>
+								<select name="status" lay-filter="status">
+                                    <option value="">请选择一个状态</option>
+                                    {volist name="buy_status" key="k" id="vo"}
+                                        <option {eq name="Request.param.status" value="$k"}selected{/eq} value="{$k}">{$vo}</option>
+                                    {/volist}
 								</select>
                             </div>
                             <div class="layui-inline">
@@ -53,18 +54,14 @@
 								<col>
 								<col>
 								<col>
-								<col>
-								<col>
+								
 							</colgroup>
 							<thead>
 								<tr>
 									<th>订单号</th>
 									<th>项目</th>
-									<th>工程队</th>
-									<th>仓库</th>
 									<th>类型</th>
 									<th>操作人</th>
-									<th>备注</th>
 									<th>创建时间</th>
 									<th>操作</th>
 								</tr>
@@ -74,17 +71,17 @@
 								<tr>								
 									<td>{$vo['number']}</td>
 									<td>{$vo['project_name']}</td>
-									<td>{$vo['woker_name']}</td>
-									<td>{$vo['stock_name']}</td>
-									<td><span class="layui-badge {eq name='vo.type' value='7'}layui-bg-green{/eq}{eq name='vo.status' value='8'}layui-bg-orange{/eq}">{$vo['type_name']}</span></td>
+									<td>{$buy_status[$vo['status']]}</td>
 									<td>{$vo['user_name']}</td>
-									<td>{$vo['note']}</td>
 									<td>{$vo['create_time']}</td>
 									<td>
 										<div class="layui-inline">
                                             
-											<button class="layui-btn layui-btn-sm layui-btn-normal edit-btn btn_tips" data-title="查看详情" data-id="{$vo['id']}" data-url="{:url('stock_order/get_show')}" data-h="388px"><i class="layui-icon">&#xe63c;</i></button>
-                                                
+											<button class="layui-btn layui-btn-sm layui-btn-normal edit-btn btn_tips" data-title="查看详情" data-id="{$vo['id']}" data-url="{:url('buy/show')}" data-h="388px"><i class="layui-icon">&#xe63c;</i></button>
+                                            {in name="vo['status']" value="1,2"}
+												<button class="layui-btn layui-btn-sm layui-btn-primary edit-btn btn_tips" data-title="采购入库" data-id="{$vo['id']}" data-url="{:url('buy/put')}" data-h="500px">入库</button>
+												<button class="layui-btn layui-btn-sm layui-btn-warm ts-btn btn_tips" data-title="确认取消采购？" data-url="{:url('buy/cancel')}?id={$vo['id']}" data-h="500px">取消采购</button>
+											{/in}    
                                         </div>
 									</td>
 								</tr>
