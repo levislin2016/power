@@ -171,5 +171,6 @@ Route::get('buy_show', 'buy/show');
 Route::get('buy_put', 'buy/put');
 Route::post('create_put', 'buy/create_put');
 Route::get('buy_cancel', 'buy/cancel');
+Route::post('get_have', 'buy/get_have');
 
 

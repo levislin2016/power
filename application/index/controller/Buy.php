@@ -5,6 +5,7 @@ use app\index\service\Need as NeedService;
 use app\index\service\Buy as BuyService;
 use app\index\model\Project as ProjectModel;
 use app\index\model\Stock as StockModel;
+use app\index\model\StockAll as StockAllModel;
 use app\index\model\SupplyGoods as SupplyGoodsModel;
 use app\index\model\BuyInfo as BuyInfoModel;
 use app\index\model\Buy as BuyModel;
@@ -37,6 +38,14 @@ class Buy extends Base{
             $vo['supply'] = $sg_kist;
         }
         return $list;
+    }
+
+    public function get_have(){
+        $supply_goods_id = input('post.id', '');
+        $have = StockAllModel::where('supply_goods_id', $supply_goods_id)->sum('have');
+        return [
+            'have'  =>  $have
+        ];
     }
 
     public function create_buy(){

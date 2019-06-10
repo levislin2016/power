@@ -42,7 +42,7 @@
                     </div>
 
 
-                    <table class="layui-table stock_order_table" lay-size="sm" data-url="{:url('stock_order/back_woker_goods')}">
+                    <table class="layui-table stock_order_table" lay-size="sm" data-url="{:url('buy/get_have')}">
                         <colgroup>
                             <col>
                             <col>
@@ -59,6 +59,7 @@
                                 <th>供应商</th>
                                 <th>价格</th>
                                 <th>需求数</th>
+                                <th>平衡利库</th>
                                 <th>本次采购</th>
                             </tr>
                         </thead>
@@ -151,6 +152,7 @@
                         str += '    </td>';
                         str += '    <td></td>';
                         str += '    <td>'+ data[i]['need'] +'</td>';
+                        str += '    <td></td>';
                         str += '    <td style="padding: 0px;">';
                         str += '        <input type="number" min="0" data-id="'+ data[i]['goods_id'] +'" class="layui-input num" lay-verify="number|buy_num" lay-verType="tips" style="border: none; text-align: center; padding: 0px;" value="0" />';
                         str += '    </td>';
@@ -162,8 +164,23 @@
             }
 
             form.on('select(supply)', function (data) {
+                if(data.value == ''){
+                    $(data.elem).parents('td').next('td').html('');
+                    $(data.elem).parents('td').next('td').next('td').next('td').html('');
+                    return false;
+                }
                 var supply = eval('(' + data.value + ')');
                 $(data.elem).parents('td').next('td').html(supply.price / 100);
+                var url = $('.stock_order_table').data('url');
+                loading = layer.load(2, {
+                    shade: [0.2, '#000']
+                });
+                var that = $(data.elem);
+                $.post(url, {id: supply.id}, function(data){ 
+                    console.dir(data);
+                    layer.close(loading);
+                    $(that).parents('td').next('td').next('td').next('td').html(data.have);
+                });
             });
 
             function empty_table(){
