@@ -27,8 +27,10 @@ class Buy{
                     ]);
         }
         $status = 1;
+        $type = 1;
         if($project->status == 2){
             $status = 5;
+            $type = 2;
         }
 
         //创建采购订单
@@ -38,6 +40,7 @@ class Buy{
             'number'        =>  create_order_no('C'),
             'project_id'    =>  $params['project_id'],
             'status'        =>  $status,
+            'type'          =>  $type,
             'note'          =>  $params['note']
         ]);
         if(!$buy){
@@ -156,6 +159,10 @@ class Buy{
             //修改库存
             $projectStock = ProjectStockModel::where('stock_id', $params['stock_id'])->where('project_id', $buy->project_id)->where('supply_goods_id', $supplyGoods->id)->find();
             if(!$projectStock){
+                $extra = 0;
+                if($buy->type == 2){
+                    $extra = $num['val'];
+                }
                 //新建库存
                 $projectStock = ProjectStockModel::create([
                     'stock_id'          =>  $params['stock_id'],
@@ -165,7 +172,7 @@ class Buy{
                     'in'                =>  $num['val'],
                     'freeze'            =>  0,
                     'have'              =>  0,
-                    'extra'             =>  0,
+                    'extra'             =>  $extra,
                     
                 ]);
                 if(!$projectStock){
@@ -179,6 +186,9 @@ class Buy{
             }else{
                 $projectStock->num = $projectStock->num + $num['val'];
                 $projectStock->in = $projectStock->in + $num['val'];
+                if($buy->type == 2){
+                    $projectStock->extra = $projectStock->extra + $num['val'];
+                }
                 $res = $projectStock->save();
                 if(!$res){
                     BuyModel::rollback();

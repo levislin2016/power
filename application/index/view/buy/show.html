@@ -54,7 +54,7 @@
                             {/volist}
                         </tbody>
                     </table>
-                    {in name="buy.status" value="5,6"}
+                    {eq name="buy.type" value="2"}
                         <div class="layui-form-item">
                             <div class="layui-inline">
                                 <label class="layui-form-label" style="width: 70px;">申请原因：</label>
@@ -63,7 +63,7 @@
                                 </div>
                             </div>
                         </div>
-                    {/in}
+                    {/eq}
 
                 </div>
             </div>
