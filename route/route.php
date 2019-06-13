@@ -172,5 +172,8 @@ Route::get('buy_put', 'buy/put');
 Route::post('create_put', 'buy/create_put');
 Route::get('buy_cancel', 'buy/cancel');
 Route::post('get_have', 'buy/get_have');
+Route::get('buy_apply_for', 'buy/apply_for');
+Route::post('buy_select_supply', 'buy/select_supply');
+Route::get('buy_status', 'buy/save_status');
 
 
