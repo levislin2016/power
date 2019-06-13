@@ -54,7 +54,16 @@
                             {/volist}
                         </tbody>
                     </table>
-
+                    {in name="buy.status" value="5,6"}
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label" style="width: 70px;">申请原因：</label>
+                                <div class="layui-input-inline" style="width: 500px;">
+                                        <div class="layui-form-mid layui-word-aux">{$buy.note}</div>                                
+                                </div>
+                            </div>
+                        </div>
+                    {/in}
 
                 </div>
             </div>
@@ -75,7 +84,7 @@
                 element = layui.element,
                 dialog = layui.dialog;
 
-            
+        });     
     </script>
 </body>
 

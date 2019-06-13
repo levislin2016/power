@@ -79,6 +79,8 @@
 													<button class="layui-btn layui-btn-sm layui-btn-danger del-btn btn_tips" data-title="删除" data-id="{$vo['id']}" data-url="{:url('project/del')}"><i class="layui-icon">&#xe640;</i></button>
 												{/case}
 												{case 2}
+													<button class="layui-btn layui-btn-sm layui-btn-normal edit-btn btn_tips" data-title="修改工程" data-id="{$vo['id']}" data-url="{:url('project/add')}" data-h="388px"><i class="layui-icon">&#xe642;</i></button>
+													<button class="layui-btn layui-btn-sm edit-btn btn_tips" data-title="采购申请" data-id="{$vo['id']}" data-url="{:url('buy/apply_for')}" data-h="500px"><i class="layui-icon">&#xe657;</i></button>
 													<a class="layui-btn layui-btn-sm layui-btn-primary btn_tips" data-title="分配材料" href="{:url('project/woker', array('id'=>$vo['id']))}"><i class="layui-icon">&#xe656;</i></a>
 													<button class="layui-btn layui-btn-sm layui-btn-normal btn_tips tab_btn" data-tab="61" data-title="领退记录" data-url="{:url('stock_order/order_get_back')}?pid={$vo['id']}"><i class="layui-icon">&#xe63c;</i></button>
 													<button class="layui-btn layui-btn-sm layui-btn-warm btn_tips" data-title="工程完成" data-url=""><i class="layui-icon">&#xe66c;</i></button>											

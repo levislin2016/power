@@ -17,13 +17,28 @@ class Buy{
 
         BuyModel::startTrans();
         
+        $project = ProjectModel::get($params['project_id']);
+        if($project->status > 2){
+            BuyModel::rollback();
+                throw new BaseException(
+                    [
+                        'msg' => '非法操作！',
+                        'errorCode' => 61001
+                    ]);
+        }
+        $status = 1;
+        if($project->status == 2){
+            $status = 5;
+        }
+
         //创建采购订单
         $buy = BuyModel::create([
             'company_id'    =>  session('power_user.company_id'),
             'user_id'       =>  session('power_user.id'),
             'number'        =>  create_order_no('C'),
             'project_id'    =>  $params['project_id'],
-            'status'        =>  1
+            'status'        =>  $status,
+            'note'          =>  $params['note']
         ]);
         if(!$buy){
             BuyModel::rollback();

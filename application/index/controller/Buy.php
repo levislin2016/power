@@ -9,6 +9,7 @@ use app\index\model\StockAll as StockAllModel;
 use app\index\model\SupplyGoods as SupplyGoodsModel;
 use app\index\model\BuyInfo as BuyInfoModel;
 use app\index\model\Buy as BuyModel;
+use app\index\model\Goods as GoodsModel;
 use app\lib\exception\BaseException;
 use app\index\validate\CreateBuyValidate;
 use app\index\validate\CreatePutValidate;
@@ -36,6 +37,11 @@ class Buy extends Base{
             ->field('sg.price, s.name, s.phone, s.id')
             ->select();
             $vo['supply'] = $sg_kist;
+            $have = SupplyGoodsModel::alias('sg')
+            ->leftJoin('stock_all sa','sg.id = sa.supply_goods_id')
+            ->where('sg.g_id', $vo['goods_id'])
+            ->sum('have');
+            $vo['have'] = $have;
         }
         return $list;
     }
@@ -91,6 +97,8 @@ class Buy extends Base{
     }
 
     public function show(){
+        $buy = BuyModel::get(input('get.id', ''));
+        $this->assign('buy', $buy);
         $list = BuyInfoModel::alias('bi')
             ->leftJoin('supply s','bi.supply_id = s.id')
             ->leftJoin('goods g','bi.goods_id = g.id')
@@ -150,6 +158,53 @@ class Buy extends Base{
                 [
                     'msg' => '操作失败！',
                     'errorCode' => 63002
+                ]);
+        }
+        return [
+            'msg' => '操作成功',
+        ];
+    }
+
+    public function apply_for(){
+        $project_list = ProjectModel::all();
+        $this->assign('project_list', $project_list);
+        $goods_list = GoodsModel::all();
+        $this->assign('goods_list', $goods_list);
+        return $this->fetch();
+    }
+
+    public function select_supply(){
+        $goods_id = input('post.id', '');
+        $sg_kist = SupplyGoodsModel::alias('sg')
+            ->leftJoin('supply s','s.id = sg.s_id')
+            ->where('sg.g_id', $goods_id)
+            ->field('sg.price, s.name, s.phone, s.id')
+            ->select();
+        return $sg_kist;
+    }
+
+    public function save_status(){
+        $id = input('get.id', '');
+        $buy = BuyModel::get($id);
+        if($buy->status != 5){
+            throw new BaseException(
+                [
+                    'msg' => '非法操作！',
+                    'errorCode' => 64001
+                ]);
+        }
+        $type = input('get.type', 'n');
+        if($type == 'y'){
+            $buy->status = 1;
+        }else{
+            $buy->status = 6;
+        }
+        $res = $buy->save();
+        if(!$res){
+            throw new BaseException(
+                [
+                    'msg' => '操作失败！',
+                    'errorCode' => 64002
                 ]);
         }
         return [
