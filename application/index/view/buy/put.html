@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+        content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>电网system</title>
+    <link rel="stylesheet" type="text/css" href="__STATIC__/admin/layui/css/layui.css" />
+    <link rel="stylesheet" type="text/css" href="__STATIC__/admin/css/admin.css" />
+    <style>
+        .stock_order_table .layui-input{ border: none;}
+    </style>
+</head>
+
+<body>
+    <form class="layui-form column-content-detail" method="post"
+        action="{:url('buy/create_put')}">
+        <div class="layui-tab">
+            <!-- <ul class="layui-tab-title">
+							<li class="layui-this">文章内容</li>
+							<li>SEO优化</li>
+						</ul> -->
+            <div class="layui-tab-content">
+                <div class="layui-tab-item layui-show">
+
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label" style="width: 70px;">工程：</label>
+                            <div class="layui-input-inline" style="width: 185px;">
+                                    <div class="layui-form-mid layui-word-aux">{$project.name}</div>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">入库仓库:</label>
+                            <div class="layui-input-inline" style="width: 185px;">
+                                <select name="stock_id" class="stock_id" required lay-verify="required" lay-filter="" lay-verType="tips" lay-search="">
+                                    {volist name="stock_list" id="stock"}
+                                    <option value="{$stock.id}">{$stock.name}</option>
+                                    {/volist}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <table class="layui-table stock_order_table" lay-size="sm" data-url="{:url('stock_order/back_woker_goods')}">
+                        <colgroup>
+                            <col>
+                            <col>
+                            <col>
+                            <col>
+                            <col>
+                            <col>
+                            <col>
+                            <col>
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th>材料编号</th>
+                                <th>材料名称</th>
+                                <th>供应商</th>
+                                <th>价格</th>
+                                <th>采购数</th>
+                                <th>已入库</th>
+                                <th>本次入库数</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {volist name="list" id="vo"}
+                            <tr>
+                                <td>{$vo.number}</td>
+                                <td>{$vo.name}</td>
+                                <td>{$vo.supply_name}</td>
+                                <td>{$vo.price / 100}</td>
+                                <td>{$vo.num}</td>
+                                <td>{$vo.num_ok}</td>
+                                <td style="padding: 0px;">
+                                    <input type="number" min="0" data-id="{$vo.id}" data-max="{$vo.num - $vo.num_ok}" class="layui-input num" lay-verify="number|put_num" lay-verType="tips" style="border: none; text-align: center; padding: 0px;" value="0" />
+                                </td>
+                            </tr>
+                            {/volist}
+                        </tbody>
+                    </table>
+
+                    
+
+                </div>
+            </div>
+        </div>
+        <div style="padding-left: 10px; text-align: center;">
+            <input type="hidden" class="buy_id" value="{$Request.param.id}"/>
+            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="formDemo">立即提交</button>
+
+        </div>
+    </form>
+    <script src="__STATIC__/admin/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+    <script src="__STATIC__/admin/js/common.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+        layui.use(['form', 'jquery', 'laydate', 'layer', 'laypage', 'dialog', 'tool', 'element', 'layedit'], function () {
+            var form = layui.form,
+                layer = layui.layer,
+                $ = layui.jquery,
+                laypage = layui.laypage,
+                laydate = layui.laydate,
+                layedit = layui.layedit,
+                tool = layui.tool,
+                element = layui.element,
+                dialog = layui.dialog;
+
+            //自定义验证规则
+            form.verify({
+                put_num: function(value, item) {
+                    var max = item.dataset.max;
+                    var re = /^[0-9]+[0-9]*]*$/;
+                    if (!re.test(value)){
+                        return '请输入正整数';
+                    }
+                    if(value * 1 > max * 1){
+                        return '入库数量不能大于未入库数量';
+                    }
+                    
+                },
+                
+            });
+
+            form.on('submit(formDemo)', function (data) {
+
+                var url = data.form.action;
+                var stock_id = $('.stock_id').val();
+                var buy_id = $('.buy_id').val();
+                var num = [];
+                $('.stock_order_table').find('tbody').find('.num').each(function(e){
+
+                    var val = $(this).val();
+                    var id = $(this).data('id');
+                    if(val * 1 > 0){
+                        num.push({id: id, val: val});
+                    }
+                });
+
+                if(num.length <= 0){
+                    layer.msg('请填写采购的数量', { icon: 2, shade: 0.1, time: 1000 });
+                    return false;
+                }
+                num = JSON.stringify(num);
+ 
+                loading = layer.load(2, {
+                    shade: [0.2, '#000']
+                });
+
+                $.post(url, {stock_id: stock_id, buy_id: buy_id, num: num}, function (data) {
+                    layer.close(loading);
+                    console.dir(data);
+                    if (data.error_code) {
+                        layer.msg(data.msg, { icon: 2, shade: 0.1, time: 1000 }, function () {
+
+                        });
+                        return false;
+                    }
+                    layer.msg(data.msg, { icon: 1, shade: 0.1, time: 1000 }, function () {
+                        parent.refresh();
+                    });
+                });
+
+                return false;
+            });
+
+
+
+
+        });
+    </script>
+</body>
+
+</html>

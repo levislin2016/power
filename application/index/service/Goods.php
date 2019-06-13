@@ -2,6 +2,7 @@
 namespace app\index\service;
 
 use app\index\model\Goods as GoodsModel;
+use app\index\model\SupplyGoods as SupplyGoodsModel;
 use app\lib\exception\BaseException;
 use think\facade\App;
 
@@ -10,8 +11,6 @@ class Goods{
     //材料列表
     public function selectList($params){
         $list = GoodsModel::with(['company'=>function($query){
-            $query->field('id,name');
-        },'supply'=>function($query){
             $query->field('id,name');
         },'unit'=>function($query){
             $query->field('id,name');
@@ -22,7 +21,7 @@ class Goods{
             if(!empty($params['id'])){
                 $query->where('id', $params['id']);
             }
-        })->field('id, company_id, number, name, unit_id, supply_id, image, price, create_time')
+        })->field('id, company_id, number, name, unit_id, image, create_time')
         ->order('create_time', 'desc')
         ->paginate(10, false, [
             'query'     => $params,
@@ -33,44 +32,67 @@ class Goods{
     public function goodsInfo($id){
         $list = GoodsModel::with(['company'=>function($query){
             $query->field('id,name');
-        },'supply'=>function($query){
-            $query->field('id,name');
         },'unit'=>function($query){
             $query->field('id,name');
         }])
-        ->field('id, company_id, number, name, unit_id, supply_id, image, price, create_time')
+        ->field('id, company_id, number, name, unit_id, supply_id, image create_time')
         ->where('id', $id)
         ->find();
         return $list;
     }
 
-    public function add_contract($data){ 
-        $data['company_id'] = session('power_user.company_id');
-        $user = GoodsModel::create($data);
-        if(!$user){ 
+    public function add_contract($data){
+        $find = GoodsModel::field('id')->where(['name' => $data['name']])->find();
+        if($find){
             throw new BaseException(
-            [
-                'msg' => '添加材料错误！',
-                'errorCode' => 30004
-            ]);
+                [
+                    'msg' => '材料已存在！',
+                    'errorCode' => 30005
+                ]);
+        }else {
+            $data['company_id'] = session('power_user.company_id');
+            $user = GoodsModel::create($data);
+            if (!$user) {
+                throw new BaseException(
+                    [
+                        'msg' => '添加材料错误！',
+                        'errorCode' => 30004
+                    ]);
+            }
+            return [
+                'msg' => '添加材料成功',
+            ];
         }
-        return [
-            'msg' => '添加材料成功',
-        ];
     }
 
     public function save_contract($id, $data){
-        $res = GoodsModel::where('id', $id)->update($data);
-        if(!$res){ 
-            throw new BaseException(
-            [
-                'msg' => '修改材料错误！',
-                'errorCode' => 30005
-            ]);
+        $find = GoodsModel::field('id')->where(['name' => $data['name']])->find();
+        if($find){
+            $find = $find->toArray();
+            if($find['id'] == $id){
+                return [
+                    'msg' => '修改材料成功',
+                ];
+            }else{
+                throw new BaseException(
+                    [
+                        'msg' => '材料已存在！',
+                        'errorCode' => 30005
+                    ]);
+            }
+        }else {
+            $res = GoodsModel::where('id', $id)->update($data);
+            if (!$res) {
+                throw new BaseException(
+                    [
+                        'msg' => '修改材料错误！',
+                        'errorCode' => 30005
+                    ]);
+            }
+            return [
+                'msg' => '修改材料成功',
+            ];
         }
-        return [
-            'msg' => '修改材料成功',
-        ];
     }
 
     public function upload($file){

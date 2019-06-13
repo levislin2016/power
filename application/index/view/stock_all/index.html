@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html class="iframe-h">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport"
+		content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<title>电网system</title>
+	<link rel="stylesheet" type="text/css" href="__STATIC__/admin/layui/css/layui.css" />
+	<link rel="stylesheet" type="text/css" href="__STATIC__/admin/css/admin.css" />
+</head>
+
+<body>
+	<div class="wrap-container clearfix">
+		<div class="column-content-detail">
+
+			<form class="layui-form" action="">
+				<div class="">
+					<div class="layui-inline">
+						<input type="text" name="search" placeholder="请输入用户名" autocomplete="off" class="layui-input search"
+							value="{$Think.get.search}" />
+					</div>
+					<button class="layui-btn layui-btn-normal" type="submit" lay-filter="form_search" lay-submit="search">搜索</button>
+					<div class="layui-inline" style="float: right">
+						<select name="stock_type" lay-filter="stock_type" class="stock_type" lay-verify="">
+							<option value="1">仓库</option>
+							<option value="2">项目</option>
+						</select>
+					</div>
+				</div>
+			</form>
+			
+			<div class="layui-form" id="table-list">
+				<table id="demo" lay-filter="test"></table>
+			</div>
+		</div>
+	</div>
+	<script src="__STATIC__/admin/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+	<script src="__STATIC__/admin/js/common.js" type="text/javascript" charset="utf-8"></script>
+	<script>
+		var tableIns;
+		layui.use(['form', 'jquery', 'element', 'table', 'dialog', 'layer'], function () {
+			var form = layui.form,
+				$ = layui.jquery,
+				element = layui.element,
+				dialog = layui.dialog,
+				layer = layui.layer,
+				table = layui.table;
+
+			var stock_cols = [[
+				{ field: 'number', title: '商品编号' },
+				{ field: 'name', title: '商品名称' },
+				{ field: 'supply_name', title: '供应商' },
+				{ field: 'stock_name', title: '仓库' },
+				{ field: 'num', title: '库存', sort: true },
+				{ field: 'freeze', title: '冻结', sort: true },
+				{ field: 'have', title: '结余', sort: true},
+			]];
+
+			var project_cols = [[
+				{ field: 'number', title: '商品编号' },
+				{ field: 'name', title: '商品名称' },
+				{ field: 'supply_name', title: '供应商' },
+				{ field: 'stock_name', title: '仓库' },
+				{ field: 'project_name', title: '项目' },
+				{ field: 'num', title: '库存', sort: true },
+				{ field: 'in', title: '已分配', sort: true },
+				{ field: 'freeze', title: '未分配', sort: true },
+				{ field: 'have', title: '结余', sort: true},
+				{ field: 'extra', title: '材料补充', sort: true},
+			]];
+
+			var cols = stock_cols;
+
+			tableIns = table.render({
+				elem: '#demo'
+				, id: 'idTest'
+				, height: 'full-100'
+				, url: "{:Url('stock_all/get_data')}" //数据接口
+				// , parseData: function (res) { //res 即为原始返回的数据
+				// 	return {
+				// 		"code": res.code, //解析接口状态
+				// 		"msg": res.msg, //解析提示文本
+				// 		"count": res.total, //解析数据长度
+				// 		"data": res.data //解析数据列表
+				// 	};
+				// }
+				, request: {
+					pageName: 'page' //页码的参数名称，默认：page
+					, limitName: 'nums' //每页数据量的参数名，默认：limit
+				}
+				, response: {
+					statusName: 'code' //规定数据状态的字段名称，默认：code
+					, statusCode: 200 //规定成功的状态码，默认：0
+					, msgName: 'msg' //规定状态信息的字段名称，默认：msg
+					, countName: 'total' //规定数据总数的字段名称，默认：count
+					, dataName: 'data' //规定数据列表的字段名称，默认：data
+				}
+				, page: { theme: '#1E9FFF' } //开启分页
+				, cols: cols
+				, autoSort: false
+				// , initSort: {
+				// 	field: 'create_time' //排序字段，对应 cols 设定的各字段名
+				// 	, type: 'desc' //排序方式  asc: 升序、desc: 降序、null: 默认排序
+				// }
+				// , toolbar: '#barDemo'
+				// , limit: 1
+				// , limits: [1, 10, 20, 30, 40]
+			});
+
+			//监听排序事件 
+			table.on('sort(test)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+				// console.log(obj.field); //当前排序的字段名
+				// console.log(obj.type); //当前排序类型：desc（降序）、asc（升序）、null（空对象，默认排序）
+				// console.log(this); //当前排序的 th 对象
+				var where = { //请求参数（注意：这里面的参数可任意定义，并非下面固定的格式）
+						field: obj.field //排序字段
+						, order: obj.type //排序方式
+					};
+				if(!obj.type){
+					where = {}
+				}
+
+				table.reload('idTest', {
+					initSort: obj //记录初始排序，如果不设的话，将无法标记表头的排序状态。
+					, where: where
+				});
+			});
+
+
+			form.on('submit(form_search)', function (data) {
+				var param = data.field;
+				console.dir(param);
+				save_table(param);
+				return false;
+			});
+
+			form.on('select(stock_type)', function(data){
+				var stock_type = data.value;
+				var search = $('.search').val();
+				save_table({search: search, stock_type: stock_type});
+			});  
+
+			function save_table(param){
+				if(param.stock_type == 1){
+					cols = stock_cols;
+				}else{
+					cols = project_cols;
+				}
+				tableIns.reload({
+					where: param
+					, page: {
+						curr: 1 //重新从第 1 页开始
+					}
+					, cols: cols
+				});
+			}
+
+
+			//顶部批量删除
+			$('.delBtnTable').click(function () {
+				var checkStatus = table.checkStatus('idTest');
+				if (checkStatus.data.length <= 0) {
+					layer.msg('请选择删除的数据');
+					return false;
+				}
+				var url = $(this).attr('data-url');
+				dialog.confirm({
+					message: '您确定要删除选中项',
+					success: function () {
+						//var checkStatus = table.checkStatus('idTest');
+						//console.log(checkStatus.data) //获取选中行的数据
+						//console.log(checkStatus.data.length) //获取选中行数量，可作为是否有选中行的条件
+						//console.log(checkStatus.isAll ) //表格是否全选
+						//return false
+						var ids = '';
+						var data = checkStatus.data;
+						for (var i in data) {
+							ids += data[i]['id'] + ',';
+						}
+						console.log(ids);
+						//layer.msg('删除了'+ ids);
+						delAjaxTable(url, { ids: ids });
+
+					},
+					cancel: function () {
+						layer.msg('取消了')
+					}
+				})
+				return false;
+
+			})
+
+			$(document).on('click', '.del-btn-table', function () {
+				var id = $(this).data('id');
+				var url = $(this).data('url');
+				dialog.confirm({
+					message: '您确定要进行删除吗？',
+					success: function () {
+						delAjaxTable(url, { ids: id });
+
+					},
+					cancel: function () {
+						layer.msg('取消了')
+					}
+				})
+				return false;
+			})
+
+			function delAjaxTable(url, data) {
+				loading = layer.load(2, {
+					shade: [0.2, '#000']
+				});
+				$.get(url, data, function (data) {
+					layer.close(loading);
+					console.dir(data);
+					if (data.error_code) {
+						layer.msg(data.msg, { icon: 2, shade: 0.1, time: 1000 }, function () {
+
+						});
+						return false;
+					}
+					layer.msg(data.msg, { icon: 1, shade: 0.1, time: 1000 }, function () {
+						tableIns.reload();
+					});
+				});
+			}
+
+		})
+	</script>
+</body>
+
+</html>

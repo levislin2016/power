@@ -2,6 +2,7 @@
 namespace app\index\service;
 
 use app\index\model\Project as ProjectModel;
+use app\index\model\ProjectWoker as ProjectWokerModel;
 use app\lib\exception\BaseException;
 
 class Project{

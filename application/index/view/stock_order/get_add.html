@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+        content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>电网system</title>
+    <link rel="stylesheet" type="text/css" href="__STATIC__/admin/layui/css/layui.css" />
+    <link rel="stylesheet" type="text/css" href="__STATIC__/admin/css/admin.css" />
+</head>
+
+<body>
+    <form class="layui-form column-content-detail" method="post"
+        action="{:url('stock_order/create_get_order')}">
+        <div class="layui-tab">
+            <!-- <ul class="layui-tab-title">
+							<li class="layui-this">文章内容</li>
+							<li>SEO优化</li>
+						</ul> -->
+            <div class="layui-tab-content">
+                <div class="layui-tab-item layui-show">
+
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label" style="width: 55px;">工程：</label>
+                            <div class="layui-input-inline" style="width: 185px;">
+                                <select name="project_id" {notempty name="Request.param.pid"}disabled="true"{/notempty} data-pid="{$Request.param.pid}" class="project_id" data-url="{:url('woker/project_to_woker')}" required lay-verify="required" lay-filter="project_id" lay-verType="tips" lay-search="">
+                                    <option value="">请选择工程</option>
+                                    {volist name="project_list" id="project"}
+                                    <option {eq name="project.id" value="$Request.param.pid"} selected {/eq} value="{$project.id}">{$project.name}</option>
+                                    {/volist}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">工程队：</label>
+                            <div class="layui-input-inline" style="width: 185px;">
+                                <select name="woker_id" class="woker_id" required lay-verify="required" lay-verType="tips" lay-filter="get_woker_goods" lay-search="">
+                                    <option value="">请选择工程队</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label" style="width: 55px;">仓库：</label>
+                            <div class="layui-input-inline" style="width: 185px;">
+                                <select name="stock_id" class="stock_id" required lay-verify="required" lay-filter="get_woker_goods" lay-verType="tips" lay-search="">
+                                    {volist name="stock_list" id="stock"}
+                                    <option value="{$stock.id}">{$stock.name}</option>
+                                    {/volist}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <table class="layui-table stock_order_table" lay-size="sm" data-url="{:url('stock_order/get_woker_goods')}">
+                        <colgroup>
+                            <col>
+                            <col>
+                            <col>
+                            <col>
+                            <col>
+                            <col>
+                            <col>
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th>材料编号</th>
+                                <th>材料名称</th>
+                                <th>供应商</th>
+                                <th>已领取</th>
+                                <th>未领取</th>
+                                <th>仓库库存</th>
+                                <th>本次领取</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+                        </tbody>
+                    </table>
+
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label" style="width: 55px;">备注：</label>
+                            <div class="layui-input-inline" style="width: 500px;">
+								<input type="text" name="note" lay-verify="" lay-verType="tips" placeholder="请输入备注" autocomplete="off" class="layui-input note" value="">                                
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div style="padding-left: 10px; text-align: center;">
+
+            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="formDemo">立即提交</button>
+
+        </div>
+    </form>
+    <script src="__STATIC__/admin/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+    <script src="__STATIC__/admin/js/common.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+        layui.use(['form', 'jquery', 'laydate', 'layer', 'laypage', 'dialog', 'tool', 'element', 'layedit'], function () {
+            var form = layui.form,
+                layer = layui.layer,
+                $ = layui.jquery,
+                laypage = layui.laypage,
+                laydate = layui.laydate,
+                layedit = layui.layedit,
+                tool = layui.tool,
+                element = layui.element,
+                dialog = layui.dialog;
+
+            //自定义验证规则
+            form.verify({
+                get_num: function(value, item) {
+                    var not = item.dataset.not;
+                    var freeze = item.dataset.freeze;
+                    var re = /^[0-9]+[0-9]*]*$/;
+                    if (!re.test(value)){
+                        return '请输入正整数';
+                    }
+                    if(value * 1 > not * 1){
+                        return '数量不能大于未领取的数量';
+                    }
+                    if(value * 1 > freeze * 1){
+                        return '该仓库库存不足';
+                    }
+                    // if(value < 0){
+                    //     return '数量不能为负数';
+                    // }
+                },
+                
+            });
+
+            form.on('select(project_id)', function (data) {
+                var project_id = data.value;
+                var url = $(data.elem).data('url');
+                get_work_data(url, project_id);
+            });
+
+            if($('.project_id').data('pid')){
+                get_work_data($('.project_id').data('url'), $('.project_id').data('pid'))
+            }
+
+            function get_work_data(url, project_id){
+                loading = layer.load(2, {
+                    shade: [0.2, '#000']
+                });
+                $.post(url, {id: project_id}, function(data){ 
+                    console.dir(data);
+                    layer.close(loading);
+                    var str = '<option value="">请选择工程队</option>';
+                    for(var i in data){ 
+                        str += '<option value="'+data[i]['id']+'">'+data[i]['name']+'</option>';
+                    }
+                    $('.woker_id').html(str);
+                    form.render('select');
+                    empty_table();
+                })
+            }
+
+            form.on('select(get_woker_goods)', function (elem){ 
+                //console.log(elem.value);
+                var project_id = $('.project_id').val();
+                var woker_id = $('.woker_id').val();
+                var stock_id = $('.stock_id').val();
+                if(!project_id || !woker_id || !stock_id){
+                    empty_table();
+                    return false;
+                }
+                loading = layer.load(2, {
+                    shade: [0.2, '#000']
+                });
+                var url = $('.stock_order_table').data('url');
+                $.post(url, {project_id: project_id, woker_id: woker_id, stock_id: stock_id}, function(data){
+                    console.dir(data);
+                    layer.close(loading);
+                    var str = '';
+                    for(var i in data){
+                        str += '<tr>';
+                        str += '    <td>'+ data[i]['number'] +'</td>';
+                        str += '    <td>'+ data[i]['name'] +'</td>';
+                        str += '    <td>'+ data[i]['supply_name'] +'</td>';
+                        str += '    <td>'+ data[i]['get'] +'</td>';
+                        str += '    <td>'+ data[i]['not'] +'</td>';
+                        str += '    <td>'+ data[i]['freeze'] +'</td>';
+                        str += '    <td style="padding: 0px;">';
+                        str += '        <input type="number" min="0" data-id="'+ data[i]['id'] +'" data-not="'+ data[i]['not'] +'" data-freeze="'+ data[i]['freeze'] +'" class="layui-input num" lay-verify="number|get_num" lay-verType="tips" style="border: none; text-align: center; padding: 0px;" value="0" />';
+                        str += '    </td>';
+                        str += '</tr>';
+                    }
+                    $('.stock_order_table').find('tbody').html(str);
+                })
+            });
+
+            function empty_table(){
+                $('.stock_order_table').find('tbody').html('');
+            }
+
+
+            form.on('submit(formDemo)', function (data) {
+
+                var url = data.form.action;
+                var project_id = $('.project_id').val();
+                var woker_id = $('.woker_id').val();
+                var stock_id = $('.stock_id').val();
+                var note = $('.note').val();
+                var num = [];
+                $('.num').each(function(e){
+                    var val = $(this).val();
+                    var id = $(this).data('id');
+                    if(val * 1 > 0){
+                        num.push({id: id, val: val});
+                    }
+                });
+
+                if(num.length <= 0){
+                    layer.msg('请填写领取的数量', { icon: 2, shade: 0.1, time: 1000 });
+                    return false;
+                }
+                num = JSON.stringify(num);
+
+                loading = layer.load(2, {
+                    shade: [0.2, '#000']
+                });
+
+                $.post(url, {project_id: project_id, woker_id: woker_id, stock_id: stock_id, num: num, note: note}, function (data) {
+                    layer.close(loading);
+                    console.dir(data);
+                    if (data.error_code) {
+                        layer.msg(data.msg, { icon: 2, shade: 0.1, time: 1000 }, function () {
+
+                        });
+                        return false;
+                    }
+                    layer.msg(data.msg, { icon: 1, shade: 0.1, time: 1000 }, function () {
+                        parent.refresh();
+                    });
+                });
+
+                return false;
+            });
+
+
+
+
+        });
+    </script>
+</body>
+
+</html>
