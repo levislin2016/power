@@ -103,7 +103,6 @@ class Project extends Base
         $params = input('param.');
         $project_list = ProjectModel::get($params['id']);
         $this->assign('project_list', $project_list);
-
         $list = (new ProjectWokerService)->select_list($params);
         //dump($list->toArray());
     	$this->assign('list', $list);
@@ -119,6 +118,38 @@ class Project extends Base
         $goods_list = (new ProjectWokerService)->allot_goods($pid);
         $this->assign('goods_list', $goods_list);
         return $this->fetch();
+    }
+
+    //调拨材料页面
+    public function allocation_goods(){
+        $project_id = input('get.project_id', '');
+        $project_list = \Db::table('pw_project')->field('id,name')->where('id', 'neq', $project_id)->where('delete_time', 0)->select();
+        $this->assign('project_list', $project_list);
+
+        return $this->fetch();
+    }
+
+    public function allocation_set(){
+        $params = input('post.');
+        $projectService = new ProjectService();
+        $res = $projectService->allocation_set($params);
+        if(!$res){
+            throw new BaseException(
+                [
+                    'msg' => '调拨失败！',
+                    'errorCode' => 40009
+                ]);
+        }
+        return [
+            'msg' => '调拨成功',
+        ];
+    }
+
+    //获取项目的工程队
+    public function worl_list(){
+        $project_id = input('get.project_id', '');
+        $woker_list = \Db::table('pw_project_woker')->alias('pw')->field('pw.woker_id, w.name')->leftjoin('pw_woker w','w.id = pw.woker_id')->where('pw.project_id', $project_id)->where('pw.delete_time', 0)->select();
+        return json_encode(['code' => '200', 'data' => $woker_list]);
     }
 
     //工程的分配材料操作
