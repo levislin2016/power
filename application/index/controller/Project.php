@@ -12,9 +12,9 @@ use app\index\validate\AllotValidate;
 
 class Project extends Base
 {
-//    protected $beforeActionList = [
-//        'checkLogoin'
-//    ];
+    protected $beforeActionList = [
+        'checkLogoin'
+    ];
 
     public function index(){
         $params = input('get.');
