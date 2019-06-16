@@ -60,6 +60,8 @@ Route::get('project_woker', 'project/woker');
 //工程分配
 Route::get('project_woker_add', 'project/woker_add');
 Route::post('project_allot', 'project/allot');
+Route::get('project_allocation', 'project/allocation_goods');
+Route::get('project_worl_list', 'project/worl_list');
 
 
 //材料列表页

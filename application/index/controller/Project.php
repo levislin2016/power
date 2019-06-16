@@ -12,9 +12,9 @@ use app\index\validate\AllotValidate;
 
 class Project extends Base
 {
-    protected $beforeActionList = [
-        'checkLogoin'
-    ];
+//    protected $beforeActionList = [
+//        'checkLogoin'
+//    ];
 
     public function index(){
         $params = input('get.');
@@ -149,6 +149,15 @@ class Project extends Base
     public function worl_list(){
         $project_id = input('get.project_id', '');
         $woker_list = \Db::table('pw_project_woker')->alias('pw')->field('pw.woker_id, w.name')->leftjoin('pw_woker w','w.id = pw.woker_id')->where('pw.project_id', $project_id)->where('pw.delete_time', 0)->select();
+        $woker_list = $woker_list->toArray();
+        $arr = [];
+        foreach ($woker_list as $k => &$v){
+            if(empty($arr[$v['woker_id']])) {
+                $arr[$v['woker_id']] = $v['woker_id'];
+            }else{
+                unset($woker_list[$k]);
+            }
+        }
         return json_encode(['code' => '200', 'data' => $woker_list]);
     }
 
