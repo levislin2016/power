@@ -96,7 +96,18 @@
                         <div class="layui-inline">
                             <label class="layui-form-label" style="width: 70px;">申请原因：</label>
                             <div class="layui-input-inline" style="width: 500px;">
-								<input type="text" name="note" lay-verify="" lay-verType="tips" placeholder="请输入原因" autocomplete="off" class="layui-input note" value="">                                
+                                <select class="note_select" lay-verType="tips" lay-search="">
+                                    <option value="预算材料不足。">预算材料不足</option>
+                                    <option value="加购材料。">加购材料</option>
+                                    <option value="材料破损-补充材料。">材料破损-补充材料</option>
+                                    <option value="其他原因:">其他原因</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label" style="width: 70px;"></label>
+                            <div class="layui-input-inline" style="width: 500px;">
+                                <textarea name="note" placeholder="请输入原因" class="layui-textarea note"></textarea>                              
                             </div>
                         </div>
                     </div>
@@ -222,7 +233,7 @@
 
                 var url = data.form.action;
                 var project_id = $('.project_id').val();
-                var note = $('.note').val();
+                var note = $('.note_select').val() + $('.note').val();
                 var num = [];
                 $('.stock_order_table').find('tbody').find('tr').each(function(e){
 
@@ -244,13 +255,13 @@
                     return false;
                 }
                 num = JSON.stringify(num);
-                // console.log(num);
+                // console.log(note);
                 // return false;
                 loading = layer.load(2, {
                     shade: [0.2, '#000']
                 });
 
-                $.post(url, {project_id: project_id, num: num, note: note}, function (data) {
+                $.post(url, {project_id: project_id, num: num, note: note, type: 2}, function (data) {
                     layer.close(loading);
                     console.dir(data);
                     if (data.error_code) {

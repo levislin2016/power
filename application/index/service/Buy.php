@@ -28,7 +28,7 @@ class Buy{
         }
         $status = 1;
         $type = 1;
-        if($project->status == 2){
+        if($params['type'] == 2){
             $status = 5;
             $type = 2;
         }
