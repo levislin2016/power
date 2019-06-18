@@ -63,6 +63,10 @@ Route::post('project_allot', 'project/allot');
 Route::get('project_allocation', 'project/allocation_goods');
 Route::get('project_worl_list', 'project/worl_list');
 
+//调拨管理
+Route::get('allocation', 'allocation/index');
+Route::get('allocation_goods', 'allocation/allocation_goods');
+
 
 //材料列表页
 Route::get('goods', 'goods/index');

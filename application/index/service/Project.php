@@ -145,25 +145,25 @@ class Project{
     }
 
     //调拨入库
-    public function allocation($params, $type){
+    public static function allocation($params, $type){
         $sid = 'A'.date('YmdHi', time()).rand(100,999);
         $data_passive['order'] = [
             'company_id'  => '',
-            'contract_id' => $params['contract_id'],
+            'contract_id' => $params['contract_id'] ?: 0,
             'number'      => '',
             'stock_id'    => !empty($params['stock_id']) ? $params['stock_id'] : 0,
-            'project_id'  => $params['passive_project_id'],
-            'woker_id'    => $params['passive_woker_id'],
+            'project_id'  => $params['passive_project_id'] ?: 0,
+            'woker_id'    => $params['passive_woker_id'] ?: 0,
             'user_id'     => session('power_user.company_id'),
             'type'        => $type,
             'create_time' => time(),
             'update_time' => time(),
-            'note'        => $params['note'],
+            'note'        => $params['note'] ?: '',
             'delete_time' => 0,
         ];
         $data_passive['info'] = [
             'supply_goods_id' => $params['supply_goods_id'],
-            'woker_id'        => $params['passive_woker_id'],
+            'woker_id'        => $params['passive_woker_id'] ?: 0,
             'price'           => 0,
             'num'             => $params['num'],
             'create_time'     => time(),
@@ -177,7 +177,7 @@ class Project{
             'number'      => '',
             'stock_id'    => !empty($params['stock_id']) ? $params['stock_id'] : 0,
             'project_id'  => $params['project_id'],
-            'woker_id'    => $params['woker_id'],
+            'woker_id'    => '',
             'user_id'     => session('power_user.company_id'),
             'type'        => $type+1,
             'note'        => $params['note'],
@@ -187,19 +187,19 @@ class Project{
         ];
         $data['info'] = [
             'supply_goods_id' => $params['supply_goods_id'],
-            'woker_id'        => $params['passive_woker_id'],
+            'woker_id'        => '',
             'price'           => 0,
             'num'             => $params['num'],
             'create_time'     => time(),
             'update_time'     => time(),
             'delete_time'     => 0,
         ];
-        self::allocationRecord($sid, $data_passive);
+        self::allocationRecord($sid, $data);
         return ['code' => 200];
     }
 
 
-    public function allocationRecord($sid, $data){
+    public static function allocationRecord($sid, $data){
         $data['order']['sid'] = $sid;
         $data['order']['status'] = 1;
         $res = StockOrderModel::insertGetId($data['order']);
