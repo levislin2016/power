@@ -60,11 +60,11 @@
                                 <th>价格</th>
                                 <th>需求数</th>
                                 <th>平衡利库</th>
+                                <th>调拨</th>
                                 <th>本次采购</th>
                             </tr>
                         </thead>
                         <tbody>
-                            
                         </tbody>
                     </table>
 
@@ -82,6 +82,17 @@
     <script src="__STATIC__/admin/layui/layui.js" type="text/javascript" charset="utf-8"></script>
     <script src="__STATIC__/admin/js/common.js" type="text/javascript" charset="utf-8"></script>
     <script>
+        function selectRole(e,d){
+            console.log(e);
+            console.log(d);
+            layer.open({
+                //layer提供了5种层类型。可传入的值有：0（信息框，默认）1（页面层）2（iframe层）3（加载层）4（tips层）
+                type:2,
+                title:"调拨",
+                area: ['80%','100%'],
+                content:"{:url('allocation/index')}"
+            });
+            }
         layui.use(['form', 'jquery', 'laydate', 'layer', 'laypage', 'dialog', 'tool', 'element', 'layedit'], function () {
             var form = layui.form,
                 layer = layui.layer,
@@ -153,6 +164,11 @@
                         str += '    <td></td>';
                         str += '    <td>'+ data[i]['need'] +'</td>';
                         str += '    <td>'+ data[i]['have'] +'</td>';
+                        str += '<td>';
+                        str += '<div class="layui-input-inline">';
+                        str += '<button type="button" class="layui-btn layui-btn-sm layui-btn-normal addBtn btn_tips" onclick="selectRole()" data-title="调拨材料"  data-url="" data-h="400px"><i class="layui-icon">&#xe609;</i></button>';
+                        str += '</div>';
+                        str += '</td>';
                         str += '    <td style="padding: 0px;">';
                         str += '        <input type="number" min="0" data-id="'+ data[i]['goods_id'] +'" class="layui-input num" lay-verify="number|buy_num" lay-verType="tips" style="border: none; text-align: center; padding: 0px;" value="0" />';
                         str += '    </td>';

@@ -35,15 +35,13 @@ class Allocation extends Base
                         ->leftJoin('supply_goods sg','sg.id = pw.supply_goods_id')
                         ->leftJoin('goods g','g.id = sg.g_id')
                         ->leftJoin('woker w','w.id = pw.woker_id')
-                        ->field('pw.supply_goods_id as id, pw.woker_id, g.name as goods_name,w.name, pw.can, pw.back')
+                        ->field('pw.supply_goods_id as id, pw.woker_id, g.name as goods_name,w.name, pw.not')
                         ->where('pw.project_id', 'eq', $project_id)
                         ->where('pw.delete_time', 0)
                         ->select();
         $goods_list = $goods_list->toArray();
         foreach ($goods_list as $k => &$v){
-            $v['is_can_num'] = $v['can']-$v['back'];
-            unset($v['can']);
-            unset($v['back']);
+            $v['is_can_num'] = $v['not'];
             if($v['is_can_num'] == 0){
                 unset($goods_list[$k]);
             }

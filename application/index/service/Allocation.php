@@ -9,6 +9,7 @@ use app\index\model\StockOrderInfo as StockOrderInfoModel;
 use app\index\model\ProjectWoker as ProjectWokerModel;
 use app\index\model\StockOrderInfo;
 use app\lib\exception\BaseException;
+use think\Db;
 
 class Allocation{
 
@@ -17,7 +18,7 @@ class Allocation{
             ->leftJoin('contract c','p.contract_id = c.id')
             ->leftJoin('owner o','c.owner_id = o.id')
             ->where(function ($query) use($params) {
-                if(!empty($params['search'])){ 
+                if(!empty($params['search'])){
                     $query->where('c.number|p.name', 'like', '%'.$params['search'].'%');
                 }
                 $query->where('status', 2);
@@ -27,7 +28,39 @@ class Allocation{
             ->paginate(10, false, [
                 'query'     => $params,
             ]);
-
+        foreach ($list as &$v){
+            $project_list = \Db::table('pw_project_woker')->alias('pw')
+                ->leftJoin('woker w','w.id = pw.woker_id')
+                ->leftJoin('supply_goods sg','sg.id = pw.supply_goods_id')
+                ->leftJoin('goods g','g.id = sg.g_id')
+                ->field('pw.id, pw.project_id, pw.woker_id, w.name as woker_name, pw.supply_goods_id, pw.not as not_num, g.name as goods_name')
+                ->where([
+                    'pw.project_id'  => $v['id'],
+                    'pw.delete_time' => 0
+                ])
+                ->select();
+            $project_list = $project_list->toArray();
+            foreach ($project_list as &$val){
+                $stock_list = \Db::table('pw_stock_order')->alias('so')
+                    ->leftJoin('stock_order_info soi','so.id = soi.stock_order_id')
+                    ->field('so.supply_goods_id, soi.num')
+                    ->where([
+                        'so.woker_id'         => $val['woker_id'],
+                        'so.project_id'       => $val['project_id'],
+                        'soi.supply_goods_id' => $val['supply_goods_id'],
+                        'so.type'             => 9,
+                        'so.delete_time'      => 0
+                    ])
+                    ->sum('soi.num');
+                $val['can_num'] = $val['not_num'] + $stock_list;
+                $val['get_num'] = $stock_list;
+                unset($val['project_id']);
+                unset($val['woker_id']);
+                unset($val['supply_goods_id']);
+                unset($val['id']);
+            }
+            $v['goods_list'] = $project_list;
+        }
         return $list;
     }
 
@@ -76,10 +109,10 @@ class Allocation{
                         ]);
                 }
             }
-            if($project_info['can']-$project_info['back'] < $params['num']){
+            if($project_info['not'] < $params['num']){
                 throw new BaseException(
                     [
-                        'msg' => '超过项目材料数！',
+                        'msg' => '超过项目可领材料数！',
                         'errorCode' => 301
                     ]);
             }
@@ -92,28 +125,10 @@ class Allocation{
                             ])
                     ->find();
             $params['stock_id'] = $project_stock['stock_id'];
-            if($project_info['not'] > 0) {
-                if ($project_info['not'] < $params['num']) {
-                    $get_num = $params['num'] - $project_info['not'];
-                    $not_num = $project_info['not'];
-                } else {
-                    $get_num = 0;
-                    $not_num = $params['num'];
-                }
-            }else{
-                $not_num = 0;
-                $get_num = $params['num'];
-            }
-            $project_info_data['can'] = $project_info['can']-$params['num'];
+
             $project_stock_data['num'] = $project_stock['num']-$params['num'];
-            if($get_num != 0){
-                $project_info_data['get'] = $project_info['get']-$get_num;
-                $project_stock_data['in'] = $project_stock['in']-$get_num;
-            }
-            if($not_num != 0){
-                $project_info_data['not'] = $project_info['not']-$not_num;
-                $project_stock_data['freeze'] = $project_stock['freeze']-$not_num;
-            }
+            $project_info_data['not'] = $project_info['not']-$params['num'];
+            $project_stock_data['freeze'] = $project_stock['freeze']-$params['num'];
             $allocation_list_data['num'] = $allocation_list['num']+$params['num'];
             \Db::startTrans();
             try {
@@ -125,7 +140,7 @@ class Allocation{
                         'project_id'      => $params['project_id'],
                         'supply_goods_id' => $params['supply_goods_id'],
                         'num'             => $params['num'],
-                        'in'              => '0',
+                        'in'              => $params['num'],
                         'freeze'          => '0',
                         'have'            => '0',
                         'extra'           => '0',
@@ -170,7 +185,7 @@ class Allocation{
                     'project_id'      => $params['project_id'],
                     'supply_goods_id' => $params['supply_goods_id'],
                     'num'             => $params['num'],
-                    'in'              => '0',
+                    'in'              => $params['num'],
                     'freeze'          => '0',
                     'have'            => '0',
                     'extra'           => '0',

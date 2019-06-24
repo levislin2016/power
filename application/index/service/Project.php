@@ -78,10 +78,10 @@ class Project{
                     ]);
             }
         }
-        if($project_info['can']-$project_info['back'] < $params['num']){
+        if($project_info['not'] < $params['num']){
             throw new BaseException(
                 [
-                    'msg' => '超过项目材料数！',
+                    'msg' => '超过项目可领材料数！',
                     'errorCode' => 301
                 ]);
         }
@@ -101,34 +101,32 @@ class Project{
                         ])
                 ->find();
         $params['stock_id'] = $project_stock['stock_id'];
-        if($project_info['not'] > 0) {
-            if ($project_info['not'] < $params['num']) {
-                $get_num = $params['num'] - $project_info['not'];
-                $not_num = $project_info['not'];
-            } else {
-                $get_num = 0;
-                $not_num = $params['num'];
-            }
-        }else{
-            $not_num = 0;
-            $get_num = $params['num'];
-        }
-        $project_info_data['can'] = $project_info['can']-$params['num'];
+
         $project_stock_data['num'] = $project_stock['num']-$params['num'];
-        if($get_num != 0){
-            $project_info_data['get'] = $project_info['get']-$get_num;
-            $project_stock_data['in'] = $project_stock['in']-$get_num;
-        }
-        if($not_num != 0){
-            $project_info_data['not'] = $project_info['not']-$not_num;
-            $project_stock_data['freeze'] = $project_stock['freeze']-$not_num;
-        }
+        $project_info_data['not'] = $project_info['not']-$params['num'];
+        $project_stock_data['freeze'] = $project_stock['freeze']-$params['num'];
         $allocation_list_data['num'] = $allocation_list['num']+$params['num'];
         \Db::startTrans();
         try {
             $res = \Db::table('pw_project_woker')->where('id',$project_info['id'])->update($project_info_data);
             $res1 =\Db::table('pw_project_stock')->where('id', $project_stock['id'])->update($project_stock_data);
-            $res2 = \Db::table('pw_project_stock')->where('id', $allocation_list['id'])->update($allocation_list_data);
+            if(!$allocation_list){
+                $res2 = \Db::table('pw_project_stock')->insert([
+                    'stock_id'        => $params['stock_id'],
+                    'project_id'      => $params['project_id'],
+                    'supply_goods_id' => $params['supply_goods_id'],
+                    'num'             => $params['num'],
+                    'in'              => $params['num'],
+                    'freeze'          => '0',
+                    'have'            => '0',
+                    'extra'           => '0',
+                    'create_time'     => time(),
+                    'update_time'     => time(),
+                    'delete_time'     => 0,
+                ]);
+            }else{
+                $res2 = \Db::table('pw_project_stock')->where('id', $allocation_list['id'])->update($allocation_list_data);
+            }
             \Db::commit();
         }catch (\Exception $e){
             throw new BaseException(

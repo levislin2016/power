@@ -70,6 +70,8 @@ class Goods{
         if($find){
             $find = $find->toArray();
             if($find['id'] == $id){
+                $data['update_time'] = time();
+                $res = GoodsModel::where('id', $id)->update($data);
                 return [
                     'msg' => '修改材料成功',
                 ];
