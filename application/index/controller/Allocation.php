@@ -4,6 +4,7 @@ namespace app\index\controller;
 use app\index\service\Project as ProjectService;
 use app\index\service\Allocation as AllocationService;
 use app\index\model\Project as ProjectModel;
+use app\index\model\ShoppingCart as ShoppingCartModel;
 use app\index\model\Contract as ContractModel;
 use app\index\model\Woker as WokerModel;
 use app\index\service\ProjectWoker as ProjectWokerService;
@@ -21,9 +22,10 @@ class Allocation extends Base
         $params = input('get.');
         $project_list = (new AllocationService)->project_list($params);
         $balance_list = (new AllocationService)->balance_list($params);
-        //dump($list->toArray());
+        $shopping_list = (new AllocationService)->shopping_list($params);
     	$this->assign('project_list', $project_list);
     	$this->assign('balance_list', $balance_list);
+    	$this->assign('shopping_list', $shopping_list);
         return $this->fetch();
     }
 
@@ -51,10 +53,27 @@ class Allocation extends Base
         return $this->fetch();
     }
 
+    //添加购物清单
+    public function shopping_cart_add(){
+        $params = input('post.');
+        $allocationService = new AllocationService();
+        $res = $allocationService->shopping_cart_add($params);
+        if(!$res){
+            throw new BaseException(
+                [
+                    'msg' => '添加清单失败！',
+                    'errorCode' => 4001
+                ]);
+        }
+        return [
+            'msg' => '添加清单成功',
+        ];
+    }
+
     public function allocation_set(){
         $params = input('post.');
-        $projectService = new AllocationService();
-        $res = $projectService->allocation_set($params);
+        $allocationService = new AllocationService();
+        $res = $allocationService->allocation_set($params);
         if(!$res){
             throw new BaseException(
                 [
@@ -66,6 +85,40 @@ class Allocation extends Base
             'msg' => '调拨成功',
         ];
     }
+
+
+    public function shopping_set(){
+        $params = input('get.');
+        $allocationService = new AllocationService();
+        $res = $allocationService->shopping_set($params);
+        if(!$res){
+            throw new BaseException(
+                [
+                    'msg' => '调拨失败！',
+                    'errorCode' => 40009
+                ]);
+        }
+        return [
+            'msg' => '调拨成功',
+        ];
+    }
+
+    public function shopping_all_set(){
+        $params = input('get.');
+        $allocationService = new AllocationService();
+        $res = $allocationService->shopping_all_set($params);
+        if(!$res){
+            throw new BaseException(
+                [
+                    'msg' => '调拨失败！',
+                    'errorCode' => 40009
+                ]);
+        }
+        return [
+            'msg' => '调拨成功',
+        ];
+    }
+
 
     //获取项目的工程队
     public function worl_list(){
@@ -81,6 +134,23 @@ class Allocation extends Base
             }
         }
         return json_encode(['code' => '200', 'data' => $woker_list]);
+    }
+
+    //删除
+    public function del($ids){
+        $res = ShoppingCartModel::destroy(rtrim($ids, ','));
+
+        if(!$res){
+            throw new BaseException(
+                [
+                    'msg' => '删除调拨清单错误！',
+                    'errorCode' => 30006
+                ]);
+        }
+
+        return [
+            'msg' => '操作成功',
+        ];
     }
 
 }

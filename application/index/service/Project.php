@@ -2,6 +2,7 @@
 namespace app\index\service;
 
 use app\index\model\Project as ProjectModel;
+use app\index\model\ShoppingCart as ShoppingCartModel;
 use app\index\model\StockOrder as StockOrderModel;
 use app\index\model\StockOrderInfo as StockOrderInfoModel;
 use app\index\model\ProjectWoker as ProjectWokerModel;
@@ -147,7 +148,7 @@ class Project{
         $sid = 'A'.date('YmdHi', time()).rand(100,999);
         $data_passive['order'] = [
             'company_id'  => '',
-            'contract_id' => $params['contract_id'] ?: 0,
+            'contract_id' => '',
             'number'      => '',
             'stock_id'    => !empty($params['stock_id']) ? $params['stock_id'] : 0,
             'project_id'  => $params['passive_project_id'] ?: 0,
@@ -171,7 +172,7 @@ class Project{
         self::allocationRecord($sid, $data_passive);
         $data['order'] = [
             'company_id'  => '',
-            'contract_id' => $params['contract_id'],
+            'contract_id' => '',
             'number'      => '',
             'stock_id'    => !empty($params['stock_id']) ? $params['stock_id'] : 0,
             'project_id'  => $params['project_id'],

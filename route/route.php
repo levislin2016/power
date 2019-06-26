@@ -61,6 +61,16 @@ Route::get('project_woker', 'project/woker');
 Route::get('project_woker_add', 'project/woker_add');
 Route::post('project_allot', 'project/allot');
 Route::get('project_allocation', 'project/allocation_goods');
+//添加调拨清单
+//Route::get('allocation_shopping_cart_add', 'allocation/shopping_cart_add');
+
+//调拨需求删除操作
+Route::get('allocation_shopping_del', 'allocation/del');
+Route::get('allocation_shopping_all_set', 'allocation/shopping_all_set');
+Route::get('allocation_shopping_set', 'allocation/shopping_set');
+
+Route::get('need_del', 'need/del');
+
 Route::get('project_worl_list', 'project/worl_list');
 
 //调拨管理

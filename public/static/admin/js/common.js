@@ -94,8 +94,28 @@ layui.use(['form', 'jquery', 'laydate', 'layer', 'laypage', 'dialog',   'element
 			}
 		})
 		return false;
-
 	})
+
+    //顶部批量执行
+    $('.setBtn').click(function() {
+        var url=$(this).attr('data-url');
+        dialog.confirm({
+            message:'您确定要执行选中项',
+            success:function(){
+                var ids = '';
+                $('.layui-table').find('tbody').find('.layui-form-checked').siblings('input').each(function(){
+                    ids += $(this).data('id') + ',';
+                });
+                //layer.msg('删除了'+ ids);
+                delAjax(url, {ids: ids});
+            },
+            cancel:function(){
+                layer.msg('取消')
+            }
+        })
+        return false;
+
+    })
 	// .mouseenter(function() {
 
 	// 	dialog.tips('批量删除', '.delBtn');
@@ -119,6 +139,21 @@ layui.use(['form', 'jquery', 'laydate', 'layer', 'laypage', 'dialog',   'element
 	})
 	//列表删除
 	$('#table-list').on('click', '.del-btn', function() {
+		var url=$(this).attr('data-url');
+		var id = $(this).attr('data-id');
+		dialog.confirm({
+			message:'您确定要进行删除吗？',
+			success:function(){
+				delAjax(url, {ids: id});
+			},
+			cancel:function(){
+				layer.msg('取消了')
+			}
+		})
+		return false;
+	})
+
+	$('#shoop').on('click', '.del-btn', function() {
 		var url=$(this).attr('data-url');
 		var id = $(this).attr('data-id');
 		dialog.confirm({

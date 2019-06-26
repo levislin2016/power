@@ -42,7 +42,7 @@ class Goods{
     }
 
     public function add_contract($data){
-        $find = GoodsModel::field('id')->where(['name' => $data['name']])->find();
+        $find = GoodsModel::field('id')->where(['number' => $data['number'],'name' => $data['name']])->find();
         if($find){
             throw new BaseException(
                 [
@@ -66,7 +66,7 @@ class Goods{
     }
 
     public function save_contract($id, $data){
-        $find = GoodsModel::field('id')->where(['name' => $data['name']])->find();
+        $find = GoodsModel::field('id')->where(['number' => $data['number'], 'name' => $data['name']])->find();
         if($find){
             $find = $find->toArray();
             if($find['id'] == $id){

@@ -10,7 +10,7 @@
 		<link rel="stylesheet" type="text/css" href="__STATIC__/admin/css/admin.css"/>
 	</head>
 	<body>
-	<form class="layui-form column-content-detail" method="post" action="{:url('allocation/allocation_set')}">
+	<form class="layui-form column-content-detail" method="post" action="{:url('allocation/shopping_cart_add')}">
 		<input type="text" name="passive_project_id" style="display: none" lay-verify="required" lay-verType="tips" autocomplete="off" class="layui-input" value="{$_GET['project_id']}">
 		<input type="text" name="contract_id" style="display: none"  lay-verType="tips" autocomplete="off" class="layui-input" value="{$_GET['contract_id']}|">
 		<input type="text" name="passive_woker_id" style="display: none" lay-verType="tips" autocomplete="off" class="layui-input" value="{$_GET['woker_id']}">
