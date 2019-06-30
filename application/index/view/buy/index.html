@@ -71,7 +71,16 @@
 								<tr>								
 									<td>{$vo['number']}</td>
 									<td>{$vo['project_name']}</td>
-									<td>{$buy_status[$vo['status']]}</td>
+									<td>
+										{switch vo.status}
+											{case 1 }<span class="layui-badge layui-bg-green">{$buy_status[$vo['status']]}</span>{/case}
+											{case 2 }<span class="layui-badge layui-bg-cyan">{$buy_status[$vo['status']]}</span>{/case}
+											{case 3 }<span class="layui-badge layui-bg-blue">{$buy_status[$vo['status']]}</span>{/case}
+											{case 4 }<span class="layui-badge layui-bg-gray">{$buy_status[$vo['status']]}</span>{/case}
+											{case 5 }<span class="layui-badge layui-bg-orange">{$buy_status[$vo['status']]}</span>{/case}
+											{case 6 }<span class="layui-badge">{$buy_status[$vo['status']]}</span>{/case}
+										{/switch}
+									</td>
 									<td>{$vo['user_name']}</td>
 									<td>{$vo['create_time']}</td>
 									<td>
@@ -80,9 +89,15 @@
 											<button class="layui-btn layui-btn-sm layui-btn-normal edit-btn btn_tips" data-title="查看详情" data-id="{$vo['id']}" data-url="{:url('buy/show')}" data-h="388px"><i class="layui-icon">&#xe63c;</i></button>
                                             {in name="vo['status']" value="1,2"}
 												<button class="layui-btn layui-btn-sm layui-btn-primary edit-btn btn_tips" data-title="采购入库" data-id="{$vo['id']}" data-url="{:url('buy/put')}" data-h="500px">入库</button>
-												<button class="layui-btn layui-btn-sm layui-btn-warm ts-btn btn_tips" data-title="确认取消采购？" data-url="{:url('buy/cancel')}?id={$vo['id']}" data-h="500px">取消采购</button>
-											{/in}    
-                                        </div>
+											{/in}
+											{eq name="vo['status']" value="5"}
+											<button class="layui-btn layui-btn-sm ts-btn" data-title="确认审核通过？" data-url="{:url('buy/save_status')}?id={$vo['id']}&type=y">审核通过</button>
+											<button class="layui-btn layui-btn-sm layui-btn-danger ts-btn" data-title="确认审核失败？" data-url="{:url('buy/save_status')}?id={$vo['id']}&type=n">审核失败</button>
+											{/eq}
+											{in name="vo['status']" value="1,2,5"}
+												<button class="layui-btn layui-btn-sm layui-btn-warm ts-btn" data-title="确认取消采购？" data-url="{:url('buy/cancel')}?id={$vo['id']}">取消采购</button>
+											{/in} 
+										</div>
 									</td>
 								</tr>
 							{/volist}	

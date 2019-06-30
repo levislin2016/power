@@ -8,6 +8,7 @@
 		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
 		<title>电网system</title>
 		<link rel="stylesheet" type="text/css" href="__STATIC__/admin/layui/css/layui.css" />
+		<link rel="stylesheet" href="__STATIC__/admin/css/dropdown.css">
 		<link rel="stylesheet" type="text/css" href="__STATIC__/admin/css/admin.css" />
 	</head>
 
@@ -70,23 +71,57 @@
 									<td>{$vo['create_time']}</td>
 									<td>
 										<div class="layui-inline">
-											{switch vo.status}
-												{case 1}
-													<button class="layui-btn layui-btn-sm layui-btn-normal edit-btn btn_tips" data-title="修改工程" data-id="{$vo['id']}" data-url="{:url('project/add')}" data-h="388px"><i class="layui-icon">&#xe642;</i></button>
-													<a class="layui-btn layui-btn-sm layui-btn-primary btn_tips" data-title="需求" href="{:url('need/index', array('id'=>$vo['id']))}"><i class="layui-icon">&#xe63c;</i></a>
-													<button class="layui-btn layui-btn-sm edit-btn btn_tips" data-title="采购" data-id="{$vo['id']}" data-url="{:url('buy/add')}" data-h="500px"><i class="layui-icon">&#xe657;</i></button>
-													<button class="layui-btn layui-btn-sm layui-btn-normal start_work btn_tips" data-title="开始工程" data-url="{:url('project/start_work', array('id'=>$vo['id']))}"><i class="layui-icon">&#xe66c;</i></button>											
-													<button class="layui-btn layui-btn-sm layui-btn-danger del-btn btn_tips" data-title="删除" data-id="{$vo['id']}" data-url="{:url('project/del')}"><i class="layui-icon">&#xe640;</i></button>
-												{/case}
-												{case 2}
-													<a class="layui-btn layui-btn-sm layui-btn-primary btn_tips" data-title="分配材料" href="{:url('project/woker', array('id'=>$vo['id']))}"><i class="layui-icon">&#xe656;</i></a>
-													<button class="layui-btn layui-btn-sm layui-btn-normal btn_tips tab_btn" data-tab="61" data-title="领退记录" data-url="{:url('stock_order/order_get_back')}?pid={$vo['id']}"><i class="layui-icon">&#xe63c;</i></button>
-													<button class="layui-btn layui-btn-sm layui-btn-warm btn_tips" data-title="工程完成" data-url=""><i class="layui-icon">&#xe66c;</i></button>											
-												{/case}
-												{case 3}
-													<button class="layui-btn layui-btn-sm layui-btn-danger btn_tips" data-title="工程结算" data-url=""><i class="layui-icon">&#xe66c;</i></button>
-												{/case}
-											{/switch}
+									
+											<!-- <button class="layui-btn layui-btn-sm layui-btn-normal edit-btn btn_tips" data-title="修改工程" data-id="{$vo['id']}" data-url="{:url('project/add')}" data-h="388px"><i class="layui-icon">&#xe642;</i></button> -->
+											<a class="layui-btn layui-btn-sm btn_tips" data-title="设定预算" href="{:url('need/index', array('id'=>$vo['id']))}" style="margin: 0px;"><i class="layui-icon">&#xe63c;</i></a>
+											{egt name="vo.id|ifBuy" value="1"}
+											<button class="layui-btn layui-btn-sm layui-btn-normal edit-btn btn_tips" data-title="采购" data-id="{$vo['id']}" data-url="{:url('buy/add')}" data-w="700px" data-h="650px"  style="margin: 0px;"><i class="layui-icon">&#xe657;</i></button>
+											{/egt}
+											<!-- <button class="layui-btn layui-btn-sm layui-btn-normal start_work btn_tips" data-title="开始工程" data-url="{:url('project/start_work', array('id'=>$vo['id']))}"><i class="layui-icon">&#xe66c;</i></button>											 -->
+											<!-- <button class="layui-btn layui-btn-sm layui-btn-danger del-btn btn_tips" data-title="删除" data-id="{$vo['id']}" data-url="{:url('project/del')}"><i class="layui-icon">&#xe640;</i></button> -->
+
+											<!-- <button class="layui-btn layui-btn-sm layui-btn-normal edit-btn btn_tips" data-title="修改工程" data-id="{$vo['id']}" data-url="{:url('project/add')}" data-h="388px"><i class="layui-icon">&#xe642;</i></button> -->
+											{eq name="vo.status" value="2"}
+											<button class="layui-btn layui-btn-sm layui-btn-warm edit-btn btn_tips" data-title="采购申请" data-id="{$vo['id']}" data-url="{:url('buy/apply_for')}" data-h="500px" style="margin: 0px;"><i class="layui-icon">&#xe657;</i></button>
+											<a class="layui-btn layui-btn-sm layui-btn-primary btn_tips" data-title="分配材料" href="{:url('project/woker', array('id'=>$vo['id']))}" style="margin: 0px;"><i class="layui-icon">&#xe656;</i></a>
+											{/eq}
+											<!-- <button class="layui-btn layui-btn-sm layui-btn-normal btn_tips tab_btn" data-tab="61" data-title="领退记录" data-url="{:url('stock_order/order_get_back')}?pid={$vo['id']}"><i class="layui-icon">&#xe63c;</i></button> -->
+											<!-- <button class="layui-btn layui-btn-sm layui-btn-warm btn_tips" data-title="工程完成" data-url=""><i class="layui-icon">&#xe66c;</i></button>											 -->
+											<!-- <button class="layui-btn layui-btn-sm layui-btn-danger btn_tips" data-title="工程结算" data-url=""><i class="layui-icon">&#xe66c;</i></button> -->
+			
+											<div class="layui-dropdown dropdown-click dropdown-right">
+												<button class="layui-btn layui-btn-sm layui-btn-primary"><i class="layui-icon">&#xe716;</i></button>
+												<ul>
+													<li>
+														<a href="javascript:;" class="edit-btn" data-title="修改工程" data-id="{$vo['id']}" data-url="{:url('project/add')}" data-h="388px">修改工程</a>
+													</li>
+													<li>
+														<a href="javascript:;" class="del-btn" data-title="删除" data-id="{$vo['id']}" data-url="{:url('project/del')}">删除工程</a>
+													</li>
+													<hr>
+												{switch vo.status}
+													{case 1}
+													<li>
+														<a href="javascript:;" class="start_work" data-url="{:url('project/start_work', array('id'=>$vo['id']))}">开始工程</a>
+													</li>
+													{/case}
+													{case 2}
+													<li>
+														<a href="javascript:;" class="">工程完成</a>
+													</li>
+													{/case}
+													{case 3}
+													<li>
+														<a href="javascript:;" class="">工程结算</a>
+													</li>
+													{/case}
+												{/switch}
+													<hr>
+													<li>
+														<a href="javascript:;" class="tab_btn" data-tab="61" data-title="领退记录" data-url="{:url('stock_order/order_get_back')}?pid={$vo['id']}">领退记录</a>
+													</li>
+												</ul>
+											</div>
 										</div>
 									</td>
 								</tr>
@@ -102,12 +137,16 @@
 		<script src="__STATIC__/admin/layui/layui.js" type="text/javascript" charset="utf-8"></script>
 		<script src="__STATIC__/admin/js/common.js" type="text/javascript" charset="utf-8"></script>
 		<script>
-			layui.use(['form', 'jquery', 'element', 'dialog', 'layer'], function() { 
+			layui.use(['form', 'jquery', 'element', 'dialog', 'layer', 'dropdown'], function() { 
 				var form = layui.form,
 					$ = layui.jquery,
 					element = layui.element,
 					layer = layui.layer,
+					dropdown = layui.dropdown,
 					dialog = layui.dialog;
+
+				var body_h = $('.layui-show', parent.document).height();
+				$('.wrap-container').height(body_h);
 
 				//开工
 				$('#table-list').on('click', '.start_work', function() {

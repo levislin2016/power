@@ -7,6 +7,8 @@ class CreateBuyValidate extends BaseValidate
     protected $rule = [
         'project_id' => 'isNotEmpty|isPositiveInteger',
         'num' => 'isNotEmpty|is_num_json',
+        'note' => 'ok',
+        'type' => 'isNotEmpty|in:1,2'
     ];
 
     protected function is_num_json($value, $rule='', $data='', $field=''){

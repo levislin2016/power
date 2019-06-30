@@ -60,6 +60,22 @@ Route::get('project_woker', 'project/woker');
 //工程分配
 Route::get('project_woker_add', 'project/woker_add');
 Route::post('project_allot', 'project/allot');
+Route::get('project_allocation', 'project/allocation_goods');
+//添加调拨清单
+//Route::get('allocation_shopping_cart_add', 'allocation/shopping_cart_add');
+
+//调拨需求删除操作
+Route::get('allocation_shopping_del', 'allocation/del');
+Route::get('allocation_shopping_all_set', 'allocation/shopping_all_set');
+Route::get('allocation_shopping_set', 'allocation/shopping_set');
+
+Route::get('need_del', 'need/del');
+
+Route::get('project_worl_list', 'project/worl_list');
+
+//调拨管理
+Route::get('allocation', 'allocation/index');
+Route::get('allocation_goods', 'allocation/allocation_goods');
 
 
 //材料列表页
@@ -162,6 +178,9 @@ Route::post('purchase_excel', 'purchase/excel_purchase');
 //领取和退还记录
 Route::any('order_get_back', 'stock_order/order_get_back');
 
+//调拨记录
+Route::any('stock_order_index', 'stock_order/stock_order_index');
+
 //创建采购订单页面
 Route::get('buy_add', 'buy/add');
 Route::post('get_need', 'buy/get_need');
@@ -172,5 +191,8 @@ Route::get('buy_put', 'buy/put');
 Route::post('create_put', 'buy/create_put');
 Route::get('buy_cancel', 'buy/cancel');
 Route::post('get_have', 'buy/get_have');
+Route::get('buy_apply_for', 'buy/apply_for');
+Route::post('buy_select_supply', 'buy/select_supply');
+Route::get('buy_status', 'buy/save_status');
 
 

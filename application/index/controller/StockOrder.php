@@ -132,4 +132,11 @@ class StockOrder extends Base
         return $this->fetch();
     }
 
+    public function stock_order_index(){
+        $params = input('param.');
+        $list = (new StockOrderService)->allocation_order_list($params, array(9,10,11,12));
+        $this->assign('list', $list);
+        return $this->fetch();
+    }
+
 }

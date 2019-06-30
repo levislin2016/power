@@ -33,9 +33,9 @@
 									<label class="layui-form-label">图片：</label>
 									<div class="layui-input-block">
 										{if condition="$list['image'] != 0"}
-											<img id=goods_image style="height: 100px;width: 100px;" src="/static/upload/{$list['image']|default=''}">
+											<img id=goods_image style="height: 70px;width: 70px;" src="/static/upload/{$list['image']|default=''}">
 										{else}
-											<img id=goods_image  style="height: 100px;width: 100px;display: none" src="">
+											<img id=goods_image  style="height: 70px;width: 70px;display: none" src="">
 										{/if}
 										<!--<input type="file" id="goodsImg" name="image" value="" />-->
 										<button type="button" class="layui-btn layui-btn layui-btn-normal" id="goodsImg">

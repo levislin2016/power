@@ -42,7 +42,7 @@
                     </div>
 
 
-                    <table class="layui-table stock_order_table" lay-size="sm" data-url="{:url('buy/get_have')}">
+                    <table id="table-list" class="layui-table stock_order_table" lay-size="sm" data-url="{:url('buy/get_have')}">
                         <colgroup>
                             <col>
                             <col>
@@ -54,21 +54,63 @@
                         </colgroup>
                         <thead>
                             <tr>
-                                <th>材料编号</th>
-                                <th>材料名称</th>
+                                <th>材料</th>
                                 <th>供应商</th>
                                 <th>价格</th>
-                                <th>需求数</th>
-                                <th>平衡利库</th>
-                                <th>调拨</th>
                                 <th>本次采购</th>
+                                <th>操作</th>
                             </tr>
                         </thead>
                         <tbody>
+                            <tr class="goods_tr">
+                                <td style="padding: 0px;">
+                                    <select lay-verify="goods" lay-filter="goods" class="goods" data-url="{:url('buy/select_supply')}" lay-verType="tips" lay-search="">
+                                        <option value="">请选择材料</option>
+                                        {volist name="goods_list" id="goods"}
+                                            <option value="{$goods.id}">{$goods.number}/{$goods.name}</option>
+                                        {/volist}
+                                    </select>
+                                </td>
+                                <td style="padding: 0px;">
+                                    <select lay-verify="supply" lay-filter="supply" class="supply" lay-verType="tips" lay-search="">
+                                        <option value="">请选择供应商</option>
+                                    </select>
+                                </td>
+                                <td class="price"></td>
+                                <td style="padding: 0px;">
+                                    <input type="number" min="0" data-id="" class="layui-input num" lay-verify="number|buy_num" lay-verType="tips" style="border: none; text-align: center; padding: 0px;" value="0" />
+                                </td>
+                                <td>
+                                    <button type="button" class="layui-btn layui-btn-primary layui-btn-xs goods_del">删除</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="center" colspan="5" >
+                                    <button type="button" class="layui-btn layui-btn-primary layui-btn-xs goods_add">添加</button>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
 
-                    
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label" style="width: 70px;">申请原因：</label>
+                            <div class="layui-input-inline" style="width: 500px;">
+                                <select class="note_select" lay-verType="tips" lay-search="">
+                                    <option value="预算材料不足。">预算材料不足</option>
+                                    <option value="加购材料。">加购材料</option>
+                                    <option value="材料破损-补充材料。">材料破损-补充材料</option>
+                                    <option value="其他原因:">其他原因</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label" style="width: 70px;"></label>
+                            <div class="layui-input-inline" style="width: 500px;">
+                                <textarea name="note" placeholder="请输入原因" class="layui-textarea note"></textarea>                              
+                            </div>
+                        </div>
+                    </div>
 
                 </div>
             </div>
@@ -82,17 +124,6 @@
     <script src="__STATIC__/admin/layui/layui.js" type="text/javascript" charset="utf-8"></script>
     <script src="__STATIC__/admin/js/common.js" type="text/javascript" charset="utf-8"></script>
     <script>
-        function selectRole(e,d) {
-            console.log(e);
-            console.log(d);
-            parent.layer.open({ //在父窗口打开
-                //layer提供了5种层类型。可传入的值有：0（信息框，默认）1（页面层）2（iframe层）3（加载层）4（tips层）
-                type: 2,
-                title: "调拨",
-                area: ['80%', '80%'],
-                content: "{:url('allocation/index')}"
-            });
-        }
         layui.use(['form', 'jquery', 'laydate', 'layer', 'laypage', 'dialog', 'tool', 'element', 'layedit'], function () {
             var form = layui.form,
                 layer = layui.layer,
@@ -115,6 +146,14 @@
                     }
                     
                 },
+                goods: function(value, item) {
+                    var num = $(item).parents('tr').find('.num').val();
+                    if(num * 1 > 0){
+                        if(!value){
+                            return '请选择材料';
+                        }
+                    }
+                },
                 supply: function(value, item) {
                     var num = $(item).parents('tr').find('.num').val();
                     if(num * 1 > 0){
@@ -124,69 +163,55 @@
                     }
                 },
             });
+            
+            var goods_tr = $('.goods_tr').clone(true, true);
 
-            form.on('select(project_id)', function (data) {
-                var project_id = data.value;
-                var url = $(data.elem).data('url');
-                get_need_data(url, project_id);
+            $(document).on('click', '.goods_add', function(){
+                var add_tr = goods_tr.clone(true, true);
+                $(this).parents('tr').before(add_tr);
+                form.render('select');
             });
 
-            if($('.project_id').data('pid')){
-                get_need_data($('.project_id').data('url'), $('.project_id').data('pid'))
-            }
+            $(document).on('click', '.goods_del', function(){
+                $(this).parents('tr').remove();
+            });
 
-            function get_need_data(url, project_id){
-                if(!project_id){
-                    empty_table();
+            form.on('select(goods)', function (data) {
+                var url = $(data.elem).data('url');
+                var id = data.value;
+                var that = $(data.elem);
+                $(that).parents('tr').find('.price').html('');
+                if(id == ''){
+                    $(that).parents('tr').find('.supply').html('<option value="">请选择供应商</option>');
+                    form.render('select');
+                    return false;
                 }
                 loading = layer.load(2, {
                     shade: [0.2, '#000']
                 });
-                $.post(url, {id: project_id}, function(data){ 
+                
+                $.post(url, {id: id}, function(data){ 
                     console.dir(data);
                     layer.close(loading);
-                    var str = '';
-                    for(var i in data){
-                        str += '<tr>';
-                        str += '    <td>'+ data[i]['number'] +'</td>';
-                        str += '    <td>'+ data[i]['name'] +'</td>';
-                        str += '    <td style="padding: 0px;">';
-                        str += '        <select lay-verify="supply" lay-filter="supply" class="supply" lay-verType="tips" lay-search="">';
-                        str += '            <option value="">请选择供应商</option>';
-
-                        var data2 = data[i]['supply'];
-                        for(var j in data2){
-                            str += '            <option value="{id:'+data2[j]['id']+', price:'+data2[j]['price']+'}">'+data2[j]['name']+'</option>';
+                    var str = '<option value="">请选择供应商</option>';
+                    for(var j in data){
+                            str += '<option value="{id:'+data[j]['id']+', price:'+data[j]['price']+'}">'+data[j]['name']+'</option>';
                         }
-
-                        str += '        </select>';
-                        str += '    </td>';
-                        str += '    <td></td>';
-                        str += '    <td>'+ data[i]['need'] +'</td>';
-                        str += '    <td>'+ data[i]['have'] +'</td>';
-                        str += '<td>';
-                        str += '<div class="layui-input-inline">';
-                        str += '<button type="button" class="layui-btn layui-btn-sm layui-btn-normal addBtn btn_tips" onclick="selectRole()" data-title="调拨材料"  data-url="" data-h="400px"><i class="layui-icon">&#xe609;</i></button>';
-                        str += '</div>';
-                        str += '</td>';
-                        str += '    <td style="padding: 0px;">';
-                        str += '        <input type="number" min="0" data-id="'+ data[i]['goods_id'] +'" class="layui-input num" lay-verify="number|buy_num" lay-verType="tips" style="border: none; text-align: center; padding: 0px;" value="0" />';
-                        str += '    </td>';
-                        str += '</tr>';
-                    }
-                    $('.stock_order_table').find('tbody').html(str);
+                    $(that).parents('tr').find('.supply').html(str);
                     form.render('select');
-                })
-            }
+                });
+            });
 
             form.on('select(supply)', function (data) {
                 if(data.value == ''){
-                    $(data.elem).parents('td').next('td').html('');
-                    //$(data.elem).parents('td').next('td').next('td').next('td').html('');
+                    //$(data.elem).parents('td').next('td').html('');
+                    $(data.elem).parents('tr').find('.price').html('');
+                    // $(data.elem).parents('td').next('td').next('td').next('td').html('');
                     return false;
                 }
                 var supply = eval('(' + data.value + ')');
-                $(data.elem).parents('td').next('td').html(supply.price / 100);
+                //$(data.elem).parents('td').next('td').html();
+                $(data.elem).parents('tr').find('.price').html(supply.price / 100);
                 // var url = $('.stock_order_table').data('url');
                 // loading = layer.load(2, {
                 //     shade: [0.2, '#000']
@@ -208,11 +233,12 @@
 
                 var url = data.form.action;
                 var project_id = $('.project_id').val();
+                var note = $('.note_select').val() + $('.note').val();
                 var num = [];
                 $('.stock_order_table').find('tbody').find('tr').each(function(e){
 
                     var val = $(this).find('.num').val();
-                    var id = $(this).find('.num').data('id');
+                    var id = $(this).find('.goods').val();
                     var supply = $(this).find('.supply').val();
                     var sp = '';
                     if(supply){
@@ -229,12 +255,13 @@
                     return false;
                 }
                 num = JSON.stringify(num);
-
+                // console.log(note);
+                // return false;
                 loading = layer.load(2, {
                     shade: [0.2, '#000']
                 });
 
-                $.post(url, {project_id: project_id, num: num, note: '', type: 1}, function (data) {
+                $.post(url, {project_id: project_id, num: num, note: note, type: 2}, function (data) {
                     layer.close(loading);
                     console.dir(data);
                     if (data.error_code) {
