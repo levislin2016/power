@@ -7,6 +7,7 @@ use app\index\model\Project as ProjectModel;
 use app\index\model\Stock as StockModel;
 use app\index\model\StockAll as StockAllModel;
 use app\index\model\SupplyGoods as SupplyGoodsModel;
+use app\index\model\StockOrder as StockOrderModel;
 use app\index\model\BuyInfo as BuyInfoModel;
 use app\index\model\Buy as BuyModel;
 use app\index\model\Goods as GoodsModel;
@@ -41,7 +42,13 @@ class Buy extends Base{
             ->leftJoin('stock_all sa','sg.id = sa.supply_goods_id')
             ->where('sg.g_id', $vo['goods_id'])
             ->sum('have');
-            $vo['have'] = $have;
+            $stock_num = StockOrderModel::alias('so')
+                ->leftJoin('stock_order_info soi', 'soi.stock_order_id = so.id')
+                ->where('soi.supply_goods_id', $vo['goods_id'])
+                ->where('so.project_id', $params['id'])
+                ->where('so.type', 'in',['10','12'])
+                ->sum('soi.num');
+            $vo['have'] = $have+$stock_num;
         }
         return $list;
     }
