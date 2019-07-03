@@ -37,7 +37,11 @@
 							<div class="layui-inline">
 								<input type="text" name="is_type" style="display: none" lay-verType="tips" autocomplete="off" class="layui-input" value="{$_GET['is_type']}">
 							</div>
+							<div class="layui-inline">
+								<button type="button" class="layui-btn layui-btn-sm layui-btn-normal addBtn1 btn_tips" data-title="查询调拨记录"  data-url="{:url('stock_order/stock_order_index')}?is_project_id=$_GET['project_id']" style="display: none" data-w="1000px" data-h="748px"><i class="layui-icon">&#xe705;</i></button>
+							</div>
 							<button id="search_school" class="layui-btn layui-btn-normal ztc" type="submit" lay-submit="search">搜索</button>
+
 						</div>
 					</form>
 
@@ -319,6 +323,13 @@
 		<script src="__STATIC__/admin/js/common.js" type="text/javascript" charset="utf-8"></script>
 		<script src="http://libs.baidu.com/jquery/2.1.4/jquery.min.js"></script>
 		<script>
+            $(document).ready(function(){
+                var selecta = $('#project_id option:selected').val();
+                if(selecta != ''){
+                    $(".addBtn1").css('display','block');
+                }
+            });
+
 			layui.use(['form', 'jquery', 'element', 'dialog', 'layer', 'table'], function() {
 				var form = layui.form,
 					$ = layui.jquery,
@@ -328,6 +339,7 @@
                     table = layui.table;
                 form.on("select", function(data){
                     $("#filter").submit();
+                    $('addbtn')
                 });
 			});
 

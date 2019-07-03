@@ -41,6 +41,29 @@ layui.use(['form', 'jquery', 'laydate', 'layer', 'laypage', 'dialog',   'element
 		return false;
 
 	})
+
+	$('.addBtn1').click(function() {
+		var selecta = $('#project_id option:selected').val();
+		if(selecta == ''){
+			alert('请选择调拨工程');
+            return false;
+        }
+		var title = $(this).attr('data-title');
+		var url = $(this).attr('data-url');
+		var pw = $(this).attr('data-w');
+		var ph = $(this).attr('data-h');
+		console.log(pw);
+		if(!pw){
+			pw = '700px';
+		}
+		if(!ph){
+			ph = '620px';
+		}
+		//将iframeObj传递给父级窗口
+		parent.page(title, url, iframeObj, pw, ph);
+		return false;
+
+	})
 	// .mouseenter(function() {
 
 	// 	dialog.tips('添加', '.addBtn');
