@@ -67,12 +67,14 @@
                             <col>
                             <col>
                             <col>
+                            <col>
                         </colgroup>
                         <thead>
                             <tr>
-                                <th>材料编号</th>
                                 <th>材料名称</th>
+                                <th>材料编号</th>
                                 <th>供应商</th>
+                                <th>可领取</th>
                                 <th>已领取</th>
                                 <th>累计退还</th>
                                 <th>本次退还</th>
@@ -178,9 +180,10 @@
                     var str = '';
                     for(var i in data){
                         str += '<tr>';
-                        str += '    <td>'+ data[i]['number'] +'</td>';
                         str += '    <td>'+ data[i]['name'] +'</td>';
+                        str += '    <td>'+ data[i]['number'] +'</td>';
                         str += '    <td>'+ data[i]['supply_name'] +'</td>';
+                        str += '    <td>'+ data[i]['not'] +'</td>';
                         str += '    <td>'+ data[i]['get'] +'</td>';
                         str += '    <td>'+ data[i]['back'] +'</td>';
                         str += '    <td style="padding: 0px;">';

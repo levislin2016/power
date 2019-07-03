@@ -194,5 +194,6 @@ Route::post('get_have', 'buy/get_have');
 Route::get('buy_apply_for', 'buy/apply_for');
 Route::post('buy_select_supply', 'buy/select_supply');
 Route::get('buy_status', 'buy/save_status');
+Route::get('buy_water', 'buy/water');
 
 

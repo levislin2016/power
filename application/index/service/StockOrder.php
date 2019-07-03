@@ -235,6 +235,7 @@ class StockOrder{
                         'errorCode' => 51002
                     ]);
             }
+            $projectWoker->not = $projectWoker->not + $num['val'];
             $projectWoker->back = $projectWoker->back + $num['val'];
             if($projectWoker->back > $projectWoker->get){
                 StockOrderModel::rollback();
@@ -264,8 +265,8 @@ class StockOrder{
                     'supply_goods_id'   =>  $projectWoker->supply_goods_id,
                     'num'               =>  $num['val'],
                     'in'                =>  0,
-                    'freeze'            =>  0,
-                    'have'              =>  $num['val'],
+                    'freeze'            =>  $num['val'],
+                    'have'              =>  0,
                     'extra'             =>  0,
                     
                 ]);
@@ -279,7 +280,7 @@ class StockOrder{
                 }
             }else{
                 $projectStock->num = $projectStock->num + $num['val'];
-                $projectStock->have = $projectStock->have + $num['val'];
+                $projectStock->freeze = $projectStock->freeze + $num['val'];
                 $res = $projectStock->save();
                 if(!$res){
                     StockOrderModel::rollback();
@@ -298,8 +299,8 @@ class StockOrder{
                     'stock_id'    =>  $params['stock_id'],
                     'supply_goods_id'    =>  $projectWoker->supply_goods_id,
                     'num'    =>  $num['val'],
-                    'freeze'    =>  0,
-                    'have'    =>  $num['val'],
+                    'freeze'    =>  $num['val'],
+                    'have'    =>  0,
                 ]);
                 if(!$stockAll){
                     StockOrderModel::rollback();
@@ -311,7 +312,7 @@ class StockOrder{
                 }
             }else{
                 $stockAll->num = $stockAll->num + $num['val'];
-                $stockAll->have = $stockAll->have + $num['val'];
+                $stockAll->freeze = $stockAll->freeze + $num['val'];
                 $res = $stockAll->save();
                 if(!$res){
                     StockOrderModel::rollback();

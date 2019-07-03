@@ -24,6 +24,9 @@ class Buy extends Base{
         $stock_list = StockModel::all();
         $this->assign('project_list', $project_list);
         $this->assign('stock_list', $stock_list);
+
+        $buy_from = config('extra.buy_from');
+        $this->assign('buy_from', $buy_from);
         return $this->fetch();
     }
 
@@ -170,6 +173,8 @@ class Buy extends Base{
         $this->assign('project_list', $project_list);
         $goods_list = GoodsModel::all();
         $this->assign('goods_list', $goods_list);
+        $buy_from = config('extra.buy_from');
+        $this->assign('buy_from', $buy_from);
         return $this->fetch();
     }
 

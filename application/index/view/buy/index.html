@@ -19,6 +19,10 @@
 							<!-- <div class="layui-inline tool-btn">
 								<button type="button" class="layui-btn layui-btn-sm layui-btn-normal addBtn btn_tips" data-title="领取材料" data-url="{:url('stock_order/get_add')}" data-h="500px"><i class="layui-icon">&#xe654;</i></button>
 							</div> -->
+							<div class="layui-inline tool-btn">
+								<button type="button" class="layui-btn layui-btn-sm layui-btn-normal btn_tips" onclick="window.location.reload();" data-title="刷新"><i class="layui-icon">&#xe666;</i></button>
+							</div>
+
 							<div class="layui-inline">
 								<input type="text" name="search" placeholder="请输入搜索内容" autocomplete="off" class="layui-input" value="{$Request.param.search}" />
 							</div>
@@ -90,11 +94,14 @@
                                             {in name="vo['status']" value="1,2"}
 												<button class="layui-btn layui-btn-sm layui-btn-primary edit-btn btn_tips" data-title="采购入库" data-id="{$vo['id']}" data-url="{:url('buy/put')}" data-h="500px">入库</button>
 											{/in}
+											{eq name="vo['status']" value="2"}
+												<button class="layui-btn layui-btn-sm layui-btn-normal edit-btn btn_tips" data-title="采购流水" data-id="{$vo['id']}" data-url="{:url('buy/water')}" data-h="500px">流水</button>
+											{/eq}
 											{eq name="vo['status']" value="5"}
 											<button class="layui-btn layui-btn-sm ts-btn" data-title="确认审核通过？" data-url="{:url('buy/save_status')}?id={$vo['id']}&type=y">审核通过</button>
 											<button class="layui-btn layui-btn-sm layui-btn-danger ts-btn" data-title="确认审核失败？" data-url="{:url('buy/save_status')}?id={$vo['id']}&type=n">审核失败</button>
 											{/eq}
-											{in name="vo['status']" value="1,2,5"}
+											{in name="vo['status']" value="1,5"}
 												<button class="layui-btn layui-btn-sm layui-btn-warm ts-btn" data-title="确认取消采购？" data-url="{:url('buy/cancel')}?id={$vo['id']}">取消采购</button>
 											{/in} 
 										</div>

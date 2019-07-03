@@ -41,6 +41,7 @@ class Buy{
             'project_id'    =>  $params['project_id'],
             'status'        =>  $status,
             'type'          =>  $type,
+            'from'          =>  $params['from'],
             'note'          =>  $params['note']
         ]);
         if(!$buy){
@@ -244,17 +245,18 @@ class Buy{
         if($status_ok == 0){
             $status = 3;
         }
-        $buy->status = $status;
-        $res = $buy->save();
-        if(!$res){
-            BuyModel::rollback();
-            throw new BaseException(
-                [
-                    'msg' => '修改采购订单状态错误！',
-                    'errorCode' => 62010
-                ]);
+        if($buy->status != $status){
+            $buy->status = $status;
+            $res = $buy->save();
+            if(!$res){
+                BuyModel::rollback();
+                throw new BaseException(
+                    [
+                        'msg' => '修改采购订单状态错误！',
+                        'errorCode' => 62010
+                    ]);
+            }
         }
-
         BuyModel::commit();
         return [
             'msg' => '采购入库成功',

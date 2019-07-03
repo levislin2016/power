@@ -25,7 +25,7 @@
 										<select name="goods_id" required lay-verify="required" lay-verType="tips" lay-search="">
 											<option value=""></option>
 											{volist name="goods_list" id="vo"}
-									        	<option value="{$vo['id']}" {eq name="list['goods_id']|default=''" value="$vo['id']"}selected{/eq} >{$vo['number']}/{$vo['name']}</option>
+									        	<option value="{$vo['id']}" {eq name="list['goods_id']|default=''" value="$vo['id']"}selected{/eq} >{$vo['name']} / {$vo['number']}</option>
 									        {/volist}
 										</select>
 									</div>

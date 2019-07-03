@@ -38,7 +38,7 @@
 											<select name="supply_goods_id" required lay-verify="required" lay-verType="tips" lay-search="">
 												<option value=""></option>
 												{volist name="goods_list" id="vo"}
-													<option value="{$vo['supply_goods_id']}" {eq name="list['supply_goods_id']|default=''" value="$vo['supply_goods_id']"}selected{/eq} >{$vo.number}/{$vo.name}/{$vo.supply_name}/可分配数量：{$vo.num}</option>
+													<option value="{$vo['supply_goods_id']}" {eq name="list['supply_goods_id']|default=''" value="$vo['supply_goods_id']"}selected{/eq} >{$vo.name}/{$vo.number}/{$vo.supply_name}/可分配数量：{$vo.num}</option>
 												{/volist}
 											</select>
 											
