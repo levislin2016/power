@@ -23,7 +23,7 @@
 							</div>
 							<div class="layui-inline" style="z-index: 1">
 								<select name="project_id" required lay-verify="required" lay-filter="filter" lay-search=""  style="width:195px" id="project_id" >
-									<option value="" >请选择材料</option>
+									<option value="" >请选择调拨工程</option>
 									{volist name="project_all_list" id="vo"}
 									<option value="{$vo['id']}" {if condition="$_GET['project_id'] eq $vo['id']"}selected{else/}{/if}>{$vo['name']}</option>
 									{/volist}
@@ -38,7 +38,7 @@
 								<input type="text" name="is_type" style="display: none" lay-verType="tips" autocomplete="off" class="layui-input" value="{$_GET['is_type']}">
 							</div>
 							<div class="layui-inline">
-								<button type="button" class="layui-btn layui-btn-sm layui-btn-normal addBtn1 btn_tips" data-title="查询调拨记录"  data-url="{:url('stock_order/stock_order_index')}?is_project_id=$_GET['project_id']" style="display: none" data-w="1000px" data-h="748px"><i class="layui-icon">&#xe705;</i></button>
+								<button type="button" class="layui-btn layui-btn-sm layui-btn-normal addBtn1 btn_tips" data-title="查询调拨记录"  data-url="{:url('stock_order/stock_order_index')}?is_project_id={$_GET['project_id']}" style="display: none" data-w="1000px" data-h="748px"><i class="layui-icon">&#xe705;</i></button>
 							</div>
 							<button id="search_school" class="layui-btn layui-btn-normal ztc" type="submit" lay-submit="search">搜索</button>
 

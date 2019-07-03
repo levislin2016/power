@@ -55,7 +55,7 @@ class StockOrder{
 
 
     public function allocation_order_list($params, $type){
-        $sids = [];
+        $sids = 1;
         if(!empty($params['is_project_id'])){
             $sids = \Db::table('pw_stock_order')->where('project_id', $params['is_project_id'])->where('type', 'in', $type)->column('sid');
         }
@@ -79,7 +79,7 @@ class StockOrder{
                         $query->where('so.type', $type);
                     }
                 }
-                if(!empty($sids)){
+                if($sids != 1){
                     $query->where('so.sid', 'in',$sids);
                 }
                 if(!empty($params['time'])){

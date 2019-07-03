@@ -33,8 +33,8 @@ class Allocation{
                 }
                 $query->where('status', 2);
             })
-            ->field('p.id, p.company_id, pw.woker_id,p.contract_id, c.number as contract_number, p.name, p.status, p.create_time, o.id as owner_id, o.name as owner_name')
-            ->order('p.create_time', 'desc')
+            ->field('p.id, max(p.company_id) as company_id, max(pw.woker_id) as woker_id, max(p.contract_id) as contract_id, max(c.number) as contract_number, max(p.name) as name, max(p.status) as status, max(p.create_time) as create_time, max(o.id) as owner_id, max(o.name) as owner_name')
+            ->order('create_time', 'desc')
             ->group('p.id')
             ->paginate(10, false, [
                 'query'     => $params,
@@ -93,7 +93,7 @@ class Allocation{
                 }
                 $query->where('ps.have', '>', 0);
             })
-            ->field('p.id, ps.have, p.name as project_name, ps.stock_id, g.name as supply_goods_name,sg.id as supply_goods_id, p.name, s.name as stock_name, c.owner_id')
+            ->field('p.id, max(ps.have) as have, max(p.name) as project_name, max(ps.stock_id) as stock_id, max(g.name) as supply_goods_name,max(sg.id) as supply_goods_id, max(p.name) as num, max(s.name) as stock_name, max(c.owner_id) owner_id')
             ->order('p.create_time', 'desc')
             ->group('p.id')
             ->paginate(10, false, [
@@ -136,8 +136,8 @@ class Allocation{
                 $query->where('status', 2);
                 $query->where('c.owner_id', $p_owner['owner_id']);
             })
-            ->field('p.id, p.company_id, pw.woker_id,p.contract_id, c.number as contract_number, p.name, p.status, p.create_time, o.id as owner_id, o.name as owner_name')
-            ->order('p.create_time', 'desc')
+            ->field('p.id, max(p.company_id) as company_id, max(pw.woker_id) as woker_id, max(p.contract_id) as contract_id, max(c.number) as contract_number, max(p.name) as name, max(p.status) as status, max(p.create_time) as create_time, max(o.id) as owner_id, max(o.name) as owner_name')
+            ->order('create_time', 'desc')
             ->group('p.id')
             ->paginate(10, false, [
                 'query'     => $params,
@@ -212,7 +212,7 @@ class Allocation{
                 $query->where('ps.have', '>', 0);
                 $query->where('c.owner_id', $p_owner['owner_id']);
             })
-            ->field('p.id, ps.have, p.name as project_name, ps.stock_id, g.name as supply_goods_name,sg.id as supply_goods_id, p.name, s.name as stock_name, c.owner_id')
+            ->field('p.id, max(ps.have) as have, max(p.name) as project_name, max(ps.stock_id) as stock_id, max(g.name) as supply_goods_name,max(sg.id) as supply_goods_id, max(p.name) as num, max(s.name) as stock_name, max(c.owner_id) owner_id')
             ->order('p.create_time', 'desc')
             ->group('p.id')
             ->paginate(10, false, [
