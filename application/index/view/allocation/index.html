@@ -14,28 +14,34 @@
 	<body>
 		<div class="wrap-container clearfix">
 				<div class="column-content-detail">
-					<form class="layui-form" action="">
+					<form class="layui-form" action=""  lay-filter="filter" id="filter">
 						<div class="layui-form-item">
 							<div class="layui-inline tool-btn">
-								<!--<button type="button" class="layui-btn layui-btn-sm layui-btn-normal addBtn btn_tips" data-title="创建工程" data-url="{:url('project/add')}" data-h="388px"><i class="layui-icon">&#xe654;</i></button>-->
-								<!--<button type="button" class="layui-btn layui-btn-sm layui-btn-danger delBtn btn_tips" data-title="批量删除" data-url="{:url('project/del')}"><i class="layui-icon">&#xe640;</i></button>-->
-								<!-- <button class="layui-btn layui-btn-sm layui-btn-warm listOrderBtn hidden-xs" data-url="article-add.html"><i class="iconfont">&#xe656;</i></button> -->
 							</div>
 							<div class="layui-inline">
-								<input type="text" name="search" placeholder="请输入项目/工程名/材料" autocomplete="off" class="layui-input" value="{$Think.get.search}" />
+								<input type="text" name="search" placeholder="请输入项目/工程名/材料" autocomplete="off" class="layui-input" value={if condition="$_GET['supply_goods_id'] neq null"}"{$goods_name['name']}" disabled="disabled"{else/}"{$Think.get.search}"{/if} />
 							</div>
-							<!-- <div class="layui-inline">
-								<select name="states" lay-filter="status">
-									<option value="">请选择一个状态</option>
-									<option value="010">正常</option>
-									<option value="021">停止</option>
-									<option value="0571">删除</option>
+							<div class="layui-inline" style="z-index: 1">
+								<select name="project_id" required lay-verify="required" lay-filter="filter" lay-search=""  style="width:195px" id="project_id" >
+									<option value="" >请选择材料</option>
+									{volist name="project_all_list" id="vo"}
+									<option value="{$vo['id']}" {if condition="$_GET['project_id'] eq $vo['id']"}selected{else/}{/if}>{$vo['name']}</option>
+									{/volist}
 								</select>
-							</div> -->
-							<button class="layui-btn layui-btn-normal" type="submit" lay-submit="search">搜索</button>
+							</div>
+
+							<div class="layui-inline">
+								<input type="text" name="supply_goods_id" style="display: none"  lay-verType="tips" autocomplete="off" class="layui-input" value="{$_GET['supply_goods_id']}">
+
+							</div>
+							<div class="layui-inline">
+								<input type="text" name="is_type" style="display: none" lay-verType="tips" autocomplete="off" class="layui-input" value="{$_GET['is_type']}">
+							</div>
+							<button id="search_school" class="layui-btn layui-btn-normal ztc" type="submit" lay-submit="search">搜索</button>
 						</div>
 					</form>
-					<div class="layui-tab layui-tab-card">
+
+					<div class="layui-tab layui-tab-card" >
 						<ul class="layui-tab-title">
 							<li class="layui-this">结余调拨</li>
 							<li>工程调拨</li>
@@ -43,11 +49,11 @@
 							<li>甲供工程调拨</li>
 							<li>调拨清单</li>
 						</ul>
-						<div class="layui-tab-content" style="height: 600px;">
+						<div name="hidden_frame" class="layui-tab-content" id="tablelist" style="height: 600px;">
 							<!--结余调拨-->
 							<div class="layui-tab-item layui-show">
 								<div class="layui-form" id="table-list">
-									<table class="layui-table" lay-skin="line">
+									<table class="layui-table" lay-skin="line" lay-filter="school_table">
 										<colgroup>
 											<col class="hidden-xs" width="80">
 											<col>
@@ -76,7 +82,7 @@
 											<td>{$vo['have']}</td>
 											<td>
 												<div class="layui-inline">
-													<button type="button" class="layui-btn layui-btn-sm layui-btn-normal addBtn btn_tips" data-title="调拨材料"  data-url="{:url('allocation/allocation_goods')}?project_id={$vo['id']}&type_id=2&supply_goods_id={$vo['supply_goods_id']}&supply_goods_name={$vo['supply_goods_name']}&have={$vo['have']}&stock_id={$vo['stock_id']}&contract_id=&woker_id=&is_type=1" data-h="568px"><i class="layui-icon">&#xe698;</i></button>
+													<button type="button" class="layui-btn layui-btn-sm layui-btn-normal addBtn1 btn_tips" data-title="调拨材料"  data-url="{:url('allocation/allocation_goods')}?project_id={$vo['id']}&type_id=2&supply_goods_id={$vo['supply_goods_id']}&supply_goods_name={$vo['supply_goods_name']}&have={$vo['have']}&stock_id={$vo['stock_id']}&contract_id=&woker_id=&is_type=1&is_project_id={$_GET['project_id']}" data-h="568px"><i class="layui-icon">&#xe698;</i></button>
 												</div>
 											</td>
 										</tr>
@@ -92,7 +98,7 @@
 							<!--工程调拨-->
 							<div class="layui-tab-item">
 								<div class="layui-form" id="table-list">
-									<table class="layui-table" lay-skin="line">
+									<table class="layui-table" lay-filter="school_table" lay-skin="line">
 										<colgroup>
 											<col width="50">
 											<col class="hidden-xs" width="80">
@@ -131,7 +137,7 @@
 											</td>
 											<td>
 												<div class="layui-inline">
-													<button type="button" class="layui-btn layui-btn-sm layui-btn-normal addBtn btn_tips" data-title="调拨材料"  data-url="{:url('allocation/allocation_goods')}?project_id={$vo['id']}&contract_id={$vo['contract_id']}&type_id=1&stock_id=&supply_goods_id=&woker_id=$vo['woker_id']&is_type=1" data-h="568px"><i class="layui-icon">&#xe698;</i></button>
+													<button type="button" class="layui-btn layui-btn-sm layui-btn-normal addBtn1 btn_tips" data-title="调拨材料"  data-url="{:url('allocation/allocation_goods')}?project_id={$vo['id']}&contract_id={$vo['contract_id']}&type_id=1&stock_id=&supply_goods_id=&woker_id=$vo['woker_id']&is_type=1&is_project_id={$_GET['project_id']}" data-h="568px"><i class="layui-icon">&#xe698;</i></button>
 													<button class="layui-btn layui-btn-sm layui-btn-danger del-btn btn_tips" data-title="取消" data-id="{$vo['id']}" data-url="{:url('allocation/del')}"><i class="layui-icon">&#xe640;</i></button>
 												</div>
 											</td>
@@ -148,7 +154,7 @@
 							<!--甲供结余调拨-->
 							<div class="layui-tab-item">
 								<div class="layui-form" id="table-list">
-									<table class="layui-table" lay-skin="line">
+									<table class="layui-table" lay-filter="school_table" lay-skin="line">
 										<colgroup>
 											<col class="hidden-xs" width="80">
 											<col>
@@ -168,7 +174,7 @@
 										</tr>
 										</thead>
 										<tbody>
-										{volist name="balance_list" id="vo"}
+										{volist name="balance_type_list" id="vo"}
 										<tr>
 											<td class="hidden-xs">{$vo['id']}</td>
 											<td>{$vo['stock_name']}</td>
@@ -177,7 +183,7 @@
 											<td>{$vo['have']}</td>
 											<td>
 												<div class="layui-inline">
-													<button type="button" class="layui-btn layui-btn-sm layui-btn-normal addBtn btn_tips" data-title="调拨材料"  data-url="{:url('allocation/allocation_goods')}?project_id={$vo['id']}&type_id=2&supply_goods_id={$vo['supply_goods_id']}&supply_goods_name={$vo['supply_goods_name']}&have={$vo['have']}&stock_id={$vo['stock_id']}&contract_id=&woker_id=&is_type=2&owner_id={$vo['owner_id']}" data-h="568px"><i class="layui-icon">&#xe698;</i></button>
+													<button type="button" class="layui-btn layui-btn-sm layui-btn-normal addBtn1 btn_tips" data-title="调拨材料"  data-url="{:url('allocation/allocation_goods')}?project_id={$vo['id']}&type_id=2&supply_goods_id={$vo['supply_goods_id']}&supply_goods_name={$vo['supply_goods_name']}&have={$vo['have']}&stock_id={$vo['stock_id']}&contract_id=&woker_id=&is_type=2&owner_id={$vo['owner_id']}&is_project_id={$_GET['project_id']}" data-h="568px"><i class="layui-icon">&#xe698;</i></button>
 												</div>
 											</td>
 										</tr>
@@ -185,7 +191,7 @@
 										</tbody>
 									</table>
 									<div class="page-wrap">
-										{$balance_list->render()|raw}
+										{$balance_type_list->render()|raw}
 									</div>
 								</div>
 							</div>
@@ -193,7 +199,7 @@
 							<!--甲供工程调拨-->
 							<div class="layui-tab-item">
 								<div class="layui-form" id="table-list">
-									<table class="layui-table" lay-skin="line">
+									<table class="layui-table" lay-filter="school_table" lay-skin="line">
 										<colgroup>
 											<col width="50">
 											<col class="hidden-xs" width="80">
@@ -216,7 +222,7 @@
 										</tr>
 										</thead>
 										<tbody>
-										{volist name="project_list" id="vo"}
+										{volist name="project_type_list" id="vo"}
 										<tr>
 											<td class="hidden-xs">{$vo['id']}</td>
 											<td>{$vo['contract_number']}</td>
@@ -232,7 +238,7 @@
 											</td>
 											<td>
 												<div class="layui-inline">
-													<button type="button" class="layui-btn layui-btn-sm layui-btn-normal addBtn btn_tips" data-title="调拨材料"  data-url="{:url('allocation/allocation_goods')}?project_id={$vo['id']}&contract_id={$vo['contract_id']}&type_id=1&stock_id=&supply_goods_id=&woker_id={$vo['woker_id']}&is_type=2&owner_id={$vo['owner_id']}" data-h="568px"><i class="layui-icon">&#xe698;</i></button>
+													<button type="button" class="layui-btn layui-btn-sm layui-btn-normal addBtn1 btn_tips" data-title="调拨材料"  data-url="{:url('allocation/allocation_goods')}?project_id={$vo['id']}&contract_id={$vo['contract_id']}&type_id=1&stock_id=&supply_goods_id=&woker_id={$vo['woker_id']}&is_type=2&owner_id={$vo['owner_id']}&is_project_id={$_GET['project_id']}" data-h="568px"><i class="layui-icon">&#xe698;</i></button>
 													<button class="layui-btn layui-btn-sm layui-btn-danger del-btn btn_tips" data-title="取消" data-id="{$vo['id']}" data-url="{:url('allocation/del')}"><i class="layui-icon">&#xe640;</i></button>
 												</div>
 											</td>
@@ -241,7 +247,7 @@
 										</tbody>
 									</table>
 									<div class="page-wrap">
-										{$project_list->render()|raw}
+										{$project_type_list->render()|raw}
 									</div>
 								</div>
 							</div>
@@ -311,46 +317,20 @@
 		</div>
 		<script src="__STATIC__/admin/layui/layui.js" type="text/javascript" charset="utf-8"></script>
 		<script src="__STATIC__/admin/js/common.js" type="text/javascript" charset="utf-8"></script>
+		<script src="http://libs.baidu.com/jquery/2.1.4/jquery.min.js"></script>
 		<script>
-			layui.use(['form', 'jquery', 'element', 'dialog', 'layer'], function() { 
+			layui.use(['form', 'jquery', 'element', 'dialog', 'layer', 'table'], function() {
 				var form = layui.form,
 					$ = layui.jquery,
 					element = layui.element,
 					layer = layui.layer,
 					dialog = layui.dialog;
+                    table = layui.table;
+                form.on("select", function(data){
+                    $("#filter").submit();
+                });
+			});
 
-				//开工
-				$('#table-list').on('click', '.start_work', function() {
-					var url=$(this).attr('data-url');
-					dialog.confirm({
-						message:'开始工程后将不能修改工程和需求，您确定要开始工程吗？',
-						success:function(){
-							loading = layer.load(2, {
-								shade: [0.2, '#000']
-							});
-							$.post(url, {}, function(data){ 
-								layer.close(loading);
-								console.dir(data);
-								if(data.error_code){ 
-									layer.msg(data.msg, {icon: 2, shade: 0.1, time: 1000}, function(){ 
-
-									});
-									return false;
-								} 
-								layer.msg(data.msg, {icon: 1, shade: 0.1, time: 1000}, function () {
-									window.location.reload();
-								});
-							})
-						},
-						cancel:function(){
-							layer.msg('取消了')
-						}
-					})
-					return false;
-				})
-
-				
-			})
 		</script>
 	</body>
 

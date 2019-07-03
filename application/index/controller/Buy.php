@@ -51,7 +51,8 @@ class Buy extends Base{
                 ->where('so.project_id', $params['id'])
                 ->where('so.type', 'in',['10','12'])
                 ->sum('soi.num');
-            $vo['have'] = $have+$stock_num;
+            $vo['have'] = $have;
+            $vo['allocation'] = $stock_num;
         }
         return $list;
     }

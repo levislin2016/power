@@ -69,6 +69,7 @@
                                 <th>价格</th>
                                 <th>需求数</th>
                                 <th>平衡利库</th>
+                                <th>已调拨材料数</th>
                                 <th>调拨</th>
                                 <th>本次采购</th>
                             </tr>
@@ -91,15 +92,16 @@
     <script src="__STATIC__/admin/layui/layui.js" type="text/javascript" charset="utf-8"></script>
     <script src="__STATIC__/admin/js/common.js" type="text/javascript" charset="utf-8"></script>
     <script>
-        function selectRole(e,d) {
+        function selectRole(e,d,f,c) {
             console.log(e);
             console.log(d);
+            console.log(f);
             parent.layer.open({ //在父窗口打开
                 //layer提供了5种层类型。可传入的值有：0（信息框，默认）1（页面层）2（iframe层）3（加载层）4（tips层）
                 type: 2,
                 title: "调拨",
                 area: ['80%', '80%'],
-                content: "{:url('allocation/index')}"
+                content: "{:url('allocation/index')}?project_id="+d+"&supply_goods_id="+e+"&is_type="+f+"&goods_name="+c,
             });
         }
         layui.use(['form', 'jquery', 'laydate', 'layer', 'laypage', 'dialog', 'tool', 'element', 'layedit'], function () {
@@ -122,7 +124,7 @@
                     if (!re.test(value)){
                         return '请输入正整数';
                     }
-                    
+
                 },
                 supply: function(value, item) {
                     var num = $(item).parents('tr').find('.num').val();
@@ -151,7 +153,7 @@
                 loading = layer.load(2, {
                     shade: [0.2, '#000']
                 });
-                $.post(url, {id: project_id}, function(data){ 
+                $.post(url, {id: project_id}, function(data){
                     console.dir(data);
                     layer.close(loading);
                     var str = '';
@@ -173,9 +175,10 @@
                         str += '    <td></td>';
                         str += '    <td>'+ data[i]['need'] +'</td>';
                         str += '    <td>'+ data[i]['have'] +'</td>';
+                        str += '    <td>'+ data[i]['allocation'] +'</td>';
                         str += '<td>';
                         str += '<div class="layui-input-inline">';
-                        str += '<button type="button" class="layui-btn layui-btn-sm layui-btn-normal addBtn btn_tips" onclick="selectRole()" data-title="调拨材料"  data-url="" data-h="400px"><i class="layui-icon">&#xe609;</i></button>';
+                        str += '<button type="button" class="layui-btn layui-btn-sm layui-btn-normal addBtn btn_tips" onclick="selectRole('+ data[i]['goods_id'] +','+ data[i]['project_id'] +','+data[i]['type']+')" data-title="调拨材料"  data-url="" data-h="400px"><i class="layui-icon">&#xe609;</i></button>';
                         str += '</div>';
                         str += '</td>';
                         str += '    <td style="padding: 0px;">';
@@ -201,7 +204,7 @@
                 //     shade: [0.2, '#000']
                 // });
                 // var that = $(data.elem);
-                // $.post(url, {id: supply.id}, function(data){ 
+                // $.post(url, {id: supply.id}, function(data){
                 //     console.dir(data);
                 //     layer.close(loading);
                 //     $(that).parents('td').next('td').next('td').next('td').html(data.have);
@@ -217,7 +220,6 @@
 
                 var url = data.form.action;
                 var project_id = $('.project_id').val();
-                var from = $('.from').val();
                 var num = [];
                 $('.stock_order_table').find('tbody').find('tr').each(function(e){
 
@@ -244,7 +246,7 @@
                     shade: [0.2, '#000']
                 });
 
-                $.post(url, {project_id: project_id, num: num, note: '', type: 1, from: from}, function (data) {
+                $.post(url, {project_id: project_id, num: num, note: '', type: 1}, function (data) {
                     layer.close(loading);
                     console.dir(data);
                     if (data.error_code) {

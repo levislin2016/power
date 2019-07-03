@@ -22,27 +22,35 @@ class Allocation extends Base
         $params = input('get.');
         $project_list = (new AllocationService)->project_list($params);
         $balance_list = (new AllocationService)->balance_list($params);
+        $project_type_list = (new AllocationService)->project_type_list($params);
+        $balance_type_list = (new AllocationService)->balance_type_list($params);
         $shopping_list = (new AllocationService)->shopping_list($params);
     	$this->assign('project_list', $project_list);
     	$this->assign('balance_list', $balance_list);
+        $this->assign('project_type_list', $project_type_list);
+        $this->assign('balance_type_list', $balance_type_list);
     	$this->assign('shopping_list', $shopping_list);
+
+        $project_all_list = \Db::table('pw_project')->alias('p')
+            ->leftJoin('contract c','c.id = p.contract_id')
+            ->field('p.id,p.name')
+            ->where('p.delete_time', 0)
+            ->select();
+        if(!empty($params['supply_goods_id'])){
+            $goods_name = \Db::table('pw_goods')->field('id','name')->where('id',$params['supply_goods_id'])->find();
+        }else{
+            $goods_name['name'] = '';
+        }
+
+        $this->assign('project_all_list', $project_all_list);
+        $this->assign('goods_name', $goods_name);
+
         return $this->fetch();
     }
 
     //调拨材料页面
     public function allocation_goods(){
-        $project_id = input('get.project_id', '');
-        $where = [];
-        if(input('get.is_type') == 2){
-            $where['c.owner_id'] = input('get.owner_id');
-        }
-        $project_list = \Db::table('pw_project')->alias('p')
-                            ->leftJoin('contract c','c.id = p.contract_id')
-                            ->field('p.id,p.name')
-                            ->where('p.id', 'neq', $project_id)
-                            ->where('p.delete_time', 0)
-                            ->where($where)
-                            ->select();
+        $project_id = input('get.project_id');
         $goods_list = \Db::table('pw_project_woker')->alias('pw')
                         ->leftJoin('supply_goods sg','sg.id = pw.supply_goods_id')
                         ->leftJoin('goods g','g.id = sg.g_id')
@@ -59,7 +67,6 @@ class Allocation extends Base
                 unset($goods_list[$k]);
             }
         }
-        $this->assign('project_list', $project_list);
         $this->assign('supply_goods_list', $goods_list);
         return $this->fetch();
     }
