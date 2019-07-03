@@ -18,14 +18,18 @@ class Allocation{
         $list = ProjectModel::useGlobalScope(false)->alias('p')
             ->leftJoin('contract c','p.contract_id = c.id')
             ->leftJoin('owner o','c.owner_id = o.id')
+            ->leftJoin('project_woker pw','pw.project_id = p.id')
+            ->leftJoin('supply_goods sg','sg.id = pw.supply_goods_id')
+            ->leftJoin('goods g','g.id = sg.g_id')
             ->where(function ($query) use($params) {
                 if(!empty($params['search'])){
-                    $query->where('c.number|p.name', 'like', '%'.$params['search'].'%');
+                    $query->where('c.number|p.name|g.name', 'like', '%'.$params['search'].'%');
                 }
                 $query->where('status', 2);
             })
-            ->field('p.id, p.company_id, p.contract_id, c.number as contract_number, p.name, p.status, p.create_time, o.name as owner_name')
+            ->field('p.id, p.company_id, pw.woker_id,p.contract_id, c.number as contract_number, p.name, p.status, p.create_time, o.id as owner_id, o.name as owner_name')
             ->order('p.create_time', 'desc')
+            ->group('p.id')
             ->paginate(10, false, [
                 'query'     => $params,
             ]);
@@ -34,11 +38,12 @@ class Allocation{
                 ->leftJoin('woker w','w.id = pw.woker_id')
                 ->leftJoin('supply_goods sg','sg.id = pw.supply_goods_id')
                 ->leftJoin('goods g','g.id = sg.g_id')
-                ->field('pw.id, pw.project_id, pw.woker_id, w.name as woker_name, pw.supply_goods_id, pw.not as not_num, g.name as goods_name')
+                ->field('pw.id, pw.supply_goods_id, sum(pw.not) as not_num, g.number as goods_number, g.name as goods_name')
                 ->where([
                     'pw.project_id'  => $v['id'],
                     'pw.delete_time' => 0
                 ])
+                ->group('goods_number')
                 ->select();
             $project_list = $project_list->toArray();
             foreach ($project_list as &$val){
@@ -46,8 +51,6 @@ class Allocation{
                     ->leftJoin('stock_order_info soi','so.id = soi.stock_order_id')
                     ->field('so.supply_goods_id, soi.num')
                     ->where([
-                        'so.woker_id'         => $val['woker_id'],
-                        'so.project_id'       => $val['project_id'],
                         'soi.supply_goods_id' => $val['supply_goods_id'],
                         'so.type'             => 9,
                         'so.delete_time'      => 0
@@ -71,14 +74,16 @@ class Allocation{
             ->leftJoin('supply_goods sg','sg.id = ps.supply_goods_id')
             ->leftJoin('goods g','sg.g_id = g.id')
             ->leftJoin('project p','p.id = ps.project_id')
+            ->leftJoin('contract c','p.contract_id = c.id')
             ->where(function ($query) use($params) {
                 if(!empty($params['search'])){
-                    $query->where('p.name|s.name', 'like', '%'.$params['search'].'%');
+                    $query->where('p.name|s.name|g.name', 'like', '%'.$params['search'].'%');
                 }
                 $query->where('ps.have', '>', 0);
             })
-            ->field('p.id, ps.have, p.name as project_name, ps.stock_id, g.name as supply_goods_name,sg.id as supply_goods_id, p.name, s.name as stock_name')
+            ->field('p.id, ps.have, p.name as project_name, ps.stock_id, g.name as supply_goods_name,sg.id as supply_goods_id, p.name, s.name as stock_name, c.owner_id')
             ->order('p.create_time', 'desc')
+            ->group('p.id')
             ->paginate(10, false, [
                 'query'     => $params,
             ]);

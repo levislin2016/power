@@ -91,17 +91,17 @@
     <script src="__STATIC__/admin/layui/layui.js" type="text/javascript" charset="utf-8"></script>
     <script src="__STATIC__/admin/js/common.js" type="text/javascript" charset="utf-8"></script>
     <script>
-        function selectRole(e,d){
+        function selectRole(e,d) {
             console.log(e);
             console.log(d);
-            layer.open({
+            parent.layer.open({ //在父窗口打开
                 //layer提供了5种层类型。可传入的值有：0（信息框，默认）1（页面层）2（iframe层）3（加载层）4（tips层）
-                type:2,
-                title:"调拨",
-                area: ['100%','100%'],
-                content:"{:url('allocation/index')}"
+                type: 2,
+                title: "调拨",
+                area: ['80%', '80%'],
+                content: "{:url('allocation/index')}"
             });
-            }
+        }
         layui.use(['form', 'jquery', 'laydate', 'layer', 'laypage', 'dialog', 'tool', 'element', 'layedit'], function () {
             var form = layui.form,
                 layer = layui.layer,

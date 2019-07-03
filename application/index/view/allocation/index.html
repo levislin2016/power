@@ -22,7 +22,7 @@
 								<!-- <button class="layui-btn layui-btn-sm layui-btn-warm listOrderBtn hidden-xs" data-url="article-add.html"><i class="iconfont">&#xe656;</i></button> -->
 							</div>
 							<div class="layui-inline">
-								<input type="text" name="search" placeholder="请输入项目/工程名" autocomplete="off" class="layui-input" value="{$Think.get.search}" />
+								<input type="text" name="search" placeholder="请输入项目/工程名/材料" autocomplete="off" class="layui-input" value="{$Think.get.search}" />
 							</div>
 							<!-- <div class="layui-inline">
 								<select name="states" lay-filter="status">
@@ -39,6 +39,8 @@
 						<ul class="layui-tab-title">
 							<li class="layui-this">结余调拨</li>
 							<li>工程调拨</li>
+							<li>甲供结余调拨</li>
+							<li>甲供工程调拨</li>
 							<li>调拨清单</li>
 						</ul>
 						<div class="layui-tab-content" style="height: 600px;">
@@ -74,7 +76,7 @@
 											<td>{$vo['have']}</td>
 											<td>
 												<div class="layui-inline">
-													<button type="button" class="layui-btn layui-btn-sm layui-btn-normal addBtn btn_tips" data-title="调拨材料"  data-url="{:url('allocation/allocation_goods')}?project_id={$vo['id']}&type_id=2&supply_goods_id={$vo['supply_goods_id']}&supply_goods_name={$vo['supply_goods_name']}&have={$vo['have']}&stock_id={$vo['stock_id']}&contract_id=&woker_id=" data-h="568px"><i class="layui-icon">&#xe698;</i></button>
+													<button type="button" class="layui-btn layui-btn-sm layui-btn-normal addBtn btn_tips" data-title="调拨材料"  data-url="{:url('allocation/allocation_goods')}?project_id={$vo['id']}&type_id=2&supply_goods_id={$vo['supply_goods_id']}&supply_goods_name={$vo['supply_goods_name']}&have={$vo['have']}&stock_id={$vo['stock_id']}&contract_id=&woker_id=&is_type=1" data-h="568px"><i class="layui-icon">&#xe698;</i></button>
 												</div>
 											</td>
 										</tr>
@@ -123,13 +125,114 @@
 											<td>{$vo['create_time']}</td>
 											<td>
 												{volist name="vo.goods_list" id="v"}
-													工程队:{$v.woker_name}  材料:{$v.goods_name}  可领:{$v.can_num}  已领:{$v.get_num}  未领:{$v.not_num}
+													编号:{$v.goods_number}  材料:{$v.goods_name}  可领:{$v.can_num}  已领:{$v.get_num}  未领:{$v.not_num}
 													<br/>
 												{/volist}
 											</td>
 											<td>
 												<div class="layui-inline">
-													<button type="button" class="layui-btn layui-btn-sm layui-btn-normal addBtn btn_tips" data-title="调拨材料"  data-url="{:url('allocation/allocation_goods')}?project_id={$vo['id']}&contract_id={$vo['contract_id']}&type_id=1&stock_id=&supply_goods_id=&woker_id=$vo['woker_id']" data-h="568px"><i class="layui-icon">&#xe698;</i></button>
+													<button type="button" class="layui-btn layui-btn-sm layui-btn-normal addBtn btn_tips" data-title="调拨材料"  data-url="{:url('allocation/allocation_goods')}?project_id={$vo['id']}&contract_id={$vo['contract_id']}&type_id=1&stock_id=&supply_goods_id=&woker_id=$vo['woker_id']&is_type=1" data-h="568px"><i class="layui-icon">&#xe698;</i></button>
+													<button class="layui-btn layui-btn-sm layui-btn-danger del-btn btn_tips" data-title="取消" data-id="{$vo['id']}" data-url="{:url('allocation/del')}"><i class="layui-icon">&#xe640;</i></button>
+												</div>
+											</td>
+										</tr>
+										{/volist}
+										</tbody>
+									</table>
+									<div class="page-wrap">
+										{$project_list->render()|raw}
+									</div>
+								</div>
+							</div>
+
+							<!--甲供结余调拨-->
+							<div class="layui-tab-item">
+								<div class="layui-form" id="table-list">
+									<table class="layui-table" lay-skin="line">
+										<colgroup>
+											<col class="hidden-xs" width="80">
+											<col>
+											<col>
+											<col>
+											<col>
+											<col>
+										</colgroup>
+										<thead>
+										<tr>
+											<th class="hidden-xs">编号</th>
+											<th>仓库名</th>
+											<th>项目名</th>
+											<th>材料</th>
+											<th>可调拨数</th>
+											<th>操作</th>
+										</tr>
+										</thead>
+										<tbody>
+										{volist name="balance_list" id="vo"}
+										<tr>
+											<td class="hidden-xs">{$vo['id']}</td>
+											<td>{$vo['stock_name']}</td>
+											<td>{$vo['project_name']}</td>
+											<td>{$vo['supply_goods_name']}</td>
+											<td>{$vo['have']}</td>
+											<td>
+												<div class="layui-inline">
+													<button type="button" class="layui-btn layui-btn-sm layui-btn-normal addBtn btn_tips" data-title="调拨材料"  data-url="{:url('allocation/allocation_goods')}?project_id={$vo['id']}&type_id=2&supply_goods_id={$vo['supply_goods_id']}&supply_goods_name={$vo['supply_goods_name']}&have={$vo['have']}&stock_id={$vo['stock_id']}&contract_id=&woker_id=&is_type=2&owner_id={$vo['owner_id']}" data-h="568px"><i class="layui-icon">&#xe698;</i></button>
+												</div>
+											</td>
+										</tr>
+										{/volist}
+										</tbody>
+									</table>
+									<div class="page-wrap">
+										{$balance_list->render()|raw}
+									</div>
+								</div>
+							</div>
+
+							<!--甲供工程调拨-->
+							<div class="layui-tab-item">
+								<div class="layui-form" id="table-list">
+									<table class="layui-table" lay-skin="line">
+										<colgroup>
+											<col width="50">
+											<col class="hidden-xs" width="80">
+											<col>
+											<col>
+											<col>
+											<col>
+											<col>
+										</colgroup>
+										<thead>
+										<tr>
+											<th class="hidden-xs">编号</th>
+											<th>合同编号</th>
+											<th>业主</th>
+											<th>项目名</th>
+											<th>状态</th>
+											<th>创建时间</th>
+											<th>材料概况</th>
+											<th>操作</th>
+										</tr>
+										</thead>
+										<tbody>
+										{volist name="project_list" id="vo"}
+										<tr>
+											<td class="hidden-xs">{$vo['id']}</td>
+											<td>{$vo['contract_number']}</td>
+											<td>{$vo['owner_name']}</td>
+											<td>{$vo['name']}</td>
+											<td><span class="layui-badge {eq name='vo.status' value='1'}layui-bg-gray{/eq}{eq name='vo.status' value='2'}layui-bg-blue{/eq}{eq name='vo.status' value='3'}layui-bg-orange{/eq}{eq name='vo.status' value='4'}layui-badge{/eq}">{$vo['status_name']}</span></td>
+											<td>{$vo['create_time']}</td>
+											<td>
+												{volist name="vo.goods_list" id="v"}
+												编号:{$v.goods_number}  材料:{$v.goods_name}  可领:{$v.can_num}  已领:{$v.get_num}  未领:{$v.not_num}
+												<br/>
+												{/volist}
+											</td>
+											<td>
+												<div class="layui-inline">
+													<button type="button" class="layui-btn layui-btn-sm layui-btn-normal addBtn btn_tips" data-title="调拨材料"  data-url="{:url('allocation/allocation_goods')}?project_id={$vo['id']}&contract_id={$vo['contract_id']}&type_id=1&stock_id=&supply_goods_id=&woker_id={$vo['woker_id']}&is_type=2&owner_id={$vo['owner_id']}" data-h="568px"><i class="layui-icon">&#xe698;</i></button>
 													<button class="layui-btn layui-btn-sm layui-btn-danger del-btn btn_tips" data-title="取消" data-id="{$vo['id']}" data-url="{:url('allocation/del')}"><i class="layui-icon">&#xe640;</i></button>
 												</div>
 											</td>
@@ -146,8 +249,6 @@
 							<!--调拨清单-->
 
 							<div class="layui-tab-item ">
-								<button type="button" class="layui-btn layui-btn-sm layui-btn-green setBtn btn_tips" data-title="批量调拨" data-url="{:url('allocation/shopping_all_set')}"><i class="layui-icon">&#xe609;</i></button>
-								<button type="button" class="layui-btn layui-btn-sm layui-btn-danger delBtn btn_tips" data-title="批量删除" data-url="{:url('allocation/del')}"><i class="layui-icon">&#xe640;</i></button>
 								<div class="layui-form" id="shoop">
 									<table class="layui-table" lay-skin="line">
 										<colgroup>
@@ -162,9 +263,9 @@
 										<tr>
 											<th><input type="checkbox" name="" lay-skin="primary" lay-filter="allChoose"></th>
 											<th class="hidden-xs">编号</th>
-											<th>被调拨工程</th>
-											<th>被调拨工程队</th>
-											<th>调拨工程</th>
+											<th>调拨工程（出）</th>
+											<th>调拨工程队（出）</th>
+											<th>调拨工程（入）</th>
 											<th>仓库</th>
 											<th>材料</th>
 											<th>数量</th>
@@ -188,7 +289,6 @@
 											<td>{$vor['create_time']}</td>
 											<td>
 												<div class="layui-inline">
-													<button type="button" class="layui-btn layui-btn-sm layui-btn-normal setBtn btn_tips" data-title="执行调拨材料"  data-url="{:url('allocation/shopping_set')}?id={$vor['id']}" data-h="568px"><i class="layui-icon">&#xe609;</i></button>
 													<button class="layui-btn layui-btn-sm layui-btn-danger del-btn btn_tips" data-title="删除" data-id="{$vor['id']}" data-url="{:url('allocation/del')}"><i class="layui-icon">&#xe640;</i></button>
 												</div>
 											</td>
@@ -199,6 +299,10 @@
 									<div class="page-wrap">
 										{$shopping_list->render()|raw}
 									</div>
+								</div>
+								<div style="text-align:center">
+									<button type="button" class="layui-btn layui-btn-lg layui-btn-normal setBtn btn_tips" style="width: 150px" data-title="确认调拨" data-url="{:url('allocation/shopping_all_set')}"><i class="layui-icon">&#xe609;</i></button>
+									<button type="button" class="layui-btn layui-btn-lg layui-btn-danger delBtn btn_tips" style="width: 150px" data-title="批量清除" data-url="{:url('allocation/del')}"><i class="layui-icon">&#xe640;</i></button>
 								</div>
 							</div>
 						</div>

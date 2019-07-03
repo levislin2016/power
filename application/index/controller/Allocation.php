@@ -32,11 +32,22 @@ class Allocation extends Base
     //调拨材料页面
     public function allocation_goods(){
         $project_id = input('get.project_id', '');
-        $project_list = \Db::table('pw_project')->field('id,name')->where('id', 'neq', $project_id)->where('delete_time', 0)->select();
+        $where = [];
+        if(input('get.is_type') == 2){
+            $where['c.owner_id'] = input('get.owner_id');
+        }
+        $project_list = \Db::table('pw_project')->alias('p')
+                            ->leftJoin('contract c','c.id = p.contract_id')
+                            ->field('p.id,p.name')
+                            ->where('p.id', 'neq', $project_id)
+                            ->where('p.delete_time', 0)
+                            ->where($where)
+                            ->select();
         $goods_list = \Db::table('pw_project_woker')->alias('pw')
                         ->leftJoin('supply_goods sg','sg.id = pw.supply_goods_id')
                         ->leftJoin('goods g','g.id = sg.g_id')
                         ->leftJoin('woker w','w.id = pw.woker_id')
+                        ->leftJoin('contract c','c.id = pw.woker_id')
                         ->field('pw.supply_goods_id as id, pw.woker_id, g.name as goods_name,w.name, pw.not')
                         ->where('pw.project_id', 'eq', $project_id)
                         ->where('pw.delete_time', 0)
