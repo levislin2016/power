@@ -122,6 +122,11 @@ layui.use(['form', 'jquery', 'laydate', 'layer', 'laypage', 'dialog',   'element
     //顶部批量执行
     $('.setBtn').click(function() {
         var url=$(this).attr('data-url');
+        var chock = $("input[type='checkbox']").is(':checked')
+		if(chock == false){
+        	alert('请选择购物清单');
+            return false;
+		}
         dialog.confirm({
             message:'您确定要执行选中项',
             success:function(){
