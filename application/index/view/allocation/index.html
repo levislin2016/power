@@ -46,14 +46,17 @@
 
 					<div class="layui-tab layui-tab-card table_list" >
 						<ul class="layui-tab-title">
-							<li class="layui-this">结余调拨</li>
+							<li  class="layui-this">结余调拨</li>
 							<li>工程调拨</li>
 							<li>甲供结余调拨</li>
-							<li>调拨清单</li>
 						</ul>
 						<div name="hidden_frame" class="layui-tab-content"  id="tablelist" style="height: 600px;">
 							<!--结余调拨-->
-							<div class="layui-tab-item layui-show">
+							{if condition="$Think.cookie.check_shop eq ''"}
+								<div class="layui-tab-item layui-show">
+							{else/}
+								<div class="layui-tab-item">
+							{/if}
 								<div class="layui-form" id="table-list">
 									<table class="layui-table all1" lay-skin="line" lay-filter="school_table">
 									</table>
@@ -81,63 +84,12 @@
 
 							<!--调拨清单-->
 
-							<div class="layui-tab-item ">
-								<div class="layui-form" id="shoop">
-									<table class="layui-table" lay-skin="line">
-										<colgroup>
-											<col class="hidden-xs" width="80">
-											<col>
-											<col>
-											<col>
-											<col>
-											<col>
-										</colgroup>
-										<thead>
-										<tr>
-											<th><input type="checkbox" name="" lay-skin="primary" lay-filter="allChoose"></th>
-											<th class="hidden-xs">编号</th>
-											<th>调拨工程（出）</th>
-											<th>调拨工程队（出）</th>
-											<th>调拨工程（入）</th>
-											<th>仓库</th>
-											<th>材料</th>
-											<th>数量</th>
-											<th>调拨类型</th>
-											<th>添加时间</th>
-											<th>操作</th>
-										</tr>
-										</thead>
-										<tbody>
-										{volist name="shopping_list" id="vor"}
-										<tr>
-											<td><input type="checkbox" name="" lay-skin="primary" data-id="{$vor['id']}"></td>
-											<td class="hidden-xs">{$vor['id']}</td>
-											<td>{$vor['passive_project_name']}</td>
-											<td>{$vor['passive_woker_name']}</td>
-											<td>{$vor['project_name']}</td>
-											<td>{$vor['stock_name']}</td>
-											<td>{$vor['supply_goods_name']}</td>
-											<td>{$vor['num']}</td>
-											<td><span class="layui-badge {eq name='vor.type' value='1'}layui-bg-green{/eq}{eq name='vor.type' value='2'}layui-bg-black{/eq}">{$vor['type_name']}</span></td>
-											<td>{$vor['create_time']}</td>
-											<td>
-												<div class="layui-inline">
-													<button class="layui-btn layui-btn-sm layui-btn-danger del-btn btn_tips" data-title="删除" data-id="{$vor['id']}" data-url="{:url('allocation/del')}"><i class="layui-icon">&#xe640;</i></button>
-												</div>
-											</td>
-										</tr>
-										{/volist}
-										</tbody>
-									</table>
-									<div class="page-wrap">
-										{$shopping_list->render()|raw}
-									</div>
-								</div>
-								<div style="text-align:center">
-									<button type="button" class="layui-btn layui-btn-lg layui-btn-normal setBtn btn_tips" style="width: 150px" data-title="确认调拨" data-url="{:url('allocation/shopping_all_set')}"><i class="layui-icon">&#xe609;</i></button>
-									<button type="button" class="layui-btn layui-btn-lg layui-btn-danger delBtn btn_tips" style="width: 150px" data-title="批量清除" data-url="{:url('allocation/del')}"><i class="layui-icon">&#xe640;</i></button>
-								</div>
-							</div>
+							<!--{if condition="$Think.cookie.check_shop neq ''"}-->
+								<!--<div class="layui-tab-item layui-show">-->
+							<!--{else/}-->
+								<!--<div class="layui-tab-item">-->
+							<!--{/if}-->
+
 
 						</div>
 					</div>
@@ -167,16 +119,6 @@
          {{#  } }}
       </script>
 		<script>
-            function selectRole(e) {
-                console.log(e);
-                parent.layer.open({ //在父窗口打开
-                    //layer提供了5种层类型。可传入的值有：0（信息框，默认）1（页面层）2（iframe层）3（加载层）4（tips层）
-                    type: 2,
-                    title: "调拨",
-                    area: ['50%', '80%'],
-                    content: e,
-                });
-            }
             layui.use(['form', 'jquery', 'element', 'dialog', 'layer', 'table'], function() {
 				var form = layui.form,
 					$ = layui.jquery,
@@ -191,7 +133,6 @@
                         $(".addBtn2").css('display','block');
                         $(".table_list").css('display','block');
                     }
-                    console.log(123);
                     table.render({
                         elem: '.all1'
                         , url: "{:url('allocation/banlance_list')}?search="+$("#search").val()+"&project_id="+$('#project_id option:selected').val()+"&is_type="
@@ -230,12 +171,13 @@
                         }
                         , cols: [[
                             , {field: '', title: '', width:0}
-                            , {field: 'id', title: 'ID', width:150,sort: true}
-                            , {field: 'contract_number', width:150,title: '合同编号', sort: true}
-                            , {field: 'owner_name',width:150, title: '业主'}
+                            , {field: 'id', title: 'ID', width:80,sort: true}
+                            , {field: 'contract_number', width:120,title: '合同编号', sort: true}
+                            , {field: 'owner_name',width:100, title: '业主'}
                             , {field: 'name', width:150,title: '项目名'}
                             , {field: 'status_name', title: '状态', width:150, templet: '#status_name'}
                             , {field: 'create_time', width:180,title: '创建时间'}
+                            , {field: 'goods_list', width:210, title: '材料概况'}
                             , {fixed: 'right', title:'操作', align: 'center', toolbar: '#barDemo1'} //这里的toolbar值是模板元素的选择器
                         ]]
                     });
@@ -312,12 +254,13 @@
                         }
                         , cols: [[
                             , {field: '', title: '', width:0}
-                            , {field: 'id', title: 'ID', width:150,sort: true}
-                            , {field: 'contract_number', width:150,title: '合同编号', sort: true}
-                            , {field: 'owner_name',width:150, title: '业主'}
+                            , {field: 'id', title: 'ID', width:80,sort: true}
+                            , {field: 'contract_number', width:120,title: '合同编号', sort: true}
+                            , {field: 'owner_name',width:100, title: '业主'}
                             , {field: 'name', width:150,title: '项目名'}
                             , {field: 'status_name', title: '状态', width:150, templet: '#status_name'}
                             , {field: 'create_time', width:180,title: '创建时间'}
+                            , {field: 'goods_list', width:210, title: '材料概况'}
                             , {fixed: 'right', title:'操作', align: 'center', toolbar: '#barDemo1'} //这里的toolbar值是模板元素的选择器
                         ]]
                     });
@@ -366,7 +309,7 @@
 							type: 2,
 							title: "调拨",
 							area: ['80%', '80%'],
-							content: "{:url('allocation/allocation_goods')}?project_id="+data.id+"&contract_id="+data.contract_id+"&type_id=1&stock_id=&supply_goods_id=&woker_id="+data.woker_id+"&is_type=2&owner_id="+data.owner_id+"&is_project_id="+$('#project_id option:selected').val(),
+							content: "{:url('allocation/allocation_goods')}?project_id="+data.id+"&contract_id="+data.contract_id+"&type_id=1&stock_id=&supply_goods_id=&search="+$("#search").val()+"&woker_id="+data.woker_id+"&is_type=2&owner_id="+data.owner_id+"&is_project_id="+$('#project_id option:selected').val(),
 						});
                     }
                 });
@@ -387,7 +330,7 @@
                             type: 2,
                             title: "调拨",
                             area: ['80%', '80%'],
-                            content: "{:url('allocation/allocation_goods')}?project_id="+data.id+"&contract_id="+data.contract_id+"&type_id=1&stock_id=&supply_goods_id=&woker_id="+data.woker_id+"&is_type=1&is_project_id="+$('#project_id option:selected').val(),
+                            content: "{:url('allocation/allocation_goods')}?project_id="+data.id+"&contract_id="+data.contract_id+"&type_id=1&stock_id=&supply_goods_id=&search="+$("#search").val()+"&woker_id="+data.woker_id+"&is_type=1&is_project_id="+$('#project_id option:selected').val(),
                         });
                     }
                 });
@@ -436,12 +379,13 @@
                         }
                         , cols: [[
                             , {field: '', title: '', width:0}
-                            , {field: 'id', title: 'ID', width:150,sort: true}
-                            , {field: 'contract_number', width:150,title: '合同编号', sort: true}
-                            , {field: 'owner_name',width:150, title: '业主'}
+                            , {field: 'id', title: 'ID', width:80,sort: true}
+                            , {field: 'contract_number', width:120,title: '合同编号', sort: true}
+                            , {field: 'owner_name',width:100, title: '业主'}
                             , {field: 'name', width:150,title: '项目名'}
                             , {field: 'status_name', title: '状态', width:150, templet: '#status_name'}
                             , {field: 'create_time', width:180,title: '创建时间'}
+                            , {field: 'goods_list', width:210, title: '材料概况'}
                             , {fixed: 'right', title:'操作', align: 'center', toolbar: '#barDemo1'} //这里的toolbar值是模板元素的选择器
                         ]]
                     });
@@ -473,38 +417,6 @@
                 });
 
 
-                function get_need_data1(url, project_id, supply_goods_id, is_type){
-                    loading = layer.load(2, {
-                        shade: [0.2, '#000']
-                    });
-                    $.post(url, {project_id: project_id, supply_goods_id:supply_goods_id, is_type:is_type}, function(data){
-                        console.log(url);
-                        layer.close(loading);
-                        var str = '';
-                        for(var i in data){
-                            str += '<tr>';
-                            str += '    <td>'+ data[i]['stock_name'] +'</td>';
-                            str += '    <td>'+ data[i]['project_name'] +'</td>';
-                            str += '    <td>'+ data[i]['supply_goods_name'] +'</td>';
-                            str += '    <td>'+ data[i]['have'] +'</td>';
-                            str += '<td>';
-                            str += '<div class="layui-input-inline">';
-                            str += '<button type="button" class="layui-btn layui-btn-sm layui-btn-normal addBtn1 btn_tips" data-title="调拨材料"  data-url="{:url(\'allocation/allocation_goods\')}" data-h="568px"><i class="layui-icon">&#xe698;</i></button>';
-                            str += '</div>';
-                            str += '</td>';
-                            str += '</tr>';
-                        }
-                        $('.all1').find('tbody').html(str);
-//                        form.render('select');
-                    })
-                }
-
-
-
-//                form.on("select", function(data){
-//                    $("#filter").submit();
-//                    $('addbtn')
-//                });
 			});
 
 		</script>

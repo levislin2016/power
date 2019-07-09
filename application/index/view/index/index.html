@@ -80,7 +80,11 @@
             <a href="javascript:;" data-url="{:url('project/index')}" data-id='3' data-text="工程管理"><i class="layui-icon">&#xe632;</i> 工程管理</a>
           </li>
           <li class="layui-nav-item">
-            <a href="javascript:;" data-url="{:url('allocation/index')}?project_id=&supply_goods_id=&is_type=" data-id='11' data-text="调拨管理"><i class="layui-icon">&#xe632;</i> 调拨管理</a>
+            <a href="javascript:;" data-id='11' data-text="调拨"><i class="layui-icon">&#xe632;</i> 调拨</a>
+            <dl class="layui-nav-child">
+              <dd><a href="javascript:;" data-url="{:url('allocation/index')}?project_id=&supply_goods_id=&is_type=" data-id='51' data-text="调拨管理"><span class="l-line"></span>调拨管理</a></dd>
+              <dd><a href="javascript:;" data-url="{:url('allocation/shopping_list')}" data-id='52' data-text="调拨清单"><span class="l-line"></span>调拨清单</a></dd>
+            </dl>
           </li>
           <li class="layui-nav-item">
             <a href="javascript:;"><i class="layui-icon">&#xe656;</i> 材料管理</a>

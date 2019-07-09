@@ -11,6 +11,8 @@ use app\index\service\ProjectWoker as ProjectWokerService;
 use app\lib\exception\BaseException;
 use app\index\validate\ProjectValidate;
 use app\index\validate\AllotValidate;
+use think\Cookie;
+use think\Session;
 
 class Allocation extends Base
 {
@@ -19,15 +21,8 @@ class Allocation extends Base
     ];
 
     public function index(){
+        cookie('check_shop', '');
         $params = input('get.');
-//        $project_list = (new AllocationService)->project_list($params);
-//        $balance_list = (new AllocationService)->balance_list($params);
-//        $balance_type_list = (new AllocationService)->balance_type_list($params);
-        $shopping_list = (new AllocationService)->shopping_list($params);
-//    	$this->assign('project_list', $project_list);
-//    	$this->assign('balance_list', $balance_list);
-//        $this->assign('balance_type_list', $balance_type_list);
-    	$this->assign('shopping_list', $shopping_list);
 
         $project_all_list = \Db::table('pw_project')->alias('p')
             ->leftJoin('contract c','c.id = p.contract_id')
@@ -46,34 +41,39 @@ class Allocation extends Base
         return $this->fetch();
     }
 
+    public function shopping_list(){
+        $params = input('get.');
+        $shopping_list = (new AllocationService)->shopping_list($params);
+        $this->assign('shopping_list', $shopping_list);
+        return $this->fetch();
+    }
+
     public function project_list(){
         $params = input('get.');
         $project_list = (new AllocationService)->project_list($params);
+        cookie('check_shop', '');
         return json(["code"=>"0","msg"=>"","count" => $project_list['count'], "data"=>$project_list['list']]);
     }
 
     public function banlance_list(){
         $params = input('get.');
         $balance_list = (new AllocationService)->balance_list($params);
+        cookie('check_shop', '');
         return json(["code"=>"0","msg"=>"","count" => $balance_list['count'], "data"=>$balance_list['list']]);
-//        echo json_decode(["code"=>"0","msg"=>"","count" => "1000", "data"=>$balance_list],1);
     }
 
     public function banlance_type_list(){
         $params = input('get.');
         $project_type_list = (new AllocationService)->balance_type_list($params);
+        cookie('check_shop', '');
         return json(["code"=>"0","msg"=>"","count" => $project_type_list['count'], "data"=>$project_type_list['list']]);
     }
 
-    public function shopping_list(){
-        $params = input('get.');
-        $shopping_list = (new AllocationService)->shopping_list($params);
-        return $shopping_list;
-    }
 
     //调拨材料页面
     public function allocation_goods(){
         $project_id = input('get.project_id');
+        $search = input('get.search');
         $goods_list = \Db::table('pw_project_woker')->alias('pw')
                         ->leftJoin('supply_goods sg','sg.id = pw.supply_goods_id')
                         ->leftJoin('goods g','g.id = sg.g_id')
@@ -81,6 +81,11 @@ class Allocation extends Base
                         ->leftJoin('contract c','c.id = pw.woker_id')
                         ->field('pw.supply_goods_id as id, pw.woker_id, g.name as goods_name,w.name, pw.not')
                         ->where('pw.project_id', 'eq', $project_id)
+                        ->where(function ($query) use($search) {
+                            if(!empty($search)){
+                                $query->where('g.name', 'like', '%'.$search.'%');
+                            }
+                        })
                         ->where('pw.delete_time', 0)
                         ->select();
         $goods_list = $goods_list->toArray();
@@ -179,21 +184,19 @@ class Allocation extends Base
 
     //删除
     public function del($ids){
-        session('check_shopp','1',5);
-        print_r(session('check_shopp'));die;
-//        $res = ShoppingCartModel::destroy(rtrim($ids, ','));
-//
-//        if(!$res){
-//            throw new BaseException(
-//                [
-//                    'msg' => '删除调拨清单错误！',
-//                    'errorCode' => 30006
-//                ]);
-//        }
-//
-//        return [
-//            'msg' => '操作成功',
-//        ];
+        $res = ShoppingCartModel::destroy(rtrim($ids, ','));
+
+        if(!$res){
+            throw new BaseException(
+                [
+                    'msg' => '删除调拨清单错误！',
+                    'errorCode' => 30006
+                ]);
+        }
+        cookie('check_shop', 2, 5);
+        return [
+            'msg' => '操作成功',
+        ];
     }
 
 }

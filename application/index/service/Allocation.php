@@ -68,11 +68,17 @@ class Allocation{
         $project_status = config('extra.project_status');
 
         foreach ($list as &$v){
+            $str = '';
             $project_list = \Db::table('pw_project_woker')->alias('pw')
                 ->leftJoin('woker w','w.id = pw.woker_id')
                 ->leftJoin('supply_goods sg','sg.id = pw.supply_goods_id')
                 ->leftJoin('goods g','g.id = sg.g_id')
                 ->field('pw.id, pw.supply_goods_id, sum(pw.not) as not_num, g.number as goods_number, g.name as goods_name')
+                ->where(function ($query) use($params) {
+                    if(!empty($params['search'])){
+                        $query->where('g.name', 'like', '%'.$params['search'].'%');
+                    }
+                })
                 ->where([
                     'pw.project_id'  => $v['id'],
                     'pw.delete_time' => 0
@@ -96,8 +102,9 @@ class Allocation{
                 unset($val['woker_id']);
                 unset($val['supply_goods_id']);
                 unset($val['id']);
+                $str .= '编号:'.$val['goods_number'].'材料:'.$val['goods_name'].'可领:'.$val['can_num'].'已领:'.$val['get_num'].'未领:'.$val['not_num'].'<br/>';
             }
-            $v['goods_list'] = $project_list;
+            $v['goods_list'] = $str;
             $v['status_name'] = $project_status[$v['status']];
         }
         return ['count' => $count, 'list' => $list];
@@ -304,12 +311,12 @@ class Allocation{
             ->leftJoin('goods g','g.id = sg.g_id')
             ->where(function ($query) use($params) {
                 if(!empty($params['search'])){
-                    $query->where('p.name', 'like', '%'.$params['search'].'%');
+                    $query->where('w.name|g.name|p1.name|p.name', 'like', '%'.$params['search'].'%');
                 }
             })
             ->where('sc.status',1)
             ->field('sc.*, s.name as stock_name, p.name as project_name,p1.name as passive_project_name, w.name as passive_woker_name,g.name as supply_goods_name')
-            ->order('sc.create_time', 'desc')
+            ->order(['sc.create_time' => 'desc'])
             ->paginate(10, false, [
                 'query'     => $params,
             ]);
