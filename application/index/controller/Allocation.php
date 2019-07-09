@@ -20,15 +20,13 @@ class Allocation extends Base
 
     public function index(){
         $params = input('get.');
-        $project_list = (new AllocationService)->project_list($params);
-        $balance_list = (new AllocationService)->balance_list($params);
-        $project_type_list = (new AllocationService)->project_type_list($params);
-        $balance_type_list = (new AllocationService)->balance_type_list($params);
+//        $project_list = (new AllocationService)->project_list($params);
+//        $balance_list = (new AllocationService)->balance_list($params);
+//        $balance_type_list = (new AllocationService)->balance_type_list($params);
         $shopping_list = (new AllocationService)->shopping_list($params);
-    	$this->assign('project_list', $project_list);
-    	$this->assign('balance_list', $balance_list);
-        $this->assign('project_type_list', $project_type_list);
-        $this->assign('balance_type_list', $balance_type_list);
+//    	$this->assign('project_list', $project_list);
+//    	$this->assign('balance_list', $balance_list);
+//        $this->assign('balance_type_list', $balance_type_list);
     	$this->assign('shopping_list', $shopping_list);
 
         $project_all_list = \Db::table('pw_project')->alias('p')
@@ -46,6 +44,31 @@ class Allocation extends Base
         $this->assign('goods_name', $goods_name);
 
         return $this->fetch();
+    }
+
+    public function project_list(){
+        $params = input('get.');
+        $project_list = (new AllocationService)->project_list($params);
+        return json(["code"=>"0","msg"=>"","count" => $project_list['count'], "data"=>$project_list['list']]);
+    }
+
+    public function banlance_list(){
+        $params = input('get.');
+        $balance_list = (new AllocationService)->balance_list($params);
+        return json(["code"=>"0","msg"=>"","count" => $balance_list['count'], "data"=>$balance_list['list']]);
+//        echo json_decode(["code"=>"0","msg"=>"","count" => "1000", "data"=>$balance_list],1);
+    }
+
+    public function banlance_type_list(){
+        $params = input('get.');
+        $project_type_list = (new AllocationService)->balance_type_list($params);
+        return json(["code"=>"0","msg"=>"","count" => $project_type_list['count'], "data"=>$project_type_list['list']]);
+    }
+
+    public function shopping_list(){
+        $params = input('get.');
+        $shopping_list = (new AllocationService)->shopping_list($params);
+        return $shopping_list;
     }
 
     //调拨材料页面
@@ -156,19 +179,21 @@ class Allocation extends Base
 
     //删除
     public function del($ids){
-        $res = ShoppingCartModel::destroy(rtrim($ids, ','));
-
-        if(!$res){
-            throw new BaseException(
-                [
-                    'msg' => '删除调拨清单错误！',
-                    'errorCode' => 30006
-                ]);
-        }
-
-        return [
-            'msg' => '操作成功',
-        ];
+        session('check_shopp','1',5);
+        print_r(session('check_shopp'));die;
+//        $res = ShoppingCartModel::destroy(rtrim($ids, ','));
+//
+//        if(!$res){
+//            throw new BaseException(
+//                [
+//                    'msg' => '删除调拨清单错误！',
+//                    'errorCode' => 30006
+//                ]);
+//        }
+//
+//        return [
+//            'msg' => '操作成功',
+//        ];
     }
 
 }

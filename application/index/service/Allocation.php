@@ -15,6 +15,33 @@ use think\Db;
 class Allocation{
 
     public function project_list($params){
+        $page=$params['page']?$params['page']:1;
+        $page=intval($page);
+        $limit=$params['limit']?$params['limit']:10;
+        $limit=intval($limit);
+        $start=$limit*($page-1);
+        $count = ProjectModel::useGlobalScope(false)->alias('p')
+            ->leftJoin('contract c','p.contract_id = c.id')
+            ->leftJoin('owner o','c.owner_id = o.id')
+            ->leftJoin('project_woker pw','pw.project_id = p.id')
+            ->leftJoin('supply_goods sg','sg.id = pw.supply_goods_id')
+            ->leftJoin('goods g','g.id = sg.g_id')
+            ->where(function ($query) use($params) {
+                if(!empty($params['search'])){
+                    $query->where('c.number|p.name|g.name', 'like', '%'.$params['search'].'%');
+                }
+                if(!empty($params['project_id'])){
+                    $query->where('p.id', 'neq', $params['project_id']);
+                }
+                if(!empty($params['supply_goods_id'])){
+                    $query->where('g.id', 'eq', $params['supply_goods_id']);
+                }
+                $query->where('status', 2);
+            })
+            ->order('p.create_time', 'desc')
+            ->group('p.id')
+            ->count();
+
         $list = ProjectModel::useGlobalScope(false)->alias('p')
             ->leftJoin('contract c','p.contract_id = c.id')
             ->leftJoin('owner o','c.owner_id = o.id')
@@ -34,11 +61,12 @@ class Allocation{
                 $query->where('status', 2);
             })
             ->field('p.id, max(p.company_id) as company_id, max(pw.woker_id) as woker_id, max(p.contract_id) as contract_id, max(c.number) as contract_number, max(p.name) as name, max(p.status) as status, max(p.create_time) as create_time, max(o.id) as owner_id, max(o.name) as owner_name')
-            ->order('create_time', 'desc')
+            ->order('p.create_time', 'desc')
             ->group('p.id')
-            ->paginate(10, false, [
-                'query'     => $params,
-            ]);
+            ->limit($start,$limit)
+            ->select()->toArray();
+        $project_status = config('extra.project_status');
+
         foreach ($list as &$v){
             $project_list = \Db::table('pw_project_woker')->alias('pw')
                 ->leftJoin('woker w','w.id = pw.woker_id')
@@ -70,11 +98,17 @@ class Allocation{
                 unset($val['id']);
             }
             $v['goods_list'] = $project_list;
+            $v['status_name'] = $project_status[$v['status']];
         }
-        return $list;
+        return ['count' => $count, 'list' => $list];
     }
 
     public function balance_list($params){
+        $page=$params['page']?$params['page']:1;
+        $page=intval($page);
+        $limit=$params['limit']?$params['limit']:10;
+        $limit=intval($limit);
+        $start=$limit*($page-1);
         $list = ProjectStockModel::useGlobalScope(false)->alias('ps')
             ->leftJoin('stock s','s.id = ps.stock_id ')
             ->leftJoin('supply_goods sg','sg.id = ps.supply_goods_id')
@@ -96,11 +130,29 @@ class Allocation{
             ->field('p.id, max(ps.have) as have, max(p.name) as project_name, max(ps.stock_id) as stock_id, max(g.name) as supply_goods_name,max(sg.id) as supply_goods_id, max(p.name) as num, max(s.name) as stock_name, max(c.owner_id) owner_id')
             ->order('p.create_time', 'desc')
             ->group('p.id')
-            ->paginate(10, false, [
-                'query'     => $params,
-            ]);
-
-        return $list;
+            ->limit($start,$limit)
+            ->select()->toArray();
+        $count = ProjectStockModel::useGlobalScope(false)->alias('ps')
+            ->leftJoin('stock s','s.id = ps.stock_id ')
+            ->leftJoin('supply_goods sg','sg.id = ps.supply_goods_id')
+            ->leftJoin('goods g','sg.g_id = g.id')
+            ->leftJoin('project p','p.id = ps.project_id')
+            ->leftJoin('contract c','p.contract_id = c.id')
+            ->where(function ($query) use($params) {
+                if(!empty($params['search'])){
+                    $query->where('p.name|s.name|g.name', 'like', '%'.$params['search'].'%');
+                }
+                if(!empty($params['project_id'])){
+                    $query->where('p.id', 'neq', $params['project_id']);
+                }
+                if(!empty($params['supply_goods_id'])){
+                    $query->where('g.id', 'eq', $params['supply_goods_id']);
+                }
+                $query->where('ps.have', '>', 0);
+            })
+            ->group('p.id')
+            ->count();
+        return ['count' => $count, 'list' => $list];
     }
 
     public function project_type_list($params){
@@ -193,6 +245,29 @@ class Allocation{
         }else{
             $p_owner['owner_id'] = '0';
         }
+        $count = ProjectStockModel::useGlobalScope(false)->alias('ps')
+            ->leftJoin('stock s', 's.id = ps.stock_id ')
+            ->leftJoin('supply_goods sg', 'sg.id = ps.supply_goods_id')
+            ->leftJoin('goods g', 'sg.g_id = g.id')
+            ->leftJoin('project p', 'p.id = ps.project_id')
+            ->leftJoin('contract c', 'p.contract_id = c.id')
+            ->where(function ($query) use ($params, $p_owner) {
+                if (!empty($params['search'])) {
+                    $query->where('p.name|s.name|g.name', 'like', '%' . $params['search'] . '%');
+                }
+                if (!empty($params['project_id'])) {
+                    $query->where('p.id', 'neq', $params['project_id']);
+                }
+                if (!empty($params['supply_goods_id'])) {
+                    $query->where('g.id', 'eq', $params['supply_goods_id']);
+                }
+                $query->where('ps.have', '>', 0);
+                $query->where('c.owner_id', $p_owner['owner_id']);
+            })
+            ->field('p.id, max(ps.have) as have, max(p.name) as project_name, max(ps.stock_id) as stock_id, max(g.name) as supply_goods_name,max(sg.id) as supply_goods_id, max(p.name) as num, max(s.name) as stock_name, max(c.owner_id) owner_id')
+            ->order('p.create_time', 'desc')
+            ->group('p.id')
+            ->count();
         $list = ProjectStockModel::useGlobalScope(false)->alias('ps')
             ->leftJoin('stock s', 's.id = ps.stock_id ')
             ->leftJoin('supply_goods sg', 'sg.id = ps.supply_goods_id')
@@ -215,10 +290,8 @@ class Allocation{
             ->field('p.id, max(ps.have) as have, max(p.name) as project_name, max(ps.stock_id) as stock_id, max(g.name) as supply_goods_name,max(sg.id) as supply_goods_id, max(p.name) as num, max(s.name) as stock_name, max(c.owner_id) owner_id')
             ->order('p.create_time', 'desc')
             ->group('p.id')
-            ->paginate(10, false, [
-                'query' => $params,
-            ]);
-        return $list;
+            ->select()->toArray();
+        return ['count' => $count, 'list' => $list];
     }
 
     public function shopping_list($params){
