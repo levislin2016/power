@@ -41,7 +41,51 @@ layui.use(['form', 'jquery', 'laydate', 'layer', 'laypage', 'dialog',   'element
 		return false;
 
 	})
-	// .mouseenter(function() {
+
+	$('.addBtn1').click(function() {
+        layer.msg('请选择调拨工程');
+        return false;
+		var selecta = $('#project_id option:selected').val();
+		if(selecta == ''){
+            layer.msg('请选择调拨工程');
+            return false;
+        }
+		var title = $(this).attr('data-title');
+		var url = $(this).attr('data-url');
+		var pw = $(this).attr('data-w');
+		var ph = $(this).attr('data-h');
+		console.log(pw);
+		if(!pw){
+			pw = '700px';
+		}
+		if(!ph){
+			ph = '620px';
+		}
+		//将iframeObj传递给父级窗口
+		parent.page(title, url, iframeObj, pw, ph);
+		return false;
+
+	})
+
+    $('.addBtn2').click(function() {
+        var title = $(this).attr('data-title');
+        var url = $(this).attr('data-url');
+        var pw = $(this).attr('data-w');
+        var ph = $(this).attr('data-h');
+        console.log(pw);
+        if(!pw){
+            pw = '700px';
+        }
+        if(!ph){
+            ph = '620px';
+        }
+        //将iframeObj传递给父级窗口
+        parent.page(title, url, iframeObj, pw, ph);
+        return false;
+
+    })
+
+    // .mouseenter(function() {
 
 	// 	dialog.tips('添加', '.addBtn');
 
@@ -99,6 +143,11 @@ layui.use(['form', 'jquery', 'laydate', 'layer', 'laypage', 'dialog',   'element
     //顶部批量执行
     $('.setBtn').click(function() {
         var url=$(this).attr('data-url');
+        var chock = $("input[type='checkbox']").is(':checked')
+		if(chock == false){
+        	alert('请选择购物清单');
+            return false;
+		}
         dialog.confirm({
             message:'您确定要执行选中项',
             success:function(){
@@ -159,7 +208,7 @@ layui.use(['form', 'jquery', 'laydate', 'layer', 'laypage', 'dialog',   'element
 		dialog.confirm({
 			message:'您确定要进行删除吗？',
 			success:function(){
-				delAjax(url, {ids: id});
+                delAjax1(url, {ids: id});
 			},
 			cancel:function(){
 				layer.msg('取消了')
@@ -248,7 +297,27 @@ layui.use(['form', 'jquery', 'laydate', 'layer', 'laypage', 'dialog',   'element
 		});
 	}
 
-	$('#table-list').on('click', '.tab_btn', function() {
+    function delAjax1(url, data){
+        loading = layer.load(2, {
+            shade: [0.2, '#000']
+        });
+        $.get(url, data, function(data){
+            layer.close(loading);
+            console.dir(data);
+            if(data.error_code){
+                layer.msg(data.msg, {icon: 2, shade: 0.1, time: 1000}, function(){
+
+                });
+                return false;
+            }
+            layer.msg(data.msg, {icon: 1, shade: 0.1, time: 1000}, function () {
+            	layui.table.reload();
+            });
+        });
+    }
+
+
+    $('#table-list').on('click', '.tab_btn', function() {
 		var id = $(this).data('tab');
 		var title = $(this).data('title');
 		var url = $(this).data('url');
