@@ -21,8 +21,10 @@
 						<div class="layui-form-item">
 							<div class="layui-inline tool-btn">
 									<button type="button" class="layui-btn layui-btn-sm layui-btn-normal btn_tips" onclick="window.history.back();" data-title="返回工程管理"><i class="layui-icon">&#xe65c;</i></button>
-									<button type="button" class="layui-btn layui-btn-sm layui-btn-normal addBtn btn_tips" data-title="分配材料" data-url="{:url('project/woker_add')}?pid={$project_list.id}" data-h="388px"><i class="layui-icon">&#xe654;</i></button>
-									<button type="button" class="layui-btn layui-btn-sm addBtn btn_tips" data-title="领取材料" data-url="{:url('stock_order/get_add')}?pid={$project_list.id}" data-h="500px">领取</button>
+									{eq name="project_list.status" value="2"}
+										<button type="button" class="layui-btn layui-btn-sm layui-btn-normal addBtn btn_tips" data-title="分配材料" data-url="{:url('project/woker_add')}?pid={$project_list.id}" data-h="388px"><i class="layui-icon">&#xe654;</i></button>
+										<button type="button" class="layui-btn layui-btn-sm addBtn btn_tips" data-title="领取材料" data-url="{:url('stock_order/get_add')}?pid={$project_list.id}" data-h="500px">领取</button>
+									{/eq}
 									<button type="button" class="layui-btn layui-btn-sm layui-btn-danger addBtn btn_tips" data-title="退还材料" data-url="{:url('stock_order/back_add')}?pid={$project_list.id}" data-h="500px">退还</button>
 								<!-- <button type="button" class="layui-btn layui-btn-sm layui-btn-danger delBtn btn_tips" data-title="批量删除" data-url="{:url('project/del')}"><i class="layui-icon">&#xe640;</i></button> -->
 								<!-- <button class="layui-btn layui-btn-sm layui-btn-warm listOrderBtn hidden-xs" data-url="article-add.html"><i class="iconfont">&#xe656;</i></button> -->

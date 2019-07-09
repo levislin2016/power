@@ -73,20 +73,23 @@
 										<div class="layui-inline">
 									
 											<!-- <button class="layui-btn layui-btn-sm layui-btn-normal edit-btn btn_tips" data-title="修改工程" data-id="{$vo['id']}" data-url="{:url('project/add')}" data-h="388px"><i class="layui-icon">&#xe642;</i></button> -->
-											{eq name="vo.status" value="1"}
-											<a class="layui-btn layui-btn-sm btn_tips" data-title="设定预算" href="{:url('need/index', array('id'=>$vo['id']))}" style="margin: 0px;"><i class="layui-icon">&#xe63c;</i></a>
-											{/eq}
-											{egt name="vo.id|ifBuy" value="1"}
-											<button class="layui-btn layui-btn-sm layui-btn-normal edit-btn btn_tips" data-title="采购" data-id="{$vo['id']}" data-url="{:url('buy/add')}" data-w="700px" data-h="650px"  style="margin: 0px;"><i class="layui-icon">&#xe657;</i></button>
-											{/egt}
+											
+											{in  name="vo.status" value="1,2"}
+												<a class="layui-btn layui-btn-sm btn_tips" data-title="设定预算" href="{:url('need/index', array('id'=>$vo['id']))}" style="margin: 0px;"><i class="layui-icon">&#xe63c;</i></a>
+												{egt name="vo.id|ifBuy" value="1"}
+													<button class="layui-btn layui-btn-sm layui-btn-normal edit-btn btn_tips" data-title="采购" data-id="{$vo['id']}" data-url="{:url('buy/add')}" data-w="700px" data-h="650px"  style="margin: 0px;"><i class="layui-icon">&#xe657;</i></button>
+												{/egt}
+											{/in}
 											<!-- <button class="layui-btn layui-btn-sm layui-btn-normal start_work btn_tips" data-title="开始工程" data-url="{:url('project/start_work', array('id'=>$vo['id']))}"><i class="layui-icon">&#xe66c;</i></button>											 -->
 											<!-- <button class="layui-btn layui-btn-sm layui-btn-danger del-btn btn_tips" data-title="删除" data-id="{$vo['id']}" data-url="{:url('project/del')}"><i class="layui-icon">&#xe640;</i></button> -->
 
 											<!-- <button class="layui-btn layui-btn-sm layui-btn-normal edit-btn btn_tips" data-title="修改工程" data-id="{$vo['id']}" data-url="{:url('project/add')}" data-h="388px"><i class="layui-icon">&#xe642;</i></button> -->
 											{eq name="vo.status" value="2"}
-											<button class="layui-btn layui-btn-sm layui-btn-warm edit-btn btn_tips" data-title="采购申请" data-id="{$vo['id']}" data-url="{:url('buy/apply_for')}" data-h="500px" style="margin: 0px;"><i class="layui-icon">&#xe657;</i></button>
-											<a class="layui-btn layui-btn-sm layui-btn-primary btn_tips" data-title="分配材料" href="{:url('project/woker', array('id'=>$vo['id']))}" style="margin: 0px;"><i class="layui-icon">&#xe656;</i></a>
+												<!-- <button class="layui-btn layui-btn-sm layui-btn-warm edit-btn btn_tips" data-title="采购申请" data-id="{$vo['id']}" data-url="{:url('buy/apply_for')}" data-h="500px" style="margin: 0px;"><i class="layui-icon">&#xe657;</i></button> -->
 											{/eq}
+											{in  name="vo.status" value="2,3"}
+												<a class="layui-btn layui-btn-sm layui-btn-primary btn_tips" data-title="分配材料" href="{:url('project/woker', array('id'=>$vo['id']))}" style="margin: 0px;"><i class="layui-icon">&#xe656;</i></a>
+											{/in}
 											<!-- <button class="layui-btn layui-btn-sm layui-btn-normal btn_tips tab_btn" data-tab="61" data-title="领退记录" data-url="{:url('stock_order/order_get_back')}?pid={$vo['id']}"><i class="layui-icon">&#xe63c;</i></button> -->
 											<!-- <button class="layui-btn layui-btn-sm layui-btn-warm btn_tips" data-title="工程完成" data-url=""><i class="layui-icon">&#xe66c;</i></button>											 -->
 											<!-- <button class="layui-btn layui-btn-sm layui-btn-danger btn_tips" data-title="工程结算" data-url=""><i class="layui-icon">&#xe66c;</i></button> -->
@@ -97,24 +100,26 @@
 													<li>
 														<a href="javascript:;" class="edit-btn" data-title="修改工程" data-id="{$vo['id']}" data-url="{:url('project/add')}" data-h="388px">修改工程</a>
 													</li>
+													{eq name="vo.id|ifBuy" value="0"}
 													<li>
 														<a href="javascript:;" class="del-btn" data-title="删除" data-id="{$vo['id']}" data-url="{:url('project/del')}">删除工程</a>
 													</li>
+													{/eq}
 													<hr>
 												{switch vo.status}
 													{case 1}
 													<li>
-														<a href="javascript:;" class="start_work" data-url="{:url('project/start_work', array('id'=>$vo['id']))}">开始工程</a>
+														<a href="javascript:;" class="save_work_status" data-message="您确定要开始工程吗？" data-url="{:url('project/start_work', array('id'=>$vo['id']))}">开始工程</a>
 													</li>
 													{/case}
 													{case 2}
 													<li>
-														<a href="javascript:;" class="">工程完成</a>
+														<a href="javascript:;" class="save_work_status" data-message="您确定要完成工程吗？" data-url="{:url('project/accomplish_work', array('id'=>$vo['id']))}">工程完成</a>
 													</li>
 													{/case}
 													{case 3}
 													<li>
-														<a href="javascript:;" class="">工程结算</a>
+														<a href="javascript:;" class="edit-btn" data-title="{$vo['name']}-工程结算盘库" data-url="{:url('project/balance', array('id'=>$vo['id']))}" data-w="900px">工程结算</a>
 													</li>
 													{/case}
 												{/switch}
@@ -151,10 +156,11 @@
 				$('.wrap-container').height(body_h);
 
 				//开工
-				$('#table-list').on('click', '.start_work', function() {
-					var url=$(this).attr('data-url');
+				$('#table-list').on('click', '.save_work_status', function() {
+					var url = $(this).data('url');
+					var message = $(this).data('message');
 					dialog.confirm({
-						message:'开始工程后将不能修改工程和需求，您确定要开始工程吗？',
+						message: message,
 						success:function(){
 							loading = layer.load(2, {
 								shade: [0.2, '#000']

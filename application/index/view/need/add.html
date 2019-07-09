@@ -38,6 +38,17 @@
 										<input type="text" name="need" required lay-verify="required|number" lay-verType="tips" placeholder="请输入需求数量" autocomplete="off" class="layui-input" value="{$list['need']|default=''}">
 									</div>
 								</div>
+								
+								<div class="layui-form-item">
+									<label class="layui-form-label" style="width: 100px">类型：</label>
+									<div class="layui-input-block" style="margin-left: 130px">
+										<select name="type" required lay-verify="required" lay-verType="tips" lay-search="">
+											{volist name="buy_from" id="vo"}
+									        	<option value="{$key}" {eq name="list['type']|default=''" value="$key"}selected{/eq} >{$vo}</option>
+									        {/volist}
+										</select>
+									</div>
+								</div>
 
 								<div class="layui-form-item">
 									<label class="layui-form-label" style="width: 100px">备注：</label>

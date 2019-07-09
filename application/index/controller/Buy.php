@@ -33,7 +33,7 @@ class Buy extends Base{
 
     public function get_need(){
         $params = input('post.', '');
-        $list = (new NeedService())->select_list($params);
+        $list = (new NeedService())->select_list($params, 2);
         foreach($list as &$vo){
             $sg_kist = SupplyGoodsModel::alias('sg')
             ->leftJoin('supply s','s.id = sg.s_id')
@@ -41,17 +41,36 @@ class Buy extends Base{
             ->field('sg.price, s.name, s.phone, s.id')
             ->select();
             $vo['supply'] = $sg_kist;
-            $have = SupplyGoodsModel::alias('sg')
-            ->leftJoin('stock_all sa','sg.id = sa.supply_goods_id')
-            ->where('sg.g_id', $vo['goods_id'])
-            ->sum('have');
-            $stock_num = StockOrderModel::alias('so')
+            // $have = SupplyGoodsModel::alias('sg')
+            // ->leftJoin('stock_all sa','sg.id = sa.supply_goods_id')
+            // ->where('sg.g_id', $vo['goods_id'])
+            // ->sum('have');
+            $stock_nums = StockOrderModel::alias('so')
                 ->leftJoin('stock_order_info soi', 'soi.stock_order_id = so.id')
-                ->where('soi.supply_goods_id', $vo['goods_id'])
+                ->leftJoin('supply_goods sg', 'sg.id = soi.supply_goods_id')
+                ->where('sg.g_id', $vo['goods_id'])
                 ->where('so.project_id', $params['id'])
                 ->where('so.type', 'in',['10','12'])
-                ->sum('soi.num');
-            $vo['have'] = $have+$stock_num;
+                ->group('so.type')
+                ->field('so.type, sum(soi.num) as num')
+                ->select();
+            $vo['have_num'] = $vo['project_num'] = 0;
+            foreach($stock_nums as $stock_num){
+                if($stock_num['type'] == 10){
+                    $vo['project_num'] = $stock_num['num'];
+                }
+                if($stock_num['type'] == 12){
+                    $vo['have_num'] = $stock_num['num'];
+                }
+            }
+
+            //已采购数量（非已入库）
+            $vo['buy_num'] = BuyModel::useGlobalScope(false)->alias('b')
+                ->leftJoin('buy_info bi','b.id = bi.buy_id')
+                ->where('b.status', 'in', '1,2,3')
+                ->where('b.project_id', $params['id'])
+                ->where('bi.goods_id', $vo['goods_id'])
+                ->sum('num');
         }
         return $list;
     }

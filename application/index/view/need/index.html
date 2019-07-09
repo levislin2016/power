@@ -52,6 +52,7 @@
 								<col>
 								<col>
 								<col>
+								<col>
 							</colgroup>
 							<thead>
 								<tr>
@@ -62,6 +63,7 @@
 									<!-- <th>供应商</th> -->
 									<th>需求数量</th>
 									<th>单位</th>
+									<th>类型</th>
 									<th>备注</th>
 									<th>创建时间</th>
 									<th>操作</th>
@@ -77,6 +79,7 @@
 									<!-- <td></td> -->
 									<td>{$vo['need']}</td>
 									<td>{$vo['unit']}</td>
+									<td>{$buy_from[$vo['type']]}</td>
 									<td>{$vo['note']}</td>
 									<td>{$vo['create_time']}</td>
 									<td>

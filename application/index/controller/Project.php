@@ -2,13 +2,17 @@
 namespace app\index\controller;
 
 use app\index\service\Project as ProjectService;
+use app\index\service\Balance as BalanceService;
 use app\index\model\Project as ProjectModel;
+use app\index\model\ProjectEnd as ProjectEndModel;
+use app\index\model\ProjectEndInfo as ProjectEndInfoModel;
 use app\index\model\Contract as ContractModel;
 use app\index\model\Woker as WokerModel;
 use app\index\service\ProjectWoker as ProjectWokerService;
 use app\lib\exception\BaseException;
 use app\index\validate\ProjectValidate;
 use app\index\validate\AllotValidate;
+use app\index\validate\BalanceValidate;
 
 class Project extends Base
 {
@@ -168,6 +172,76 @@ class Project extends Base
         $data = $validate->getDataByRule(input('param.'));
         $projectWokerService = new ProjectWokerService();
         $res = $projectWokerService->allot($data);
+        return $res;
+    }
+
+    //工程完成
+    public function accomplish_work(){
+        $id = input('param.id', '');
+        ProjectModel::startTrans();
+        $project = ProjectModel::get($id);
+        if($project->status != 2){
+            ProjectModel::rollback();
+            throw new BaseException(
+	            [
+	                'msg' => '非法操作！',
+	                'errorCode' => 40010
+	            ]);
+        }
+        $project->status = 3;
+        $res = $project->save();
+        if(!$res){ 
+            ProjectModel::rollback();
+    		throw new BaseException(
+	            [
+	                'msg' => '完成工程错误！',
+	                'errorCode' => 40011
+	            ]);
+        }
+
+        $res = (new BalanceService)->create_balance($id);
+        if($res['errorCode'] > 0){
+            ProjectModel::rollback();
+    		throw new BaseException($res);
+        }
+        ProjectModel::commit();
+        return [
+            'msg' => '工程完成',
+        ];
+    }
+
+    //结算页面
+    public function balance(){
+        $id = input('param.id', '');
+        $project = ProjectModel::get($id);
+        $this->assign('project', $project);
+        $list = ProjectEndModel::useGlobalScope(false)->alias('pe')
+            ->leftJoin('supply_goods sg','pe.supply_goods_id = sg.id')
+            ->leftJoin('supply s','sg.s_id = s.id')
+            ->leftJoin('goods g','sg.g_id = g.id')
+            ->leftJoin('unit u','g.unit_id = u.id')
+            ->where('pe.project_id', $project->id)
+            ->field('pe.*, g.number, g.id as goods_id, g.name as goods_name, u.name as unit, s.name as supply_name, s.id as supply_id')
+            ->select();
+
+        foreach($list as &$vo){
+            $vo->arr = ProjectEndInfoModel::useGlobalScope(false)->alias('pei')
+                ->leftJoin('stock s','pei.stock_id = s.id')
+                ->where('pei.project_end_id', $vo->id)
+                ->field('s.name as stock_name, pei.*')
+                ->select();
+            $vo->count = count($vo->arr);
+        }
+        $this->assign('list', $list);
+        return $this->fetch();
+    }
+
+    public function balance_save(){
+        $validate = new BalanceValidate();
+        $validate->goCheck();
+        $params = $validate->getDataByRule(input('post.'));
+        $params['num'] = json_decode($params['num'], true);
+        $res = (new BalanceService)->balance_operation($params);
         return $res;
     }
 

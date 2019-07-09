@@ -55,6 +55,11 @@ Route::post('need_save', 'need/save');
 Route::get('need_del', 'need/del');
 //工程开工
 Route::post('start_work', 'project/start_work');
+//工程完成
+Route::post('accomplish_work', 'project/accomplish_work');
+//工程结算
+Route::get('balance', 'project/balance');
+Route::post('balance_save', 'project/balance_save');
 //工程工程队
 Route::get('project_woker', 'project/woker');
 //工程分配

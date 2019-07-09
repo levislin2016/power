@@ -22,7 +22,9 @@ class Need extends Base
 
         $list = (new NeedService)->select_list($params);
         //dump($list->toArray());
-    	$this->assign('list', $list);
+        $this->assign('list', $list);
+        $buy_from = config('extra.buy_from');
+        $this->assign('buy_from', $buy_from);
         return $this->fetch();
     }
 
@@ -43,6 +45,8 @@ class Need extends Base
             }
             $this->assign('list', $list);
         }
+        $buy_from = config('extra.buy_from');
+        $this->assign('buy_from', $buy_from);
         return $this->fetch();
     }
 

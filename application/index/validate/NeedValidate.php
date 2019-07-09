@@ -10,6 +10,7 @@ class NeedValidate extends BaseValidate
         'goods_id' => 'require|isPositiveInteger|isGoodsId',
         'project_id' => 'require|isPositiveInteger',
         'need' => 'require|isPositiveInteger',
+        'type' => 'require|isPositiveInteger',
         'note' => 'ok',
     ];
 
