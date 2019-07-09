@@ -269,6 +269,7 @@
 
                 var url = data.form.action;
                 var project_id = $('.project_id').val();
+                var from = $('.from').val();
                 var num = [];
                 $('.stock_order_table').find('tbody').find('tr').each(function(e){
 
@@ -295,7 +296,7 @@
                     note = $('.note_select').val() + $('.note').val();
                 }
                 num = JSON.stringify(num);
-         
+                
                 loading = layer.load(2, {
                     shade: [0.2, '#000']
                 });
