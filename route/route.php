@@ -75,6 +75,9 @@ Route::get('project_worl_list', 'project/worl_list');
 
 //调拨管理
 Route::get('allocation', 'allocation/index');
+Route::get('allocation_banlance_list', 'allocation/banlance_list');
+Route::get('allocation_banlance_type_list', 'allocation/banlance_type_list');
+Route::get('allocation_project_list', 'allocation/project_list');
 Route::get('allocation_goods', 'allocation/allocation_goods');
 
 
