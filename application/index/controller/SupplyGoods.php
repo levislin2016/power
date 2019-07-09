@@ -24,8 +24,8 @@ class SupplyGoods extends Base
     public function add(){
         $supply_list = SupplyModel::where(['company_id' => session('power_user.company_id')])->all();
         $this->assign('supply_list', $supply_list);
-        $supply_list = GoodsModel::where(['company_id' => session('power_user.company_id')])->all();
-        $this->assign('goods_list', $supply_list);
+        $goods_list = GoodsModel::where(['company_id' => session('power_user.company_id')])->order(['name' => 'desc', 'number' => 'desc', 'unit_id' => 'desc'])->all();
+        $this->assign('goods_list', $goods_list);
         $id = input('get.id', '');
         if($id){
             $list = SupplyGoodsModel::get($id);

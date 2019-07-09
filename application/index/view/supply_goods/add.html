@@ -22,7 +22,7 @@
 										<select name="g_id" required lay-verify="required" lay-verType="tips" lay-verify="required" lay-search="">
 											<option value="">请选择材料</option>
 											{volist name="goods_list" id="vo"}
-											<option value="{$vo['id']}" {eq name="list['g_id']|default=''" value="$vo['id']"}selected{/eq}>{$vo['name']}</option>
+											<option value="{$vo['id']}" {eq name="list['g_id']|default=''" value="$vo['id']"}selected{/eq}>{$vo['name']}({$vo['number']})</option>
 											{/volist}
 										</select>
 									</div>
