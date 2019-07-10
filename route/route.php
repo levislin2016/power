@@ -60,6 +60,9 @@ Route::post('accomplish_work', 'project/accomplish_work');
 //工程结算
 Route::get('balance', 'project/balance');
 Route::post('balance_save', 'project/balance_save');
+Route::get('balance_show', 'project/balance_show');
+Route::get('balance_back', 'project/balance_back');
+Route::post('balance_back_save', 'project/balance_back_save');
 //工程工程队
 Route::get('project_woker', 'project/woker');
 //工程分配

@@ -6,6 +6,7 @@ use app\index\service\Balance as BalanceService;
 use app\index\model\Project as ProjectModel;
 use app\index\model\ProjectEnd as ProjectEndModel;
 use app\index\model\ProjectEndInfo as ProjectEndInfoModel;
+use app\index\model\StockOrder as StockOrderModel;
 use app\index\model\Contract as ContractModel;
 use app\index\model\Woker as WokerModel;
 use app\index\service\ProjectWoker as ProjectWokerService;
@@ -233,6 +234,8 @@ class Project extends Base
             $vo->count = count($vo->arr);
         }
         $this->assign('list', $list);
+        $buy_from = config('extra.buy_from');
+        $this->assign('buy_from', $buy_from);
         return $this->fetch();
     }
 
@@ -242,6 +245,86 @@ class Project extends Base
         $params = $validate->getDataByRule(input('post.'));
         $params['num'] = json_decode($params['num'], true);
         $res = (new BalanceService)->balance_operation($params);
+        return $res;
+    }
+
+    public function balance_show(){
+        $id = input('param.id', '');
+        $project = ProjectModel::get($id);
+        $this->assign('project', $project);
+        $list = ProjectEndModel::useGlobalScope(false)->alias('pe')
+            ->leftJoin('supply_goods sg','pe.supply_goods_id = sg.id')
+            ->leftJoin('supply s','sg.s_id = s.id')
+            ->leftJoin('goods g','sg.g_id = g.id')
+            ->leftJoin('unit u','g.unit_id = u.id')
+            ->where('pe.project_id', $project->id)
+            ->field('pe.*, g.number, g.id as goods_id, g.name as goods_name, u.name as unit, s.name as supply_name, s.id as supply_id')
+            ->select();
+
+        foreach($list as &$vo){
+            $vo->arr = ProjectEndInfoModel::useGlobalScope(false)->alias('pei')
+                ->leftJoin('stock s','pei.stock_id = s.id')
+                ->where('pei.project_end_id', $vo->id)
+                ->field('s.name as stock_name, pei.*')
+                ->select();
+            $vo->count = count($vo->arr);
+        }
+        $this->assign('list', $list);
+        $buy_from = config('extra.buy_from');
+        $this->assign('buy_from', $buy_from);
+        return $this->fetch();
+    }
+
+    //甲供退回
+    public function balance_back(){
+        $id = input('param.id', '');
+        $project = ProjectModel::get($id);
+        $this->assign('project', $project);
+        $list = ProjectEndModel::useGlobalScope(false)->alias('pe')
+            ->leftJoin('supply_goods sg','pe.supply_goods_id = sg.id')
+            ->leftJoin('supply s','sg.s_id = s.id')
+            ->leftJoin('goods g','sg.g_id = g.id')
+            ->leftJoin('unit u','g.unit_id = u.id')
+            ->where('pe.from', 2)
+            ->where('pe.project_id', $project->id)
+            ->field('pe.*, g.number, g.id as goods_id, g.name as goods_name, u.name as unit, s.name as supply_name, s.id as supply_id')
+            ->select();
+        foreach($list as &$vo){
+            $info = ProjectEndInfoModel::useGlobalScope(false)->alias('pei')
+                ->leftJoin('stock s','pei.stock_id = s.id')
+                ->leftJoin('project_stock ps','pei.project_stock_id = ps.id')
+                ->where('pei.project_end_id', $vo->id)
+                ->field('s.name as stock_name, ps.offer, pei.*')
+                ->select();
+            $vo->count = count($info);
+
+            foreach($info as $k => $vo2){
+                //结余调拨数量  11
+                $info[$k]['offer_db'] = StockOrderModel::useGlobalScope(false)->alias('so')
+                    ->leftJoin('stock_order_info soi','so.id = soi.stock_order_id')
+                    ->where('so.project_id', $project->id)
+                    ->where('so.type', 11)
+                    ->where('so.status', 2)
+                    ->where('soi.supply_goods_id', $vo->supply_goods_id)
+                    ->sum('soi.num');
+            }
+
+            $vo->arr = $info;
+            //dump($vo->arr->toArray());
+        }
+        //dump($list->toArray());
+        $this->assign('list', $list);
+        $buy_from = config('extra.buy_from');
+        $this->assign('buy_from', $buy_from);
+        return $this->fetch();
+    }
+
+    public function balance_back_save(){
+        $validate = new BalanceValidate();
+        $validate->goCheck();
+        $params = $validate->getDataByRule(input('post.'));
+        $params['num'] = json_decode($params['num'], true);
+        $res = (new BalanceService)->balance_back($params);
         return $res;
     }
 

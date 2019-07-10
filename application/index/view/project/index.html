@@ -93,7 +93,11 @@
 											<!-- <button class="layui-btn layui-btn-sm layui-btn-normal btn_tips tab_btn" data-tab="61" data-title="领退记录" data-url="{:url('stock_order/order_get_back')}?pid={$vo['id']}"><i class="layui-icon">&#xe63c;</i></button> -->
 											<!-- <button class="layui-btn layui-btn-sm layui-btn-warm btn_tips" data-title="工程完成" data-url=""><i class="layui-icon">&#xe66c;</i></button>											 -->
 											<!-- <button class="layui-btn layui-btn-sm layui-btn-danger btn_tips" data-title="工程结算" data-url=""><i class="layui-icon">&#xe66c;</i></button> -->
-			
+											
+											{eq name="vo.status" value="4"}
+												<button class="layui-btn layui-btn-sm layui-btn-warm edit-btn btn_tips" data-title="甲供退回" data-id="{$vo['id']}" data-url="{:url('project/balance_back')}"  data-w="900px" style="margin: 0px;"><i class="layui-icon">&#xe66b;</i></button>
+											{/eq}
+
 											<div class="layui-dropdown dropdown-click dropdown-right">
 												<button class="layui-btn layui-btn-sm layui-btn-primary"><i class="layui-icon">&#xe716;</i></button>
 												<ul>
@@ -105,21 +109,30 @@
 														<a href="javascript:;" class="del-btn" data-title="删除" data-id="{$vo['id']}" data-url="{:url('project/del')}">删除工程</a>
 													</li>
 													{/eq}
-													<hr>
+													
 												{switch vo.status}
 													{case 1}
+													<hr>
 													<li>
 														<a href="javascript:;" class="save_work_status" data-message="您确定要开始工程吗？" data-url="{:url('project/start_work', array('id'=>$vo['id']))}">开始工程</a>
 													</li>
 													{/case}
 													{case 2}
+													<hr>
 													<li>
 														<a href="javascript:;" class="save_work_status" data-message="您确定要完成工程吗？" data-url="{:url('project/accomplish_work', array('id'=>$vo['id']))}">工程完成</a>
 													</li>
 													{/case}
 													{case 3}
+													<hr>
 													<li>
 														<a href="javascript:;" class="edit-btn" data-title="{$vo['name']}-工程结算盘库" data-url="{:url('project/balance', array('id'=>$vo['id']))}" data-w="900px">工程结算</a>
+													</li>
+													{/case}
+													{case 4}
+													<hr>
+													<li>
+														<a href="javascript:;" class="edit-btn" data-title="{$vo['name']}-工程结算记录" data-url="{:url('project/balance_show', array('id'=>$vo['id']))}" data-w="900px">结算记录</a>
 													</li>
 													{/case}
 												{/switch}
@@ -136,7 +149,7 @@
 							</tbody>
 						</table>
 						<div class="page-wrap">
-							{$list->render()}
+							{$list->render()|raw}
 						</div>
 					</div>
 				</div>
