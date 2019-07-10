@@ -28,7 +28,7 @@ class Allocation{
             ->leftJoin('goods g','g.id = sg.g_id')
             ->where(function ($query) use($params) {
                 if(!empty($params['search'])){
-                    $query->where('c.number|p.name|g.name', 'like', '%'.$params['search'].'%');
+                    $query->where('g.name', 'like', '%'.$params['search'].'%');
                 }
                 if(!empty($params['project_id'])){
                     $query->where('p.id', 'neq', $params['project_id']);
@@ -50,7 +50,7 @@ class Allocation{
             ->leftJoin('goods g','g.id = sg.g_id')
             ->where(function ($query) use($params) {
                 if(!empty($params['search'])){
-                    $query->where('c.number|p.name|g.name', 'like', '%'.$params['search'].'%');
+                    $query->where('g.name', 'like', '%'.$params['search'].'%');
                 }
                 if(!empty($params['project_id'])){
                     $query->where('p.id', 'neq', $params['project_id']);
@@ -68,11 +68,17 @@ class Allocation{
         $project_status = config('extra.project_status');
 
         foreach ($list as &$v){
+            $str = '<table border="0" width="100%" style="text-align: left;"  rules=none cellspacing=0 align=center><tr width="100%"><th width="30%" style="border:0px;">材料</th><th  style="border:0px;width:25%">可领</th><th width="25%" style="border:0px;">已领</th><th width="10%" style="border:0px;">未领</th></tr>';
             $project_list = \Db::table('pw_project_woker')->alias('pw')
                 ->leftJoin('woker w','w.id = pw.woker_id')
                 ->leftJoin('supply_goods sg','sg.id = pw.supply_goods_id')
                 ->leftJoin('goods g','g.id = sg.g_id')
                 ->field('pw.id, pw.supply_goods_id, sum(pw.not) as not_num, g.number as goods_number, g.name as goods_name')
+                ->where(function ($query) use($params) {
+                    if(!empty($params['search'])){
+                        $query->where('g.name', 'like', '%'.$params['search'].'%');
+                    }
+                })
                 ->where([
                     'pw.project_id'  => $v['id'],
                     'pw.delete_time' => 0
@@ -80,25 +86,38 @@ class Allocation{
                 ->group('goods_number')
                 ->select();
             $project_list = $project_list->toArray();
-            foreach ($project_list as &$val){
-                $stock_list = \Db::table('pw_stock_order')->alias('so')
-                    ->leftJoin('stock_order_info soi','so.id = soi.stock_order_id')
-                    ->field('so.supply_goods_id, soi.num')
-                    ->where([
-                        'soi.supply_goods_id' => $val['supply_goods_id'],
-                        'so.type'             => 9,
-                        'so.delete_time'      => 0
-                    ])
-                    ->sum('soi.num');
-                $val['can_num'] = $val['not_num'] + $stock_list;
-                $val['get_num'] = $stock_list;
-                unset($val['project_id']);
-                unset($val['woker_id']);
-                unset($val['supply_goods_id']);
-                unset($val['id']);
+            if($project_list) {
+                foreach ($project_list as &$val) {
+                    $stock_list = \Db::table('pw_stock_order')->alias('so')
+                        ->leftJoin('stock_order_info soi', 'so.id = soi.stock_order_id')
+                        ->field('so.supply_goods_id, soi.num')
+                        ->where([
+                            'soi.supply_goods_id' => $val['supply_goods_id'],
+                            'so.type' => 9,
+                            'so.delete_time' => 0
+                        ])
+                        ->sum('soi.num');
+                    $val['can_num'] = $val['not_num'] + $stock_list;
+                    $val['get_num'] = $stock_list;
+                    unset($val['project_id']);
+                    unset($val['woker_id']);
+                    unset($val['supply_goods_id']);
+                    unset($val['id']);
+                    $v['goods'] = $val['goods_name'] . '/' . $val['goods_number'];
+                    $v['can_num'] = $val['can_num'];
+                    $v['get_num'] = $val['get_num'];
+                    $v['not_num'] = $val['not_num'];
+                }
+
+                $v['status_name'] = $project_status[$v['status']];
+            }else{
+                $v['goods'] = '--';
+                $v['can_num'] = '--';
+                $v['get_num'] = '--';
+                $v['not_num'] = '--';
+                $v['status_name'] = '';
             }
-            $v['goods_list'] = $project_list;
-            $v['status_name'] = $project_status[$v['status']];
+
         }
         return ['count' => $count, 'list' => $list];
     }
@@ -117,7 +136,7 @@ class Allocation{
             ->leftJoin('contract c','p.contract_id = c.id')
             ->where(function ($query) use($params) {
                 if(!empty($params['search'])){
-                    $query->where('p.name|s.name|g.name', 'like', '%'.$params['search'].'%');
+                    $query->where('g.name', 'like', '%'.$params['search'].'%');
                 }
                 if(!empty($params['project_id'])){
                     $query->where('p.id', 'neq', $params['project_id']);
@@ -140,7 +159,7 @@ class Allocation{
             ->leftJoin('contract c','p.contract_id = c.id')
             ->where(function ($query) use($params) {
                 if(!empty($params['search'])){
-                    $query->where('p.name|s.name|g.name', 'like', '%'.$params['search'].'%');
+                    $query->where('g.name', 'like', '%'.$params['search'].'%');
                 }
                 if(!empty($params['project_id'])){
                     $query->where('p.id', 'neq', $params['project_id']);
@@ -177,7 +196,7 @@ class Allocation{
             ->leftJoin('goods g','g.id = sg.g_id')
             ->where(function ($query) use($params, $p_owner) {
                 if(!empty($params['search'])){
-                    $query->where('c.number|p.name|g.name', 'like', '%'.$params['search'].'%');
+                    $query->where('g.name', 'like', '%'.$params['search'].'%');
                 }
                 if(!empty($params['project_id'])){
                     $query->where('p.id', 'neq', $params['project_id']);
@@ -253,7 +272,7 @@ class Allocation{
             ->leftJoin('contract c', 'p.contract_id = c.id')
             ->where(function ($query) use ($params, $p_owner) {
                 if (!empty($params['search'])) {
-                    $query->where('p.name|s.name|g.name', 'like', '%' . $params['search'] . '%');
+                    $query->where('g.name', 'like', '%' . $params['search'] . '%');
                 }
                 if (!empty($params['project_id'])) {
                     $query->where('p.id', 'neq', $params['project_id']);
@@ -276,7 +295,7 @@ class Allocation{
             ->leftJoin('contract c', 'p.contract_id = c.id')
             ->where(function ($query) use ($params, $p_owner) {
                 if (!empty($params['search'])) {
-                    $query->where('p.name|s.name|g.name', 'like', '%' . $params['search'] . '%');
+                    $query->where('g.name', 'like', '%' . $params['search'] . '%');
                 }
                 if (!empty($params['project_id'])) {
                     $query->where('p.id', 'neq', $params['project_id']);
@@ -304,12 +323,12 @@ class Allocation{
             ->leftJoin('goods g','g.id = sg.g_id')
             ->where(function ($query) use($params) {
                 if(!empty($params['search'])){
-                    $query->where('p.name', 'like', '%'.$params['search'].'%');
+                    $query->where('w.name|g.name|p1.name|p.name', 'like', '%'.$params['search'].'%');
                 }
             })
             ->where('sc.status',1)
             ->field('sc.*, s.name as stock_name, p.name as project_name,p1.name as passive_project_name, w.name as passive_woker_name,g.name as supply_goods_name')
-            ->order('sc.create_time', 'desc')
+            ->order(['sc.create_time' => 'desc'])
             ->paginate(10, false, [
                 'query'     => $params,
             ]);

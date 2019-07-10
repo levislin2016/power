@@ -74,6 +74,7 @@ Route::get('project_allocation', 'project/allocation_goods');
 
 //调拨需求删除操作
 Route::get('allocation_shopping_del', 'allocation/del');
+Route::get('allocation_shopping_index', 'allocation/shopping_list');
 Route::get('allocation_shopping_all_set', 'allocation/shopping_all_set');
 Route::get('allocation_shopping_set', 'allocation/shopping_set');
 

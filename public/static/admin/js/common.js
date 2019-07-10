@@ -140,12 +140,36 @@ layui.use(['form', 'jquery', 'laydate', 'layer', 'laypage', 'dialog',   'element
 		return false;
 	})
 
+	$('.delBtn1').click(function() {
+		var url=$(this).attr('data-url');
+        var chock = $("input[type='checkbox']").is(':checked')
+        if(chock == false){
+            layer.msg('请选择要删除购物清单');
+            return false;
+        }
+		dialog.confirm({
+			message:'您确定要删除选中项',
+			success:function(){
+				var ids = '';
+				$('.layui-table').find('tbody').find('.layui-form-checked').siblings('input').each(function(){
+					ids += $(this).data('id') + ',';
+				});
+				//layer.msg('删除了'+ ids);
+				delAjax(url, {ids: ids});
+			},
+			cancel:function(){
+				layer.msg('取消了')
+			}
+		})
+		return false;
+	})
+
     //顶部批量执行
     $('.setBtn').click(function() {
         var url=$(this).attr('data-url');
         var chock = $("input[type='checkbox']").is(':checked')
 		if(chock == false){
-        	alert('请选择购物清单');
+            layer.msg('请选择购物清单');
             return false;
 		}
         dialog.confirm({
@@ -205,6 +229,11 @@ layui.use(['form', 'jquery', 'laydate', 'layer', 'laypage', 'dialog',   'element
 	$('#shoop').on('click', '.del-btn', function() {
 		var url=$(this).attr('data-url');
 		var id = $(this).attr('data-id');
+        var chock = $("input[type='checkbox']").is(':checked')
+        if(chock == false){
+            layer.msg('请选择要删除购物清单');
+            return false;
+        }
 		dialog.confirm({
 			message:'您确定要进行删除吗？',
 			success:function(){
@@ -311,7 +340,7 @@ layui.use(['form', 'jquery', 'laydate', 'layer', 'laypage', 'dialog',   'element
                 return false;
             }
             layer.msg(data.msg, {icon: 1, shade: 0.1, time: 1000}, function () {
-            	layui.table.reload();
+                refresh();
             });
         });
     }
