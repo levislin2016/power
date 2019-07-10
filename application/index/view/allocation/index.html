@@ -9,6 +9,13 @@
 		<title>电网system</title>
 		<link rel="stylesheet" type="text/css" href="__STATIC__/admin/layui/css/layui.css" />
 		<link rel="stylesheet" type="text/css" href="__STATIC__/admin/css/admin.css" />
+		<style>
+			.layui-table-page{text-align: center;}
+			.layui-table-cell{width: 80px;text-align:center;height:60px;line-height:60px;}
+			.laytable-cell-2-0-6{width: 100%;}
+			th .layui-table-cell{text-align:center;height: 30px;line-height:30px;}
+
+		</style>
 	</head>
 	<body>
 		<div class="wrap-container clearfix">
@@ -18,10 +25,10 @@
 							<div class="layui-inline tool-btn">
 							</div>
 							<div class="layui-inline">
-								<input type="text" name="search" id="search" placeholder="请输入项目/工程名/材料" autocomplete="off" class="layui-input" value={if condition="$_GET['supply_goods_id'] neq null"}"{$goods_name['name']}" disabled="disabled"{else/}"{$Think.get.search}"{/if} />
+								<input type="text" name="search" id="search" lay-verify="required" placeholder="请输入材料" autocomplete="off" class="layui-input" value={if condition="$_GET['supply_goods_id'] neq null"}"{$goods_name['name']}" disabled="disabled"{else/}"{$Think.get.search}"{/if} />
 							</div>
 							<div class="layui-inline" style="position:relative; z-index:66;" >
-								<select name="project_id" required lay-verify="required" lay-filter="filter" lay-search=""  style="width:195px;z-index: 2" id="project_id" >
+								<select name="project_id" required  lay-filter="filter" lay-search=""  style="width:195px;z-index: 2" id="project_id" >
 									<option value="" >请选择调拨工程</option>
 									{volist name="project_all_list" id="vo"}
 									<option value="{$vo['id']}" {if condition="$_GET['project_id'] eq $vo['id']"}selected{else/}{/if}>{$vo['name']}</option>
@@ -39,8 +46,12 @@
 							<div class="layui-inline">
 								<button type="button" class="layui-btn layui-btn-sm layui-btn-normal addBtn2 btn_tips" data-title="查询调拨记录"  data-url="" style="display: none" data-w="1000px" data-h="748px"><i class="layui-icon">&#xe705;</i></button>
 							</div>
+							<div class="layui-inline">
 							<button id="search_school" lay-filter="lat" class="layui-btn layui-btn-normal ztc" type="submit" lay-submit="search">搜索</button>
-
+							</div>
+							<div class="layui-inline">
+								<button type="button" class="layui-btn layui-btn-normal addBtn3 btn_tips" data-title="调拨清单"  onclick="selectRole()" data-url="{:url('allocation/shopping_list')}" data-w="1000px" data-h="748px"><i class="layui-icon">&#xe698;</i></button>
+							</div>
 						</div>
 					</form>
 
@@ -57,8 +68,8 @@
 							{else/}
 								<div class="layui-tab-item">
 							{/if}
-								<div class="layui-form" id="table-list">
-									<table class="layui-table all1" lay-skin="line" lay-filter="school_table">
+								<div class="layui-form" id="table-list" >
+									<table class="layui-table all1"  lay-filter="school_table" >
 									</table>
 								</div>
 							</div>
@@ -66,7 +77,7 @@
 							<!--工程调拨-->
 							<div class="layui-tab-item">
 								<div class="layui-form" id="table-list">
-									<table class="layui-table all2" lay-filter="school_table1" lay-skin="line">
+									<table class="layui-table all2" lay-filter="school_table1" >
 									</table>
 								</div>
 							</div>
@@ -75,7 +86,7 @@
 							<!--甲供结余调拨-->
 							<div class="layui-tab-item">
 								<div class="layui-form" id="table-list">
-									<table class="layui-table all3" lay-filter="school_table" lay-skin="line">
+									<table class="layui-table all3" lay-filter="school_table" >
 
 									</table>
 								</div>
@@ -103,7 +114,7 @@
 			<!--{:url('allocation/allocation_goods')}?project_id='+d.id+'&contract_id='+d.contract_id+'&type_id=1&stock_id=&supply_goods_id=&woker_id='+d.woker_id+'&is_type=2&owner_id='+d.owner_id+'&is_project_id='+"{$_GET['project_id']}"+-->
 		</script>
 		<script type="text/html" id="barDemo1">
-			<button type="button" class="layui-btn layui-btn-sm layui-btn-normal addBtn1 btn_tips" data-title="调拨材料" lay-event="shopp1" onclick="selectRole()" data-h="568px" ><i class="layui-icon">&#xe698;</i></button>
+			<button type="button" class="layui-btn layui-btn-sm layui-btn-normal addBtn1 btn_tips" data-title="调拨材料" lay-event="shopp1" data-h="568px" ><i class="layui-icon">&#xe698;</i></button>
 			<!--{:url('allocation/allocation_goods')}?project_id='+d.id+'&contract_id='+d.contract_id+'&type_id=1&stock_id=&supply_goods_id=&woker_id='+d.woker_id+'&is_type=1&is_project_id='+"{$_GET['project_id']}"+-->
 
 		</script>
@@ -119,6 +130,15 @@
          {{#  } }}
       </script>
 		<script>
+            function selectRole(e) {
+                parent.layer.open({ //在父窗口打开
+                    //layer提供了5种层类型。可传入的值有：0（信息框，默认）1（页面层）2（iframe层）3（加载层）4（tips层）
+                    type: 2,
+                    title: "调拨",
+                    area: ['80%', '80%'],
+                    content: "{:url('allocation/shopping_list')}"
+                });
+            }
             layui.use(['form', 'jquery', 'element', 'dialog', 'layer', 'table'], function() {
 				var form = layui.form,
 					$ = layui.jquery,
@@ -147,38 +167,30 @@
 
                         }
                         , cols: [[
-                            , {field: '', title: '', width:0}
-                            , {field: 'id', title: 'ID', width:150,sort: true}
-                            , {field: 'stock_name', width:150,title: '仓库名', sort: true}
-                            , {field: 'project_name',width:150, title: '项目名'}
-                            , {field: 'supply_goods_name', width:150,title: '材料'}
-                            , {field: 'have', width:150,title: '可调拨数', sort: true}
-                            , {fixed: 'right', title:'操作', align: 'center', toolbar: '#barDemo'} //这里的toolbar值是模板元素的选择器
+                            , {field: 'id', title: 'ID', width:80,sort: true}
+                            , {field: 'stock_name', width:230,title: '仓库名', sort: true}
+                            , {field: 'project_name',width:230, title: '项目名'}
+                            , {field: 'supply_goods_name', width:230,title: '材料'}
+                            , {field: 'have', width:230,title: '可调拨数', sort: true}
+                            , {fixed: 'right', title:'操作', width:80, align: 'center', toolbar: '#barDemo'} //这里的toolbar值是模板元素的选择器
                         ]]
                     });
                     table.render({
                         elem: '.all2'
                         , url: "{:url('allocation/project_list')}?search="+$("#search").val()+"&project_id="+$('#project_id option:selected').val()+"&is_type="
-                        , page: { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
-                            layout: ['limit', 'count', 'prev', 'page', 'next', 'skip'] //自定义分页布局
-                            //,curr: 5 //设定初始在第 5 页
-                            , limit: 10 //一页显示多少条
-                            , limits: [10]//每页条数的选择项
-                            , groups: 4 //只显示 2 个连续页码
-                            , first: "首页" //不显示首页
-                            , last: "尾页" //不显示尾页
-
-                        }
+                        , page: true
                         , cols: [[
-                            , {field: '', title: '', width:0}
-                            , {field: 'id', title: 'ID', width:80,sort: true}
-                            , {field: 'contract_number', width:120,title: '合同编号', sort: true}
-                            , {field: 'owner_name',width:100, title: '业主'}
-                            , {field: 'name', width:150,title: '项目名'}
-                            , {field: 'status_name', title: '状态', width:150, templet: '#status_name'}
-                            , {field: 'create_time', width:180,title: '创建时间'}
-                            , {field: 'goods_list', width:210, title: '材料概况'}
-                            , {fixed: 'right', title:'操作', align: 'center', toolbar: '#barDemo1'} //这里的toolbar值是模板元素的选择器
+                            , {field: 'id', title: 'ID',align: 'center', width:80,sort: true}
+                            , {field: 'contract_number',align: 'center', width:120,title: '合同编号', sort: true}
+                            , {field: 'owner_name',align: 'center',width:100, title: '业主'}
+                            , {field: 'name',align: 'center', width:150,title: '项目名'}
+                            , {field: 'status_name',align: 'center', title: '状态', width:80, templet: '#status_name'}
+                            , {field: 'create_time',align: 'center', width:180,title: '创建时间'}
+                            , {field: 'goods', title: '材料'}
+                            , {field: 'can_num', title: '可领'}
+                            , {field: 'get_num', title: '已领'}
+                            , {field: 'not_num', title: '未领'}
+                            , {fixed: 'right', title:'操作', width:70,align: 'center', toolbar: '#barDemo1'} //这里的toolbar值是模板元素的选择器
                         ]]
                     });
                     table.render({
@@ -195,13 +207,12 @@
 
                         }
                         , cols: [[
-                            , {field: '', title: '', width:0}
-                            , {field: 'id', title: 'ID', width:150,sort: true}
-                            , {field: 'stock_name', width:150,title: '仓库名', sort: true}
-                            , {field: 'project_name',width:150, title: '项目名'}
-                            , {field: 'supply_goods_name', width:150,title: '材料'}
-                            , {field: 'have', width:150,title: '可调拨数'}
-                            , {fixed: 'right', title:'操作', align: 'center', toolbar: '#barDemo'} //这里的toolbar值是模板元素的选择器
+                            , {field: 'id', title: 'ID', width:80,sort: true}
+                            , {field: 'stock_name', width:230,title: '仓库名', sort: true}
+                            , {field: 'project_name',width:230, title: '项目名'}
+                            , {field: 'supply_goods_name', width:230,title: '材料'}
+                            , {field: 'have', width:230,title: '可调拨数',overflow:scroll}
+                            , {fixed: 'right', title:'操作',width:80, align: 'center', toolbar: '#barDemo'} //这里的toolbar值是模板元素的选择器
                         ]]
                     });
 
@@ -230,38 +241,30 @@
 
                         }
                         , cols: [[
-                            , {field: '', title: '', width:0}
-                            , {field: 'id', title: 'ID', width:150,sort: true}
-                            , {field: 'stock_name', width:150,title: '仓库名', sort: true}
-                            , {field: 'project_name',width:150, title: '项目名'}
-                            , {field: 'supply_goods_name', width:150,title: '材料'}
-                            , {field: 'have', width:150,title: '可调拨数', sort: true}
-                            , {fixed: 'right', title:'操作', align: 'center', toolbar: '#barDemo'} //这里的toolbar值是模板元素的选择器
+                            , {field: 'id', title: 'ID', width:80,sort: true}
+                            , {field: 'stock_name', width:230,title: '仓库名', sort: true}
+                            , {field: 'project_name',width:230, title: '项目名'}
+                            , {field: 'supply_goods_name', width:230,title: '材料'}
+                            , {field: 'have', width:230,title: '可调拨数', sort: true}
+                            , {fixed: 'right', title:'操作', width:80, align: 'center', toolbar: '#barDemo'} //这里的toolbar值是模板元素的选择器
                         ]]
                     });
                     table.render({
                         elem: '.all2'
                         , url: "{:url('allocation/project_list')}?search="+$("#search").val()+"&project_id="+$('#project_id option:selected').val()+"&is_type="
-                        , page: { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
-                            layout: ['limit', 'count', 'prev', 'page', 'next', 'skip'] //自定义分页布局
-                            //,curr: 5 //设定初始在第 5 页
-                            , limit: 10 //一页显示多少条
-                            , limits: [10]//每页条数的选择项
-                            , groups: 4 //只显示 2 个连续页码
-                            , first: "首页" //不显示首页
-                            , last: "尾页" //不显示尾页
-
-                        }
+                        , page: true
                         , cols: [[
-                            , {field: '', title: '', width:0}
-                            , {field: 'id', title: 'ID', width:80,sort: true}
-                            , {field: 'contract_number', width:120,title: '合同编号', sort: true}
-                            , {field: 'owner_name',width:100, title: '业主'}
-                            , {field: 'name', width:150,title: '项目名'}
-                            , {field: 'status_name', title: '状态', width:150, templet: '#status_name'}
-                            , {field: 'create_time', width:180,title: '创建时间'}
-                            , {field: 'goods_list', width:210, title: '材料概况'}
-                            , {fixed: 'right', title:'操作', align: 'center', toolbar: '#barDemo1'} //这里的toolbar值是模板元素的选择器
+                            , {field: 'id', title: 'ID',align: 'center', width:80,sort: true}
+                            , {field: 'contract_number',align: 'center', width:120,title: '合同编号', sort: true}
+                            , {field: 'owner_name',align: 'center',width:100, title: '业主'}
+                            , {field: 'name',align: 'center', width:150,title: '项目名'}
+                            , {field: 'status_name',align: 'center', title: '状态', width:80, templet: '#status_name'}
+                            , {field: 'create_time',align: 'center', width:180,title: '创建时间'}
+                            , {field: 'goods', title: '材料'}
+                            , {field: 'can_num', title: '可领'}
+                            , {field: 'get_num', title: '已领'}
+                            , {field: 'not_num', title: '未领'}
+                            , {fixed: 'right', title:'操作', width:70,align: 'center', toolbar: '#barDemo1'} //这里的toolbar值是模板元素的选择器
                         ]]
                     });
                     table.render({
@@ -278,13 +281,12 @@
 
                         }
                         , cols: [[
-                            , {field: '', title: '', width:0}
-                            , {field: 'id', title: 'ID', width:150,sort: true}
-                            , {field: 'stock_name', width:150,title: '仓库名', sort: true}
-                            , {field: 'project_name',width:150, title: '项目名'}
-                            , {field: 'supply_goods_name', width:150,title: '材料'}
-                            , {field: 'have', width:150,title: '可调拨数'}
-                            , {fixed: 'right', title:'操作', align: 'center', toolbar: '#barDemo'} //这里的toolbar值是模板元素的选择器
+                            , {field: 'id', title: 'ID', width:80,sort: true}
+                            , {field: 'stock_name', width:230,title: '仓库名', sort: true}
+                            , {field: 'project_name',width:230, title: '项目名'}
+                            , {field: 'supply_goods_name', width:230,title: '材料'}
+                            , {field: 'have', width:230,title: '可调拨数',overflow:scroll}
+                            , {fixed: 'right', title:'操作',width:80, align: 'center', toolbar: '#barDemo'} //这里的toolbar值是模板元素的选择器
                         ]]
                     });
 
@@ -325,6 +327,10 @@
                             layer.msg('请选择调拨工程');
                             return false;
                         }
+                        if($("#search").val() == ""){
+                            layer.msg('请填写调拨材料');
+                            return false;
+                        }
                         parent.layer.open({ //在父窗口打开
                             //layer提供了5种层类型。可传入的值有：0（信息框，默认）1（页面层）2（iframe层）3（加载层）4（tips层）
                             type: 2,
@@ -336,82 +342,74 @@
                 });
 
                 $(document).on('click','#search_school',function(){
-                    if($('#project_id option:selected').val() != '') {
+                    if($('#project_id option:selected').val() != '' && $("#search").val() == "") {
                         var url = "{:url('stock_order/stock_order_index')}?is_project_id="+$('#project_id option:selected').val();
                         $(".addBtn2").attr('data-url', url);
                         $(".addBtn2").css('display', 'block');
+                        table.render({
+                            elem: '.all1'
+                            , url: "{:url('allocation/banlance_list')}?search="+$("#search").val()+"&project_id="+$('#project_id option:selected').val()+"&is_type="
+                            , page: { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
+                                layout: ['limit', 'count', 'prev', 'page', 'next', 'skip'] //自定义分页布局
+                                //,curr: 5 //设定初始在第 5 页
+                                , limit: 10 //一页显示多少条
+                                , limits: [10]//每页条数的选择项
+                                , groups: 4 //只显示 2 个连续页码
+                                , first: "首页" //不显示首页
+                                , last: "尾页" //不显示尾页
+
+                            }
+                            , cols: [[
+                                , {field: 'id', title: 'ID', width:80,sort: true}
+                                , {field: 'stock_name', width:230,title: '仓库名', sort: true}
+                                , {field: 'project_name',width:230, title: '项目名'}
+                                , {field: 'supply_goods_name', width:230,title: '材料'}
+                                , {field: 'have', width:230,title: '可调拨数', sort: true}
+                                , {fixed: 'right', title:'操作', width:80, align: 'center', toolbar: '#barDemo'} //这里的toolbar值是模板元素的选择器
+                            ]]
+                        });
+                        table.render({
+                            elem: '.all2'
+                            , url: "{:url('allocation/project_list')}?search="+$("#search").val()+"&project_id="+$('#project_id option:selected').val()+"&is_type="
+                            , page: true
+                            , cols: [[
+                                , {field: 'id', title: 'ID',align: 'center', width:80,sort: true}
+                                , {field: 'contract_number',align: 'center', width:120,title: '合同编号', sort: true}
+                                , {field: 'owner_name',align: 'center',width:100, title: '业主'}
+                                , {field: 'name',align: 'center', width:150,title: '项目名'}
+                                , {field: 'status_name',align: 'center', title: '状态', width:80, templet: '#status_name'}
+                                , {field: 'create_time',align: 'center', width:180,title: '创建时间'}
+                                , {field: 'goods', title: '材料'}
+                                , {field: 'can_num', title: '可领'}
+                                , {field: 'get_num', title: '已领'}
+                                , {field: 'not_num', title: '未领'}
+                                , {fixed: 'right', title:'操作', width:70,align: 'center', toolbar: '#barDemo1'} //这里的toolbar值是模板元素的选择器
+                            ]]
+                        });
+                        table.render({
+                            elem: '.all3'
+                            , url: "{:url('allocation/banlance_type_list')}?search="+$("#search").val()+"&project_id="+$('#project_id option:selected').val()+"&is_type="
+                            , page: { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
+                                layout: ['limit', 'count', 'prev', 'page', 'next', 'skip'] //自定义分页布局
+                                //,curr: 5 //设定初始在第 5 页
+                                , limit: 10 //一页显示多少条
+                                , limits: [10]//每页条数的选择项
+                                , groups: 4 //只显示 2 个连续页码
+                                , first: "首页" //不显示首页
+                                , last: "尾页" //不显示尾页
+
+                            }
+                            , cols: [[
+                                , {field: 'id', title: 'ID', width:80,sort: true}
+                                , {field: 'stock_name', width:230,title: '仓库名', sort: true}
+                                , {field: 'project_name',width:230, title: '项目名'}
+                                , {field: 'supply_goods_name', width:230,title: '材料'}
+                                , {field: 'have', width:230,title: '可调拨数',overflow:scroll}
+                                , {fixed: 'right', title:'操作',width:80, align: 'center', toolbar: '#barDemo'} //这里的toolbar值是模板元素的选择器
+                            ]]
+                        });
                     }
-                    table.render({
-                        elem: '.all1'
-                        , url: "{:url('allocation/banlance_list')}?search="+$("#search").val()+"&project_id="+$('#project_id option:selected').val()+"&is_type="
-                        , page: { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
-                            layout: ['limit', 'count', 'prev', 'page', 'next', 'skip'] //自定义分页布局
-                            //,curr: 5 //设定初始在第 5 页
-                            , limit: 10 //一页显示多少条
-                            , limits: [10]//每页条数的选择项
-                            , groups: 4 //只显示 2 个连续页码
-                            , first: "首页" //不显示首页
-                            , last: "尾页" //不显示尾页
 
-                        }
-                        , cols: [[
-                            , {field: '', title: '', width:0}
-                            , {field: 'id', title: 'ID', width:150,sort: true}
-                            , {field: 'stock_name', width:150,title: '仓库名', sort: true}
-                            , {field: 'project_name',width:150, title: '项目名'}
-                            , {field: 'supply_goods_name', width:150,title: '材料'}
-                            , {field: 'have', width:150,title: '可调拨数', sort: true}
-                            , {fixed: 'right', title:'操作', align: 'center', toolbar: '#barDemo'} //这里的toolbar值是模板元素的选择器
-                        ]]
-                    });
-                    table.render({
-                        elem: '.all2'
-                        , url: "{:url('allocation/project_list')}?search="+$("#search").val()+"&project_id="+$('#project_id option:selected').val()+"&is_type="
-                        , page: { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
-                            layout: ['limit', 'count', 'prev', 'page', 'next', 'skip'] //自定义分页布局
-                            //,curr: 5 //设定初始在第 5 页
-                            , limit: 10 //一页显示多少条
-                            , limits: [10]//每页条数的选择项
-                            , groups: 4 //只显示 2 个连续页码
-                            , first: "首页" //不显示首页
-                            , last: "尾页" //不显示尾页
-
-                        }
-                        , cols: [[
-                            , {field: '', title: '', width:0}
-                            , {field: 'id', title: 'ID', width:80,sort: true}
-                            , {field: 'contract_number', width:120,title: '合同编号', sort: true}
-                            , {field: 'owner_name',width:100, title: '业主'}
-                            , {field: 'name', width:150,title: '项目名'}
-                            , {field: 'status_name', title: '状态', width:150, templet: '#status_name'}
-                            , {field: 'create_time', width:180,title: '创建时间'}
-                            , {field: 'goods_list', width:210, title: '材料概况'}
-                            , {fixed: 'right', title:'操作', align: 'center', toolbar: '#barDemo1'} //这里的toolbar值是模板元素的选择器
-                        ]]
-                    });
-                    table.render({
-                        elem: '.all3'
-                        , url: "{:url('allocation/banlance_type_list')}?search="+$("#search").val()+"&project_id="+$('#project_id option:selected').val()+"&is_type="
-                        , page: { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
-                            layout: ['limit', 'count', 'prev', 'page', 'next', 'skip'] //自定义分页布局
-                            //,curr: 5 //设定初始在第 5 页
-                            , limit: 10 //一页显示多少条
-                            , limits: [10]//每页条数的选择项
-                            , groups: 4 //只显示 2 个连续页码
-                            , first: "首页" //不显示首页
-                            , last: "尾页" //不显示尾页
-
-                        }
-                        , cols: [[
-                            , {field: '', title: '', width:0}
-                            , {field: 'id', title: 'ID', width:150,sort: true}
-                            , {field: 'stock_name', width:150,title: '仓库名', sort: true}
-                            , {field: 'project_name',width:150, title: '项目名'}
-                            , {field: 'supply_goods_name', width:150,title: '材料'}
-                            , {field: 'have', width:150,title: '可调拨数'}
-                            , {fixed: 'right', title:'操作', align: 'center', toolbar: '#barDemo'} //这里的toolbar值是模板元素的选择器
-                        ]]
-                    });
 
                     return false;
                 });
