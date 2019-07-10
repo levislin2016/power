@@ -9,30 +9,19 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-//if ($_SERVER['SERVER_ADDR'] == '127.0.0.1'){
-if (false){
-    $hostname = '127.0.0.1';
-    $username = 'root';
-    $password = 'root';
-}else{
-    $hostname = '144.48.9.105';
-    $username = 'power_rank666_co';
-    $password = 'XHGH23cHYjsReFw2';
-}
-
 return [
     // 数据库类型
     'type'            => 'mysql',
     // 服务器地址
-    'hostname'        => $hostname,
+    'hostname'        => '127.0.0.1',
     // 数据库名
     'database'        => 'power_rank666_co',
     // 用户名
-    'username'        => $username,
+    'username'        => 'root',
     // 密码
-    'password'        => $password,
+    'password'        => 'root',
     // 端口
-    'hostport'        => '3306',
+    'hostport'        => '8889',
     // 连接dsn
     'dsn'             => '',
     // 数据库连接参数

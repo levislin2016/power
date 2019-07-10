@@ -16,6 +16,7 @@
 		<input type="text" name="passive_woker_id" style="display: none" lay-verType="tips" autocomplete="off" class="layui-input" value="{$_GET['woker_id']}">
 		<input type="text" name="type_id" style="display: none" required lay-verify="required" lay-verType="tips" autocomplete="off" class="layui-input" value="{$_GET['type_id']}">
 		<input type="text" name="stock_id" style="display: none"  lay-verType="tips" autocomplete="off" class="layui-input" value="{$_GET['stock_id']}">
+		<input type="text" name="project_id" style="display: none"  lay-verType="tips" autocomplete="off" class="layui-input" value="{$_GET['is_project_id']}">
 					<div class="layui-tab">
 						<!-- <ul class="layui-tab-title">
 							<li class="layui-this">文章内容</li>
@@ -38,20 +39,6 @@
 													<option value="{$_GET['supply_goods_id']}" selected disabled>材料{$_GET['supply_goods_name']}可领取{$_GET['have']}</option>
 												{/if}
 
-											</select>
-										</div>
-									</div>
-								</div>
-
-								<div class="layui-form-item">
-									<div class="layui-inline">
-										<label class="layui-form-label">项目：</label>
-										<div class="layui-input-block">
-											<select name="project_id" lay-filter="project_id" required lay-verify="required" lay-verType="tips" lay-search="">
-												<option value="">请选择项目</option>
-												{volist name="project_list" id="vo"}
-												<option value="{$vo['id']}">{$vo['name']}</option>
-												{/volist}
 											</select>
 										</div>
 									</div>

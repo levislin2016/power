@@ -38,7 +38,16 @@
                                 </select>
                             </div>
                         </div>
-                        
+                        <div class="layui-inline">
+                            <label class="layui-form-label">类型:</label>
+                            <div class="layui-input-inline" style="width: 185px;">
+                                <select name="from" class="from" required lay-verify="required" lay-filter="from" lay-verType="tips" lay-search="">
+                                    {volist name="buy_from" id="from"}
+                                    <option value="{$key}">{$from}</option>
+                                    {/volist}
+                                </select>
+                            </div>
+                        </div>
                     </div>
 
 
@@ -58,8 +67,10 @@
                                 <th>材料名称</th>
                                 <th>供应商</th>
                                 <th>价格</th>
-                                <th>需求数</th>
-                                <th>平衡利库</th>
+                                <th>预算</th>
+                                <th>已采购</th>
+                                <th>结余调拨数量</th>
+                                <th>工程调拨数量</th>
                                 <th>调拨</th>
                                 <th>本次采购</th>
                             </tr>
@@ -67,8 +78,28 @@
                         <tbody>
                         </tbody>
                     </table>
-
                     
+                    <input type="hidden" class="apply_for_v" value="1" />
+                    
+                    <div class="layui-form-item apply_for_k" style="display: none;">
+                        <div class="layui-inline">
+                            <label class="layui-form-label" style="width: 70px;">申请原因：</label>
+                            <div class="layui-input-inline" style="width: 500px;">
+                                <select class="note_select" lay-verType="tips" lay-search="">
+                                    <option value="预算材料不足。">预算材料不足</option>
+                                    <option value="加购材料。">加购材料</option>
+                                    <option value="材料破损-补充材料。">材料破损-补充材料</option>
+                                    <option value="其他原因:">其他原因</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label" style="width: 70px;"></label>
+                            <div class="layui-input-inline" style="width: 500px;">
+                                <textarea name="note" placeholder="请输入原因" class="layui-textarea note"></textarea>                              
+                            </div>
+                        </div>
+                    </div>
 
                 </div>
             </div>
@@ -82,15 +113,16 @@
     <script src="__STATIC__/admin/layui/layui.js" type="text/javascript" charset="utf-8"></script>
     <script src="__STATIC__/admin/js/common.js" type="text/javascript" charset="utf-8"></script>
     <script>
-        function selectRole(e,d) {
+        function selectRole(e,d,f,c) {
             console.log(e);
             console.log(d);
+            console.log(f);
             parent.layer.open({ //在父窗口打开
                 //layer提供了5种层类型。可传入的值有：0（信息框，默认）1（页面层）2（iframe层）3（加载层）4（tips层）
                 type: 2,
                 title: "调拨",
                 area: ['80%', '80%'],
-                content: "{:url('allocation/index')}"
+                content: "{:url('allocation/index')}?project_id="+d+"&supply_goods_id="+e+"&is_type="+f+"&goods_name="+c,
             });
         }
         layui.use(['form', 'jquery', 'laydate', 'layer', 'laypage', 'dialog', 'tool', 'element', 'layedit'], function () {
@@ -107,13 +139,12 @@
             //自定义验证规则
             form.verify({
                 buy_num: function(value, item) {
-                    var get = item.dataset.get;
-                    var back = item.dataset.back;
+                    var max = item.dataset.max;
+                    var apply_for_v = $('.apply_for_v').val();
                     var re = /^[0-9]+[0-9]*]*$/;
                     if (!re.test(value)){
                         return '请输入正整数';
                     }
-                    
                 },
                 supply: function(value, item) {
                     var num = $(item).parents('tr').find('.num').val();
@@ -125,9 +156,35 @@
                 },
             });
 
+            $(document).on('change', '.num', function(){
+                var k = 0;
+                $('.num').each(function(){
+                    var max = $(this).data('max');
+                    var num = $(this).val();
+                    if(num * 1 > max *1){
+                        k++;
+                    }
+                })
+                //console.log('k:'+k);
+                if(k > 0){
+                    $('.apply_for_v').val(2);
+                    $('.apply_for_k').show();
+                }else{
+                    $('.apply_for_v').val(1);
+                    $('.apply_for_k').hide();
+                }
+                return false;
+            });
+
             form.on('select(project_id)', function (data) {
                 var project_id = data.value;
                 var url = $(data.elem).data('url');
+                get_need_data(url, project_id);
+            });
+
+            form.on('select(from)', function (data) {
+                var project_id = $('.project_id').val();
+                var url = $('.project_id').data('url');
                 get_need_data(url, project_id);
             });
 
@@ -139,10 +196,11 @@
                 if(!project_id){
                     empty_table();
                 }
+                var from = $('.from').val();
                 loading = layer.load(2, {
                     shade: [0.2, '#000']
                 });
-                $.post(url, {id: project_id}, function(data){ 
+                $.post(url, {id: project_id, from: from}, function(data){ 
                     console.dir(data);
                     layer.close(loading);
                     var str = '';
@@ -163,14 +221,17 @@
                         str += '    </td>';
                         str += '    <td></td>';
                         str += '    <td>'+ data[i]['need'] +'</td>';
-                        str += '    <td>'+ data[i]['have'] +'</td>';
+                        str += '    <td>'+ data[i]['buy_num'] +'</td>';
+                        str += '    <td>'+ data[i]['project_num'] +'</td>';
+                        str += '    <td>'+ data[i]['have_num'] +'</td>';
                         str += '<td>';
                         str += '<div class="layui-input-inline">';
-                        str += '<button type="button" class="layui-btn layui-btn-sm layui-btn-normal addBtn btn_tips" onclick="selectRole()" data-title="调拨材料"  data-url="" data-h="400px"><i class="layui-icon">&#xe609;</i></button>';
+                        str += '<button type="button" class="layui-btn layui-btn-sm layui-btn-normal addBtn btn_tips" onclick="selectRole('+ data[i]['goods_id'] +','+ data[i]['project_id'] +','+data[i]['type']+')" data-title="调拨材料"  data-url="" data-h="400px"><i class="layui-icon">&#xe609;</i></button>';
                         str += '</div>';
                         str += '</td>';
                         str += '    <td style="padding: 0px;">';
-                        str += '        <input type="number" min="0" data-id="'+ data[i]['goods_id'] +'" class="layui-input num" lay-verify="number|buy_num" lay-verType="tips" style="border: none; text-align: center; padding: 0px;" value="0" />';
+                        var max_num = data[i]['need'] * 1 - data[i]['buy_num'] * 1 - data[i]['project_num'] * 1 - data[i]['have_num'] * 1;
+                        str += '        <input type="number" min="0" data-max="'+ max_num +'" data-id="'+ data[i]['goods_id'] +'" class="layui-input num" lay-verify="number|buy_num" lay-verType="tips" style="border: none; text-align: center; padding: 0px;" value="0" />';
                         str += '    </td>';
                         str += '</tr>';
                     }
@@ -192,7 +253,7 @@
                 //     shade: [0.2, '#000']
                 // });
                 // var that = $(data.elem);
-                // $.post(url, {id: supply.id}, function(data){ 
+                // $.post(url, {id: supply.id}, function(data){
                 //     console.dir(data);
                 //     layer.close(loading);
                 //     $(that).parents('td').next('td').next('td').next('td').html(data.have);
@@ -208,6 +269,7 @@
 
                 var url = data.form.action;
                 var project_id = $('.project_id').val();
+                var from = $('.from').val();
                 var num = [];
                 $('.stock_order_table').find('tbody').find('tr').each(function(e){
 
@@ -228,13 +290,18 @@
                     layer.msg('请填写采购的数量', { icon: 2, shade: 0.1, time: 1000 });
                     return false;
                 }
+                var type = $('.apply_for_v').val();
+                var note = '';
+                if(type == 2){
+                    note = $('.note_select').val() + $('.note').val();
+                }
                 num = JSON.stringify(num);
-
+                
                 loading = layer.load(2, {
                     shade: [0.2, '#000']
                 });
 
-                $.post(url, {project_id: project_id, num: num, note: '', type: 1}, function (data) {
+                $.post(url, {project_id: project_id, num: num, note: note, type: type, from: from}, function (data) {
                     layer.close(loading);
                     console.dir(data);
                     if (data.error_code) {

@@ -38,7 +38,16 @@
                                 </select>
                             </div>
                         </div>
-                        
+                        <div class="layui-inline">
+                            <label class="layui-form-label">类型:</label>
+                            <div class="layui-input-inline" style="width: 185px;">
+                                <select name="from" class="from" required lay-verify="required" lay-filter="" lay-verType="tips" lay-search="">
+                                    {volist name="buy_from" id="from"}
+                                    <option value="{$key}">{$from}</option>
+                                    {/volist}
+                                </select>
+                            </div>
+                        </div>
                     </div>
 
 
@@ -67,7 +76,7 @@
                                     <select lay-verify="goods" lay-filter="goods" class="goods" data-url="{:url('buy/select_supply')}" lay-verType="tips" lay-search="">
                                         <option value="">请选择材料</option>
                                         {volist name="goods_list" id="goods"}
-                                            <option value="{$goods.id}">{$goods.number}/{$goods.name}</option>
+                                            <option value="{$goods.id}">{$goods.name}/{$goods.number}</option>
                                         {/volist}
                                     </select>
                                 </td>
@@ -233,6 +242,7 @@
 
                 var url = data.form.action;
                 var project_id = $('.project_id').val();
+                var from = $('.from').val();
                 var note = $('.note_select').val() + $('.note').val();
                 var num = [];
                 $('.stock_order_table').find('tbody').find('tr').each(function(e){
@@ -261,7 +271,7 @@
                     shade: [0.2, '#000']
                 });
 
-                $.post(url, {project_id: project_id, num: num, note: note, type: 2}, function (data) {
+                $.post(url, {project_id: project_id, num: num, note: note, type: 2, from: from}, function (data) {
                     layer.close(loading);
                     console.dir(data);
                     if (data.error_code) {

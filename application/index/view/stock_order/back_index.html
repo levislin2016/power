@@ -76,9 +76,7 @@
 							{/volist}	
 							</tbody>
 						</table>
-						<div class="page-wrap">
-							{$list->render()}
-						</div>
+						<div class="page-wrap">{$list->render()|raw}</div>
 					</div>
 				</div>
 		</div>

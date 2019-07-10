@@ -2,14 +2,11 @@
 
 namespace app\index\validate;
 
-class CreateBuyValidate extends BaseValidate
+class BalanceValidate extends BaseValidate
 {
     protected $rule = [
         'project_id' => 'isNotEmpty|isPositiveInteger',
-        'num' => 'isNotEmpty|is_num_json',
-        'note' => 'ok',
-        'type' => 'isNotEmpty|in:1,2',
-        'from' => 'isNotEmpty|isPositiveInteger',
+        'num' => 'isNotEmpty|is_num_json'
     ];
 
     protected function is_num_json($value, $rule='', $data='', $field=''){
@@ -18,8 +15,8 @@ class CreateBuyValidate extends BaseValidate
             return $field . '必须是json格式';
         }
         foreach($num as $v){
-            if(empty($v['id']) || empty($v['val']) || empty($v['sp'])){
-                return $field . ':json数据错误';
+            if(empty($v['id']) || $v['val'] < 0){
+                return $field . ':json数据错误'.$v['id'];
             }
         }
         return true;

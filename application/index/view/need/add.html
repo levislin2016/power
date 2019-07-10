@@ -25,7 +25,7 @@
 										<select name="goods_id" required lay-verify="required" lay-verType="tips" lay-search="">
 											<option value=""></option>
 											{volist name="goods_list" id="vo"}
-									        	<option value="{$vo['id']}" {eq name="list['goods_id']|default=''" value="$vo['id']"}selected{/eq} >{$vo['number']}/{$vo['name']}</option>
+									        	<option value="{$vo['id']}" {eq name="list['goods_id']|default=''" value="$vo['id']"}selected{/eq} >{$vo['name']} / {$vo['number']}</option>
 									        {/volist}
 										</select>
 									</div>
@@ -36,6 +36,17 @@
 									<label class="layui-form-label" style="width: 100px">需求数量：</label>
 									<div class="layui-input-block" style="margin-left: 130px">
 										<input type="text" name="need" required lay-verify="required|number" lay-verType="tips" placeholder="请输入需求数量" autocomplete="off" class="layui-input" value="{$list['need']|default=''}">
+									</div>
+								</div>
+								
+								<div class="layui-form-item">
+									<label class="layui-form-label" style="width: 100px">类型：</label>
+									<div class="layui-input-block" style="margin-left: 130px">
+										<select name="type" required lay-verify="required" lay-verType="tips" lay-search="">
+											{volist name="buy_from" id="vo"}
+									        	<option value="{$key}" {eq name="list['type']|default=''" value="$key"}selected{/eq} >{$vo}</option>
+									        {/volist}
+										</select>
 									</div>
 								</div>
 

@@ -55,6 +55,14 @@ Route::post('need_save', 'need/save');
 Route::get('need_del', 'need/del');
 //工程开工
 Route::post('start_work', 'project/start_work');
+//工程完成
+Route::post('accomplish_work', 'project/accomplish_work');
+//工程结算
+Route::get('balance', 'project/balance');
+Route::post('balance_save', 'project/balance_save');
+Route::get('balance_show', 'project/balance_show');
+Route::get('balance_back', 'project/balance_back');
+Route::post('balance_back_save', 'project/balance_back_save');
 //工程工程队
 Route::get('project_woker', 'project/woker');
 //工程分配
@@ -66,6 +74,7 @@ Route::get('project_allocation', 'project/allocation_goods');
 
 //调拨需求删除操作
 Route::get('allocation_shopping_del', 'allocation/del');
+Route::get('allocation_shopping_index', 'allocation/shopping_list');
 Route::get('allocation_shopping_all_set', 'allocation/shopping_all_set');
 Route::get('allocation_shopping_set', 'allocation/shopping_set');
 
@@ -75,6 +84,9 @@ Route::get('project_worl_list', 'project/worl_list');
 
 //调拨管理
 Route::get('allocation', 'allocation/index');
+Route::get('allocation_banlance_list', 'allocation/banlance_list');
+Route::get('allocation_banlance_type_list', 'allocation/banlance_type_list');
+Route::get('allocation_project_list', 'allocation/project_list');
 Route::get('allocation_goods', 'allocation/allocation_goods');
 
 
@@ -194,5 +206,6 @@ Route::post('get_have', 'buy/get_have');
 Route::get('buy_apply_for', 'buy/apply_for');
 Route::post('buy_select_supply', 'buy/select_supply');
 Route::get('buy_status', 'buy/save_status');
+Route::get('buy_water', 'buy/water');
 
 

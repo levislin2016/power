@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html class="iframe-h">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title>电网system</title>
+		<link rel="stylesheet" type="text/css" href="__STATIC__/admin/layui/css/layui.css" />
+		<link rel="stylesheet" type="text/css" href="__STATIC__/admin/css/admin.css" />
+	</head>
+
+	<body>
+		<div class="wrap-container clearfix">
+			<div class="column-content-detail" id="shopp_list" style="min-height: 500px;">
+					<form class="layui-form" action="">
+						<div class="layui-form-item">
+							<div class="layui-inline tool-btn">
+							</div>
+							<div class="layui-inline">
+								<input type="text" name="search" placeholder="请输入调拨工程(出)/调拨工程队(出)/商品名/调拨工程(入)" autocomplete="off" class="layui-input" value="{$Think.get.search}" />
+							</div>
+							<button class="layui-btn layui-btn-normal" type="submit" lay-submit="search">搜索</button>
+						</div>
+					</form>
+
+					<div class="layui-form" id="shoop">
+						<table class="layui-table" lay-skin="line">
+							<colgroup>
+								<col class="hidden-xs" width="80">
+								<col>
+								<col>
+								<col>
+								<col>
+								<col>
+							</colgroup>
+							<thead>
+							<tr>
+								<th><input type="checkbox" name="" lay-skin="primary" lay-filter="allChoose"></th>
+								<th class="hidden-xs">编号</th>
+								<th>调拨工程（出）</th>
+								<th>调拨工程队（出）</th>
+								<th>调拨工程（入）</th>
+								<th>仓库</th>
+								<th>材料</th>
+								<th>数量</th>
+								<th>调拨类型</th>
+								<th>添加时间</th>
+							</tr>
+							</thead>
+							<tbody>
+							{volist name="shopping_list" id="vor"}
+							<tr>
+								<td><input type="checkbox" name="" lay-skin="primary" data-id="{$vor['id']}"></td>
+								<td class="hidden-xs">{$vor['id']}</td>
+								<td>{$vor['passive_project_name']}</td>
+								<td>{$vor['passive_woker_name']}</td>
+								<td>{$vor['project_name']}</td>
+								<td>{$vor['stock_name']}</td>
+								<td>{$vor['supply_goods_name']}</td>
+								<td>{$vor['num']}</td>
+								<td><span class="layui-badge {eq name='vor.type' value='1'}layui-bg-green{/eq}{eq name='vor.type' value='2'}layui-bg-black{/eq}">{$vor['type_name']}</span></td>
+								<td>{$vor['create_time']}</td>
+							</tr>
+							{/volist}
+							</tbody>
+						</table>
+						<div class="page-wrap">
+							{$shopping_list->render()|raw}
+						</div>
+					</div>
+					<div style="text-align:center">
+						<button type="button" class="layui-btn layui-btn-lg layui-btn-normal setBtn btn_tips" style="width: 150px" data-title="确认调拨" data-url="{:url('allocation/shopping_all_set')}"><i class="layui-icon">&#xe609;</i></button>
+						<button type="button" class="layui-btn layui-btn-lg layui-btn-danger delBtn1 btn_tips" style="width: 150px" data-title="批量清除" data-url="{:url('allocation/del')}"><i class="layui-icon">&#xe640;</i></button>
+					</div>
+
+				</div>
+		</div>
+		<script src="__STATIC__/admin/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+		<script src="__STATIC__/admin/js/common.js" type="text/javascript" charset="utf-8"></script>
+		<script>
+			layui.use(['form', 'jquery', 'element'], function() { 
+				var form = layui.form,
+					$ = layui.jquery,
+					element = layui.element
+			})
+		</script>
+	</body>
+
+</html>

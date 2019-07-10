@@ -9,348 +9,414 @@
 		<title>电网system</title>
 		<link rel="stylesheet" type="text/css" href="__STATIC__/admin/layui/css/layui.css" />
 		<link rel="stylesheet" type="text/css" href="__STATIC__/admin/css/admin.css" />
-	</head>
+		<style>
+			.layui-table-page{text-align: center;}
+			.layui-table-cell{width: 80px;text-align:center;height:60px;line-height:60px;}
+			.laytable-cell-2-0-6{width: 100%;}
+			th .layui-table-cell{text-align:center;height: 30px;line-height:30px;}
 
+		</style>
+	</head>
 	<body>
 		<div class="wrap-container clearfix">
 				<div class="column-content-detail">
-					<form class="layui-form" action="">
+					<form class="layui-form" action=""  lay-filter="filter" id="filter">
 						<div class="layui-form-item">
 							<div class="layui-inline tool-btn">
-								<!--<button type="button" class="layui-btn layui-btn-sm layui-btn-normal addBtn btn_tips" data-title="创建工程" data-url="{:url('project/add')}" data-h="388px"><i class="layui-icon">&#xe654;</i></button>-->
-								<!--<button type="button" class="layui-btn layui-btn-sm layui-btn-danger delBtn btn_tips" data-title="批量删除" data-url="{:url('project/del')}"><i class="layui-icon">&#xe640;</i></button>-->
-								<!-- <button class="layui-btn layui-btn-sm layui-btn-warm listOrderBtn hidden-xs" data-url="article-add.html"><i class="iconfont">&#xe656;</i></button> -->
 							</div>
 							<div class="layui-inline">
-								<input type="text" name="search" placeholder="请输入项目/工程名/材料" autocomplete="off" class="layui-input" value="{$Think.get.search}" />
+								<input type="text" name="search" id="search" lay-verify="required" placeholder="请输入材料" autocomplete="off" class="layui-input" value={if condition="$_GET['supply_goods_id'] neq null"}"{$goods_name['name']}" disabled="disabled"{else/}"{$Think.get.search}"{/if} />
 							</div>
-							<!-- <div class="layui-inline">
-								<select name="states" lay-filter="status">
-									<option value="">请选择一个状态</option>
-									<option value="010">正常</option>
-									<option value="021">停止</option>
-									<option value="0571">删除</option>
+							<div class="layui-inline" style="position:relative; z-index:66;" >
+								<select name="project_id" required  lay-filter="filter" lay-search=""  style="width:195px;z-index: 2" id="project_id" >
+									<option value="" >请选择调拨工程</option>
+									{volist name="project_all_list" id="vo"}
+									<option value="{$vo['id']}" {if condition="$_GET['project_id'] eq $vo['id']"}selected{else/}{/if}>{$vo['name']}</option>
+									{/volist}
 								</select>
-							</div> -->
-							<button class="layui-btn layui-btn-normal" type="submit" lay-submit="search">搜索</button>
+							</div>
+
+							<div class="layui-inline">
+								<input type="text" name="supply_goods_id" id="supply_goods_id" style="display: none"  lay-verType="tips" autocomplete="off" class="layui-input" value="{$_GET['supply_goods_id']}">
+
+							</div>
+							<div class="layui-inline">
+								<input type="text" name="is_type"  id="is_type" style="display: none" lay-verType="tips" autocomplete="off" class="layui-input" value="{$_GET['is_type']}">
+							</div>
+							<div class="layui-inline">
+								<button type="button" class="layui-btn layui-btn-sm layui-btn-normal addBtn2 btn_tips" data-title="查询调拨记录"  data-url="" style="display: none" data-w="1000px" data-h="748px"><i class="layui-icon">&#xe705;</i></button>
+							</div>
+							<div class="layui-inline">
+							<button id="search_school" lay-filter="lat" class="layui-btn layui-btn-normal ztc" type="submit" lay-submit="search">搜索</button>
+							</div>
+							<div class="layui-inline">
+								<button type="button" class="layui-btn layui-btn-normal addBtn3 btn_tips" data-title="调拨清单"  onclick="selectRole()" data-url="{:url('allocation/shopping_list')}" data-w="1000px" data-h="748px"><i class="layui-icon">&#xe698;</i></button>
+							</div>
 						</div>
 					</form>
-					<div class="layui-tab layui-tab-card">
+
+					<div class="layui-tab layui-tab-card table_list" >
 						<ul class="layui-tab-title">
-							<li class="layui-this">结余调拨</li>
+							<li  class="layui-this">结余调拨</li>
 							<li>工程调拨</li>
 							<li>甲供结余调拨</li>
-							<li>甲供工程调拨</li>
-							<li>调拨清单</li>
 						</ul>
-						<div class="layui-tab-content" style="height: 600px;">
+						<div name="hidden_frame" class="layui-tab-content"  id="tablelist" style="height: 600px;">
 							<!--结余调拨-->
-							<div class="layui-tab-item layui-show">
-								<div class="layui-form" id="table-list">
-									<table class="layui-table" lay-skin="line">
-										<colgroup>
-											<col class="hidden-xs" width="80">
-											<col>
-											<col>
-											<col>
-											<col>
-											<col>
-										</colgroup>
-										<thead>
-										<tr>
-											<th class="hidden-xs">编号</th>
-											<th>仓库名</th>
-											<th>项目名</th>
-											<th>材料</th>
-											<th>可调拨数</th>
-											<th>操作</th>
-										</tr>
-										</thead>
-										<tbody>
-										{volist name="balance_list" id="vo"}
-										<tr>
-											<td class="hidden-xs">{$vo['id']}</td>
-											<td>{$vo['stock_name']}</td>
-											<td>{$vo['project_name']}</td>
-											<td>{$vo['supply_goods_name']}</td>
-											<td>{$vo['have']}</td>
-											<td>
-												<div class="layui-inline">
-													<button type="button" class="layui-btn layui-btn-sm layui-btn-normal addBtn btn_tips" data-title="调拨材料"  data-url="{:url('allocation/allocation_goods')}?project_id={$vo['id']}&type_id=2&supply_goods_id={$vo['supply_goods_id']}&supply_goods_name={$vo['supply_goods_name']}&have={$vo['have']}&stock_id={$vo['stock_id']}&contract_id=&woker_id=&is_type=1" data-h="568px"><i class="layui-icon">&#xe698;</i></button>
-												</div>
-											</td>
-										</tr>
-										{/volist}
-										</tbody>
+							{if condition="$Think.cookie.check_shop eq ''"}
+								<div class="layui-tab-item layui-show">
+							{else/}
+								<div class="layui-tab-item">
+							{/if}
+								<div class="layui-form" id="table-list" >
+									<table class="layui-table all1"  lay-filter="school_table" >
 									</table>
-									<div class="page-wrap">
-										{$balance_list->render()|raw}
-									</div>
 								</div>
 							</div>
 
 							<!--工程调拨-->
 							<div class="layui-tab-item">
 								<div class="layui-form" id="table-list">
-									<table class="layui-table" lay-skin="line">
-										<colgroup>
-											<col width="50">
-											<col class="hidden-xs" width="80">
-											<col>
-											<col>
-											<col>
-											<col>
-											<col>
-										</colgroup>
-										<thead>
-										<tr>
-											<th class="hidden-xs">编号</th>
-											<th>合同编号</th>
-											<th>业主</th>
-											<th>项目名</th>
-											<th>状态</th>
-											<th>创建时间</th>
-											<th>材料概况</th>
-											<th>操作</th>
-										</tr>
-										</thead>
-										<tbody>
-										{volist name="project_list" id="vo"}
-										<tr>
-											<td class="hidden-xs">{$vo['id']}</td>
-											<td>{$vo['contract_number']}</td>
-											<td>{$vo['owner_name']}</td>
-											<td>{$vo['name']}</td>
-											<td><span class="layui-badge {eq name='vo.status' value='1'}layui-bg-gray{/eq}{eq name='vo.status' value='2'}layui-bg-blue{/eq}{eq name='vo.status' value='3'}layui-bg-orange{/eq}{eq name='vo.status' value='4'}layui-badge{/eq}">{$vo['status_name']}</span></td>
-											<td>{$vo['create_time']}</td>
-											<td>
-												{volist name="vo.goods_list" id="v"}
-													编号:{$v.goods_number}  材料:{$v.goods_name}  可领:{$v.can_num}  已领:{$v.get_num}  未领:{$v.not_num}
-													<br/>
-												{/volist}
-											</td>
-											<td>
-												<div class="layui-inline">
-													<button type="button" class="layui-btn layui-btn-sm layui-btn-normal addBtn btn_tips" data-title="调拨材料"  data-url="{:url('allocation/allocation_goods')}?project_id={$vo['id']}&contract_id={$vo['contract_id']}&type_id=1&stock_id=&supply_goods_id=&woker_id=$vo['woker_id']&is_type=1" data-h="568px"><i class="layui-icon">&#xe698;</i></button>
-													<button class="layui-btn layui-btn-sm layui-btn-danger del-btn btn_tips" data-title="取消" data-id="{$vo['id']}" data-url="{:url('allocation/del')}"><i class="layui-icon">&#xe640;</i></button>
-												</div>
-											</td>
-										</tr>
-										{/volist}
-										</tbody>
+									<table class="layui-table all2" lay-filter="school_table1" >
 									</table>
-									<div class="page-wrap">
-										{$project_list->render()|raw}
-									</div>
 								</div>
 							</div>
+
 
 							<!--甲供结余调拨-->
 							<div class="layui-tab-item">
 								<div class="layui-form" id="table-list">
-									<table class="layui-table" lay-skin="line">
-										<colgroup>
-											<col class="hidden-xs" width="80">
-											<col>
-											<col>
-											<col>
-											<col>
-											<col>
-										</colgroup>
-										<thead>
-										<tr>
-											<th class="hidden-xs">编号</th>
-											<th>仓库名</th>
-											<th>项目名</th>
-											<th>材料</th>
-											<th>可调拨数</th>
-											<th>操作</th>
-										</tr>
-										</thead>
-										<tbody>
-										{volist name="balance_list" id="vo"}
-										<tr>
-											<td class="hidden-xs">{$vo['id']}</td>
-											<td>{$vo['stock_name']}</td>
-											<td>{$vo['project_name']}</td>
-											<td>{$vo['supply_goods_name']}</td>
-											<td>{$vo['have']}</td>
-											<td>
-												<div class="layui-inline">
-													<button type="button" class="layui-btn layui-btn-sm layui-btn-normal addBtn btn_tips" data-title="调拨材料"  data-url="{:url('allocation/allocation_goods')}?project_id={$vo['id']}&type_id=2&supply_goods_id={$vo['supply_goods_id']}&supply_goods_name={$vo['supply_goods_name']}&have={$vo['have']}&stock_id={$vo['stock_id']}&contract_id=&woker_id=&is_type=2&owner_id={$vo['owner_id']}" data-h="568px"><i class="layui-icon">&#xe698;</i></button>
-												</div>
-											</td>
-										</tr>
-										{/volist}
-										</tbody>
+									<table class="layui-table all3" lay-filter="school_table" >
+
 									</table>
-									<div class="page-wrap">
-										{$balance_list->render()|raw}
-									</div>
 								</div>
 							</div>
 
-							<!--甲供工程调拨-->
-							<div class="layui-tab-item">
-								<div class="layui-form" id="table-list">
-									<table class="layui-table" lay-skin="line">
-										<colgroup>
-											<col width="50">
-											<col class="hidden-xs" width="80">
-											<col>
-											<col>
-											<col>
-											<col>
-											<col>
-										</colgroup>
-										<thead>
-										<tr>
-											<th class="hidden-xs">编号</th>
-											<th>合同编号</th>
-											<th>业主</th>
-											<th>项目名</th>
-											<th>状态</th>
-											<th>创建时间</th>
-											<th>材料概况</th>
-											<th>操作</th>
-										</tr>
-										</thead>
-										<tbody>
-										{volist name="project_list" id="vo"}
-										<tr>
-											<td class="hidden-xs">{$vo['id']}</td>
-											<td>{$vo['contract_number']}</td>
-											<td>{$vo['owner_name']}</td>
-											<td>{$vo['name']}</td>
-											<td><span class="layui-badge {eq name='vo.status' value='1'}layui-bg-gray{/eq}{eq name='vo.status' value='2'}layui-bg-blue{/eq}{eq name='vo.status' value='3'}layui-bg-orange{/eq}{eq name='vo.status' value='4'}layui-badge{/eq}">{$vo['status_name']}</span></td>
-											<td>{$vo['create_time']}</td>
-											<td>
-												{volist name="vo.goods_list" id="v"}
-												编号:{$v.goods_number}  材料:{$v.goods_name}  可领:{$v.can_num}  已领:{$v.get_num}  未领:{$v.not_num}
-												<br/>
-												{/volist}
-											</td>
-											<td>
-												<div class="layui-inline">
-													<button type="button" class="layui-btn layui-btn-sm layui-btn-normal addBtn btn_tips" data-title="调拨材料"  data-url="{:url('allocation/allocation_goods')}?project_id={$vo['id']}&contract_id={$vo['contract_id']}&type_id=1&stock_id=&supply_goods_id=&woker_id={$vo['woker_id']}&is_type=2&owner_id={$vo['owner_id']}" data-h="568px"><i class="layui-icon">&#xe698;</i></button>
-													<button class="layui-btn layui-btn-sm layui-btn-danger del-btn btn_tips" data-title="取消" data-id="{$vo['id']}" data-url="{:url('allocation/del')}"><i class="layui-icon">&#xe640;</i></button>
-												</div>
-											</td>
-										</tr>
-										{/volist}
-										</tbody>
-									</table>
-									<div class="page-wrap">
-										{$project_list->render()|raw}
-									</div>
-								</div>
-							</div>
 
 							<!--调拨清单-->
 
-							<div class="layui-tab-item ">
-								<div class="layui-form" id="shoop">
-									<table class="layui-table" lay-skin="line">
-										<colgroup>
-											<col class="hidden-xs" width="80">
-											<col>
-											<col>
-											<col>
-											<col>
-											<col>
-										</colgroup>
-										<thead>
-										<tr>
-											<th><input type="checkbox" name="" lay-skin="primary" lay-filter="allChoose"></th>
-											<th class="hidden-xs">编号</th>
-											<th>调拨工程（出）</th>
-											<th>调拨工程队（出）</th>
-											<th>调拨工程（入）</th>
-											<th>仓库</th>
-											<th>材料</th>
-											<th>数量</th>
-											<th>调拨类型</th>
-											<th>添加时间</th>
-											<th>操作</th>
-										</tr>
-										</thead>
-										<tbody>
-										{volist name="shopping_list" id="vor"}
-										<tr>
-											<td><input type="checkbox" name="" lay-skin="primary" data-id="{$vor['id']}"></td>
-											<td class="hidden-xs">{$vor['id']}</td>
-											<td>{$vor['passive_project_name']}</td>
-											<td>{$vor['passive_woker_name']}</td>
-											<td>{$vor['project_name']}</td>
-											<td>{$vor['stock_name']}</td>
-											<td>{$vor['supply_goods_name']}</td>
-											<td>{$vor['num']}</td>
-											<td><span class="layui-badge {eq name='vor.type' value='1'}layui-bg-green{/eq}{eq name='vor.type' value='2'}layui-bg-black{/eq}">{$vor['type_name']}</span></td>
-											<td>{$vor['create_time']}</td>
-											<td>
-												<div class="layui-inline">
-													<button class="layui-btn layui-btn-sm layui-btn-danger del-btn btn_tips" data-title="删除" data-id="{$vor['id']}" data-url="{:url('allocation/del')}"><i class="layui-icon">&#xe640;</i></button>
-												</div>
-											</td>
-										</tr>
-										{/volist}
-										</tbody>
-									</table>
-									<div class="page-wrap">
-										{$shopping_list->render()|raw}
-									</div>
-								</div>
-								<div style="text-align:center">
-									<button type="button" class="layui-btn layui-btn-lg layui-btn-normal setBtn btn_tips" style="width: 150px" data-title="确认调拨" data-url="{:url('allocation/shopping_all_set')}"><i class="layui-icon">&#xe609;</i></button>
-									<button type="button" class="layui-btn layui-btn-lg layui-btn-danger delBtn btn_tips" style="width: 150px" data-title="清空调拨清单" data-url="{:url('allocation/del')}"><i class="layui-icon">&#xe640;</i></button>
-								</div>
-							</div>
+							<!--{if condition="$Think.cookie.check_shop neq ''"}-->
+								<!--<div class="layui-tab-item layui-show">-->
+							<!--{else/}-->
+								<!--<div class="layui-tab-item">-->
+							<!--{/if}-->
+
+
 						</div>
 					</div>
 				</div>
 		</div>
 		<script src="__STATIC__/admin/layui/layui.js" type="text/javascript" charset="utf-8"></script>
 		<script src="__STATIC__/admin/js/common.js" type="text/javascript" charset="utf-8"></script>
+		<script src="http://libs.baidu.com/jquery/2.1.4/jquery.min.js"></script>
+		<script type="text/html" id="barDemo">
+			<button type="button" class="layui-btn layui-btn-sm layui-btn-normal addBtn1 btn_tips" data-title="调拨材料"  lay-event="shopp" data-h="568px"><i class="layui-icon">&#xe698;</i></button>
+			<!--{:url('allocation/allocation_goods')}?project_id='+d.id+'&contract_id='+d.contract_id+'&type_id=1&stock_id=&supply_goods_id=&woker_id='+d.woker_id+'&is_type=2&owner_id='+d.owner_id+'&is_project_id='+"{$_GET['project_id']}"+-->
+		</script>
+		<script type="text/html" id="barDemo1">
+			<button type="button" class="layui-btn layui-btn-sm layui-btn-normal addBtn1 btn_tips" data-title="调拨材料" lay-event="shopp1" data-h="568px" ><i class="layui-icon">&#xe698;</i></button>
+			<!--{:url('allocation/allocation_goods')}?project_id='+d.id+'&contract_id='+d.contract_id+'&type_id=1&stock_id=&supply_goods_id=&woker_id='+d.woker_id+'&is_type=1&is_project_id='+"{$_GET['project_id']}"+-->
+
+		</script>
+	   <script type="text/html" id="status_name">
+         {{#  if(d.status === 1){ }}
+					<span class="layui-badge layui-bg-gray" >待开工</span>
+         {{# } else if(d.status === 2) { }}
+					<span class="layui-badge layui-bg-blue">已开工</span>
+         {{# } else if(d.status === 3) { }}
+					<span class="layui-badge layui-bg-orange">待结算</span>
+         {{# } else { }}
+					<span class="layui-badge layui-badge">已结算</span>
+         {{#  } }}
+      </script>
 		<script>
-			layui.use(['form', 'jquery', 'element', 'dialog', 'layer'], function() { 
+            function selectRole(e) {
+                parent.layer.open({ //在父窗口打开
+                    //layer提供了5种层类型。可传入的值有：0（信息框，默认）1（页面层）2（iframe层）3（加载层）4（tips层）
+                    type: 2,
+                    title: "调拨",
+                    area: ['80%', '80%'],
+                    content: "{:url('allocation/shopping_list')}"
+                });
+            }
+            layui.use(['form', 'jquery', 'element', 'dialog', 'layer', 'table'], function() {
 				var form = layui.form,
 					$ = layui.jquery,
 					element = layui.element,
 					layer = layui.layer,
 					dialog = layui.dialog;
+                    table = layui.table;
 
-				//开工
-				$('#table-list').on('click', '.start_work', function() {
-					var url=$(this).attr('data-url');
-					dialog.confirm({
-						message:'开始工程后将不能修改工程和需求，您确定要开始工程吗？',
-						success:function(){
-							loading = layer.load(2, {
-								shade: [0.2, '#000']
-							});
-							$.post(url, {}, function(data){ 
-								layer.close(loading);
-								console.dir(data);
-								if(data.error_code){ 
-									layer.msg(data.msg, {icon: 2, shade: 0.1, time: 1000}, function(){ 
+                $(document).ready(function(){
+                    var selecta = $('#project_id option:selected').val();
+                    if(selecta != ''){
+                        $(".addBtn2").css('display','block');
+                        $(".table_list").css('display','block');
+                    }
+                    table.render({
+                        elem: '.all1'
+                        , url: "{:url('allocation/banlance_list')}?search="+$("#search").val()+"&project_id="+$('#project_id option:selected').val()+"&is_type="
+                        , page: { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
+                            layout: ['limit', 'count', 'prev', 'page', 'next', 'skip'] //自定义分页布局
+                            //,curr: 5 //设定初始在第 5 页
+                            , limit: 10 //一页显示多少条
+                            , limits: [10]//每页条数的选择项
+                            , groups: 4 //只显示 2 个连续页码
+                            , first: "首页" //不显示首页
+                            , last: "尾页" //不显示尾页
 
-									});
-									return false;
-								} 
-								layer.msg(data.msg, {icon: 1, shade: 0.1, time: 1000}, function () {
-									window.location.reload();
-								});
-							})
-						},
-						cancel:function(){
-							layer.msg('取消了')
+                        }
+                        , cols: [[
+                            , {field: 'id', title: 'ID', width:80,sort: true}
+                            , {field: 'stock_name', width:230,title: '仓库名', sort: true}
+                            , {field: 'project_name',width:230, title: '项目名'}
+                            , {field: 'supply_goods_name', width:230,title: '材料'}
+                            , {field: 'have', width:230,title: '可调拨数', sort: true}
+                            , {fixed: 'right', title:'操作', width:80, align: 'center', toolbar: '#barDemo'} //这里的toolbar值是模板元素的选择器
+                        ]]
+                    });
+                    table.render({
+                        elem: '.all2'
+                        , url: "{:url('allocation/project_list')}?search="+$("#search").val()+"&project_id="+$('#project_id option:selected').val()+"&is_type="
+                        , page: true
+                        , cols: [[
+                            , {field: 'id', title: 'ID',align: 'center', width:80,sort: true}
+                            , {field: 'contract_number',align: 'center', width:120,title: '合同编号', sort: true}
+                            , {field: 'owner_name',align: 'center',width:100, title: '业主'}
+                            , {field: 'name',align: 'center', width:150,title: '项目名'}
+                            , {field: 'status_name',align: 'center', title: '状态', width:80, templet: '#status_name'}
+                            , {field: 'create_time',align: 'center', width:180,title: '创建时间'}
+                            , {field: 'goods', title: '材料'}
+                            , {field: 'can_num', title: '可领'}
+                            , {field: 'get_num', title: '已领'}
+                            , {field: 'not_num', title: '未领'}
+                            , {fixed: 'right', title:'操作', width:70,align: 'center', toolbar: '#barDemo1'} //这里的toolbar值是模板元素的选择器
+                        ]]
+                    });
+                    table.render({
+                        elem: '.all3'
+                        , url: "{:url('allocation/banlance_type_list')}?search="+$("#search").val()+"&project_id="+$('#project_id option:selected').val()+"&is_type="
+                        , page: { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
+                            layout: ['limit', 'count', 'prev', 'page', 'next', 'skip'] //自定义分页布局
+                            //,curr: 5 //设定初始在第 5 页
+                            , limit: 10 //一页显示多少条
+                            , limits: [10]//每页条数的选择项
+                            , groups: 4 //只显示 2 个连续页码
+                            , first: "首页" //不显示首页
+                            , last: "尾页" //不显示尾页
+
+                        }
+                        , cols: [[
+                            , {field: 'id', title: 'ID', width:80,sort: true}
+                            , {field: 'stock_name', width:230,title: '仓库名', sort: true}
+                            , {field: 'project_name',width:230, title: '项目名'}
+                            , {field: 'supply_goods_name', width:230,title: '材料'}
+                            , {field: 'have', width:230,title: '可调拨数',overflow:scroll}
+                            , {fixed: 'right', title:'操作',width:80, align: 'center', toolbar: '#barDemo'} //这里的toolbar值是模板元素的选择器
+                        ]]
+                    });
+
+                    return false;
+
+                });
+                form.on('select(filter)', function (data) {
+                    var project_id = data.value;
+                    var selecta = $('#project_id option:selected').val();
+                    if(selecta != ''){
+                        $(".addBtn2").css('display','block');
+                        $(".table_list").css('display','block');
+                    }
+
+                    table.render({
+                        elem: '.all1'
+                        , url: "{:url('allocation/banlance_list')}?search="+$("#search").val()+"&project_id="+$('#project_id option:selected').val()+"&is_type="
+                        , page: { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
+                            layout: ['limit', 'count', 'prev', 'page', 'next', 'skip'] //自定义分页布局
+                            //,curr: 5 //设定初始在第 5 页
+                            , limit: 10 //一页显示多少条
+                            , limits: [10]//每页条数的选择项
+                            , groups: 4 //只显示 2 个连续页码
+                            , first: "首页" //不显示首页
+                            , last: "尾页" //不显示尾页
+
+                        }
+                        , cols: [[
+                            , {field: 'id', title: 'ID', width:80,sort: true}
+                            , {field: 'stock_name', width:230,title: '仓库名', sort: true}
+                            , {field: 'project_name',width:230, title: '项目名'}
+                            , {field: 'supply_goods_name', width:230,title: '材料'}
+                            , {field: 'have', width:230,title: '可调拨数', sort: true}
+                            , {fixed: 'right', title:'操作', width:80, align: 'center', toolbar: '#barDemo'} //这里的toolbar值是模板元素的选择器
+                        ]]
+                    });
+                    table.render({
+                        elem: '.all2'
+                        , url: "{:url('allocation/project_list')}?search="+$("#search").val()+"&project_id="+$('#project_id option:selected').val()+"&is_type="
+                        , page: true
+                        , cols: [[
+                            , {field: 'id', title: 'ID',align: 'center', width:80,sort: true}
+                            , {field: 'contract_number',align: 'center', width:120,title: '合同编号', sort: true}
+                            , {field: 'owner_name',align: 'center',width:100, title: '业主'}
+                            , {field: 'name',align: 'center', width:150,title: '项目名'}
+                            , {field: 'status_name',align: 'center', title: '状态', width:80, templet: '#status_name'}
+                            , {field: 'create_time',align: 'center', width:180,title: '创建时间'}
+                            , {field: 'goods', title: '材料'}
+                            , {field: 'can_num', title: '可领'}
+                            , {field: 'get_num', title: '已领'}
+                            , {field: 'not_num', title: '未领'}
+                            , {fixed: 'right', title:'操作', width:70,align: 'center', toolbar: '#barDemo1'} //这里的toolbar值是模板元素的选择器
+                        ]]
+                    });
+                    table.render({
+                        elem: '.all3'
+                        , url: "{:url('allocation/banlance_type_list')}?search="+$("#search").val()+"&project_id="+$('#project_id option:selected').val()+"&is_type="
+                        , page: { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
+                            layout: ['limit', 'count', 'prev', 'page', 'next', 'skip'] //自定义分页布局
+                            //,curr: 5 //设定初始在第 5 页
+                            , limit: 10 //一页显示多少条
+                            , limits: [10]//每页条数的选择项
+                            , groups: 4 //只显示 2 个连续页码
+                            , first: "首页" //不显示首页
+                            , last: "尾页" //不显示尾页
+
+                        }
+                        , cols: [[
+                            , {field: 'id', title: 'ID', width:80,sort: true}
+                            , {field: 'stock_name', width:230,title: '仓库名', sort: true}
+                            , {field: 'project_name',width:230, title: '项目名'}
+                            , {field: 'supply_goods_name', width:230,title: '材料'}
+                            , {field: 'have', width:230,title: '可调拨数',overflow:scroll}
+                            , {fixed: 'right', title:'操作',width:80, align: 'center', toolbar: '#barDemo'} //这里的toolbar值是模板元素的选择器
+                        ]]
+                    });
+
+                    return false;
+//                    get_need_data1(project_id);
+                });
+
+                table.on('tool(school_table)', function(obj){ //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+                    var data = obj.data; //获得当前行数据
+                    var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+                    var tr = obj.tr; //获得当前行 tr 的DOM对象
+
+                    if(layEvent === 'shopp'){ //编辑
+                        //do something
+						console.log($('#project_id option:selected').val());
+						if($('#project_id option:selected').val() == ""){
+                            layer.msg('请选择调拨工程');
+                            return false;
 						}
-					})
-					return false;
-				})
+						parent.layer.open({ //在父窗口打开
+							//layer提供了5种层类型。可传入的值有：0（信息框，默认）1（页面层）2（iframe层）3（加载层）4（tips层）
+							type: 2,
+							title: "调拨",
+							area: ['80%', '80%'],
+							content: "{:url('allocation/allocation_goods')}?project_id="+data.id+"&contract_id="+data.contract_id+"&type_id=1&stock_id=&supply_goods_id=&search="+$("#search").val()+"&woker_id="+data.woker_id+"&is_type=2&owner_id="+data.owner_id+"&is_project_id="+$('#project_id option:selected').val(),
+						});
+                    }
+                });
 
-				
-			})
+                table.on('tool(school_table1)', function(obj){ //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+                    var data = obj.data; //获得当前行数据
+                    var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+                    var tr = obj.tr; //获得当前行 tr 的DOM对象
+
+                    if(layEvent === 'shopp1'){ //编辑
+                        //do something
+                        if($('#project_id option:selected').val() == ""){
+                            layer.msg('请选择调拨工程');
+                            return false;
+                        }
+                        if($("#search").val() == ""){
+                            layer.msg('请填写调拨材料');
+                            return false;
+                        }
+                        parent.layer.open({ //在父窗口打开
+                            //layer提供了5种层类型。可传入的值有：0（信息框，默认）1（页面层）2（iframe层）3（加载层）4（tips层）
+                            type: 2,
+                            title: "调拨",
+                            area: ['80%', '80%'],
+                            content: "{:url('allocation/allocation_goods')}?project_id="+data.id+"&contract_id="+data.contract_id+"&type_id=1&stock_id=&supply_goods_id=&search="+$("#search").val()+"&woker_id="+data.woker_id+"&is_type=1&is_project_id="+$('#project_id option:selected').val(),
+                        });
+                    }
+                });
+
+                $(document).on('click','#search_school',function(){
+                    if($('#project_id option:selected').val() != '' && $("#search").val() == "") {
+                        var url = "{:url('stock_order/stock_order_index')}?is_project_id="+$('#project_id option:selected').val();
+                        $(".addBtn2").attr('data-url', url);
+                        $(".addBtn2").css('display', 'block');
+                        table.render({
+                            elem: '.all1'
+                            , url: "{:url('allocation/banlance_list')}?search="+$("#search").val()+"&project_id="+$('#project_id option:selected').val()+"&is_type="
+                            , page: { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
+                                layout: ['limit', 'count', 'prev', 'page', 'next', 'skip'] //自定义分页布局
+                                //,curr: 5 //设定初始在第 5 页
+                                , limit: 10 //一页显示多少条
+                                , limits: [10]//每页条数的选择项
+                                , groups: 4 //只显示 2 个连续页码
+                                , first: "首页" //不显示首页
+                                , last: "尾页" //不显示尾页
+
+                            }
+                            , cols: [[
+                                , {field: 'id', title: 'ID', width:80,sort: true}
+                                , {field: 'stock_name', width:230,title: '仓库名', sort: true}
+                                , {field: 'project_name',width:230, title: '项目名'}
+                                , {field: 'supply_goods_name', width:230,title: '材料'}
+                                , {field: 'have', width:230,title: '可调拨数', sort: true}
+                                , {fixed: 'right', title:'操作', width:80, align: 'center', toolbar: '#barDemo'} //这里的toolbar值是模板元素的选择器
+                            ]]
+                        });
+                        table.render({
+                            elem: '.all2'
+                            , url: "{:url('allocation/project_list')}?search="+$("#search").val()+"&project_id="+$('#project_id option:selected').val()+"&is_type="
+                            , page: true
+                            , cols: [[
+                                , {field: 'id', title: 'ID',align: 'center', width:80,sort: true}
+                                , {field: 'contract_number',align: 'center', width:120,title: '合同编号', sort: true}
+                                , {field: 'owner_name',align: 'center',width:100, title: '业主'}
+                                , {field: 'name',align: 'center', width:150,title: '项目名'}
+                                , {field: 'status_name',align: 'center', title: '状态', width:80, templet: '#status_name'}
+                                , {field: 'create_time',align: 'center', width:180,title: '创建时间'}
+                                , {field: 'goods', title: '材料'}
+                                , {field: 'can_num', title: '可领'}
+                                , {field: 'get_num', title: '已领'}
+                                , {field: 'not_num', title: '未领'}
+                                , {fixed: 'right', title:'操作', width:70,align: 'center', toolbar: '#barDemo1'} //这里的toolbar值是模板元素的选择器
+                            ]]
+                        });
+                        table.render({
+                            elem: '.all3'
+                            , url: "{:url('allocation/banlance_type_list')}?search="+$("#search").val()+"&project_id="+$('#project_id option:selected').val()+"&is_type="
+                            , page: { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
+                                layout: ['limit', 'count', 'prev', 'page', 'next', 'skip'] //自定义分页布局
+                                //,curr: 5 //设定初始在第 5 页
+                                , limit: 10 //一页显示多少条
+                                , limits: [10]//每页条数的选择项
+                                , groups: 4 //只显示 2 个连续页码
+                                , first: "首页" //不显示首页
+                                , last: "尾页" //不显示尾页
+
+                            }
+                            , cols: [[
+                                , {field: 'id', title: 'ID', width:80,sort: true}
+                                , {field: 'stock_name', width:230,title: '仓库名', sort: true}
+                                , {field: 'project_name',width:230, title: '项目名'}
+                                , {field: 'supply_goods_name', width:230,title: '材料'}
+                                , {field: 'have', width:230,title: '可调拨数',overflow:scroll}
+                                , {fixed: 'right', title:'操作',width:80, align: 'center', toolbar: '#barDemo'} //这里的toolbar值是模板元素的选择器
+                            ]]
+                        });
+                    }
+
+
+                    return false;
+                });
+
+
+			});
+
 		</script>
 	</body>
 
