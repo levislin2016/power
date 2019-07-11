@@ -321,13 +321,14 @@ class Allocation{
             ->leftJoin('woker w','sc.passive_woker_id = w.id')
             ->leftJoin('supply_goods sg','sc.supply_goods_id = sg.id')
             ->leftJoin('goods g','g.id = sg.g_id')
+            ->leftJoin('unit u','u.id = g.unit_id')
             ->where(function ($query) use($params) {
                 if(!empty($params['search'])){
                     $query->where('w.name|g.name|p1.name|p.name', 'like', '%'.$params['search'].'%');
                 }
             })
             ->where('sc.status',1)
-            ->field('sc.*, s.name as stock_name, p.name as project_name,p1.name as passive_project_name, w.name as passive_woker_name,g.name as supply_goods_name')
+            ->field('sc.*, s.name as stock_name, p.name as project_name,p1.name as passive_project_name, w.name as passive_woker_name,g.name as supply_goods_name,u.name as unit_name')
             ->order(['sc.create_time' => 'desc'])
             ->paginate(10, false, [
                 'query'     => $params,
@@ -375,7 +376,7 @@ class Allocation{
         if($data['num'] > $project_info['have']){
             throw new BaseException(
                 [
-                    'msg' => '超过可调拨材料数！',
+                    'msg' => '超过最大可调拨材料数'.$project_info['have'].'个',
                     'errorCode' => 301
                 ]);
         }
@@ -429,7 +430,7 @@ class Allocation{
         if($project_info['not'] < $data['num']){
             throw new BaseException(
                 [
-                    'msg' => '超过可调拨材料数！',
+                    'msg' => '超过最大可调拨材料数'.$project_info['not'],
                     'errorCode' => 301
                 ]);
         }
@@ -503,7 +504,7 @@ class Allocation{
                     \Db::rollback();
                     throw new BaseException(
                         [
-                            'msg' => '编号为'.$v['id'].'的清单超过可调拨材料数！',
+                            'msg' => '编号为'.$v['id'].'的清单'.$is_all['msg'].'个',
                             'errorCode' => 301
                         ]);
                     break;
@@ -527,7 +528,7 @@ class Allocation{
             ->find();
         if($data['num'] > $project_info['have']){
             return [
-                'msg' => '编号为'.$data['id'].'超过可调拨材料数！',
+                'msg' => '编号为'.$data['id'].'最大可调拨材料数'.$project_info['have'],
                 'code' => 301
             ];
         }
@@ -569,7 +570,7 @@ class Allocation{
             ->find();
         if($project_info['not'] < $data['num']){
             return [
-                'msg' => '编号为'.$data['id'].'超过可调拨材料数！',
+                'msg' => '编号为'.$data['id'].'超过最大可调拨材料数'.$project_info['not'],
                 'code' => 301
             ];
         }
@@ -644,7 +645,7 @@ class Allocation{
             if ($project_info['not'] < $params['num']) {
                 throw new BaseException(
                     [
-                        'msg' => '超过项目可领材料数！',
+                        'msg' => '超过项目最大可领材料数'.$project_info['not'].'个',
                         'errorCode' => 301
                     ]);
             }

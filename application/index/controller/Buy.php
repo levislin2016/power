@@ -14,6 +14,7 @@ use app\index\model\Goods as GoodsModel;
 use app\lib\exception\BaseException;
 use app\index\validate\CreateBuyValidate;
 use app\index\validate\CreatePutValidate;
+use think\Db;
 
 class Buy extends Base{
     protected $beforeActionList = [
@@ -45,7 +46,7 @@ class Buy extends Base{
             // ->leftJoin('stock_all sa','sg.id = sa.supply_goods_id')
             // ->where('sg.g_id', $vo['goods_id'])
             // ->sum('have');
-            $stock_nums = StockOrderModel::alias('so')
+            $stock_nums = Db::table('pw_stock_order')->alias('so')
                 ->leftJoin('stock_order_info soi', 'soi.stock_order_id = so.id')
                 ->leftJoin('supply_goods sg', 'sg.id = soi.supply_goods_id')
                 ->where('sg.g_id', $vo['goods_id'])
@@ -54,6 +55,7 @@ class Buy extends Base{
                 ->group('so.type')
                 ->field('so.type, sum(soi.num) as num')
                 ->select();
+            $stock_nums = $stock_nums->toArray();
             $vo['have_num'] = $vo['project_num'] = 0;
             foreach($stock_nums as $stock_num){
                 if($stock_num['type'] == 10){
