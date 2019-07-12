@@ -139,4 +139,101 @@ class StockOrder extends Base
         return $this->fetch();
     }
 
+    public function order_water(){
+        $tl = $params = input('param.tl', '');
+        $project_list = ProjectModel::all();
+        $this->assign('project_list', $project_list);
+        $woker_list = WokerModel::all();
+        $this->assign('woker_list', $woker_list);
+        $stock_list = StockModel::all();
+        $this->assign('stock_list', $stock_list);
+        $type_list = config('extra.order_type');
+        if($tl){
+            
+        }
+        $this->assign('type_list', $type_list);
+        return $this->fetch();
+    }
+
+    public function order_water_data(){
+        $params = input('param.');
+
+        $field = input('param.field', 'id');
+        $order = input('param.order', 'desc');
+        if($order == 'null'){ 
+            $field = 'id';
+            $order = 'asc';
+        }
+        $list = StockOrderModel::useGlobalScope(false)->alias('so')
+            ->leftJoin('Stock s','so.stock_id = s.id')
+            ->leftJoin('project p','so.project_id = p.id')
+            ->leftJoin('woker w','so.woker_id = w.id')
+            ->leftJoin('user u','so.user_id = u.id')
+            ->where(function ($query) use($params) {
+                $query->where('so.company_id', session('power_user.company_id'));
+                $query->where('so.status', 2);
+                if($params['number']){
+                    $query->where('so.number', 'like' , '%'.$params['number'].'%');
+                }
+                if($params['pid']){
+                    $query->where('so.project_id', $params['pid']);
+                }
+                if($params['wid']){
+                    $query->where('so.woker_id', $params['wid']);
+                }
+                if($params['sid']){
+                    $query->where('so.stock_id', $params['sid']);
+                }
+                if($params['tid']){
+                    $query->where('so.type', 'in', $params['tid']);
+                }
+            })
+            ->field('so.*, s.name as stock_name, p.name as project_name, w.name as woker_name, u.name as user_name')
+            ->order('so.create_time', 'desc')
+            ->order($field, $order)
+            ->paginate($params['nums'], false);
+        
+        foreach($list as &$v){
+            $v->type_name = $v->type_name;
+        }
+        $list = $list->toArray();
+        $list['code'] = 200;
+        $list['msg'] = '数据加载成功';
+        return json($list);
+    }
+
+    public function order_water_data_info(){
+        $id = input('param.id', '');
+        $nums = input('param.nums', '');
+
+        if(!$id){
+            $list['data'] = [];
+            $list['code'] = 200;
+            $list['msg'] = '数据加载成功';
+            return json($list);
+        }
+
+        $field = input('param.field', 'id');
+        $order = input('param.order', 'desc');
+        if($order == 'null'){ 
+            $field = 'id';
+            $order = 'asc';
+        }
+
+        $list = StockOrderInfoModel::alias('soi')
+            ->leftJoin('supply_goods sg','soi.supply_goods_id = sg.id')
+            ->leftJoin('supply s','sg.s_id = s.id')
+            ->leftJoin('goods g','sg.g_id = g.id')
+            ->leftJoin('unit u','g.unit_id = u.id')
+            ->where('soi.stock_order_id', $id)
+            ->field('soi.*, s.name as supply_name, sg.g_id, sg.s_id, g.name, g.image, g.number, u.name as unit')
+            ->order($field, $order)
+            ->paginate($nums, false);
+        
+        $list = $list->toArray();
+        $list['code'] = 200;
+        $list['msg'] = '数据加载成功';
+        return json($list);
+    }
+
 }
