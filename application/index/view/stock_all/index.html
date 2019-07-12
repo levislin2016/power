@@ -22,7 +22,12 @@
 						<input type="text" name="search" placeholder="请输入编号、名称、供应商、仓库" autocomplete="off" class="layui-input search"
 							value="{$Think.get.search}" />
 					</div>
-					<button class="layui-btn layui-btn-normal" type="submit" lay-filter="form_search" lay-submit="search">搜索</button>
+					<div class="layui-inline">
+						<button class="layui-btn layui-btn-sm layui-btn-normal" type="submit" lay-submit="search">搜索</button>
+					</div>
+					<div class="layui-inline tool-btn">
+						<button type="button" class="layui-btn layui-btn-sm layui-btn-normal btn_tips" onclick="window.location.reload();" data-title="刷新"><i class="layui-icon">&#xe666;</i></button>
+					</div>
 					<div class="layui-inline" style="float: right">
 						<select name="stock_type" lay-filter="stock_type" class="stock_type" lay-verify="">
 							<option value="1">仓库</option>
@@ -68,7 +73,7 @@
 				{ field: 'num', title: '库存', sort: true },
 				{ field: 'in', title: '已分配', sort: true },
 				{ field: 'freeze', title: '未分配', sort: true },
-				{ field: 'have', title: '结余', sort: true},
+				{ field: 'ho', title: '结余', sort: true},
 				{ field: 'extra', title: '材料补充', sort: true},
 			]];
 
@@ -106,8 +111,8 @@
 				// 	, type: 'desc' //排序方式  asc: 升序、desc: 降序、null: 默认排序
 				// }
 				// , toolbar: '#barDemo'
-				// , limit: 1
-				// , limits: [1, 10, 20, 30, 40]
+				, limit: 20
+				, limits: [20, 40, 60, 80, 100]
 			});
 
 			//监听排序事件 
@@ -115,17 +120,25 @@
 				// console.log(obj.field); //当前排序的字段名
 				// console.log(obj.type); //当前排序类型：desc（降序）、asc（升序）、null（空对象，默认排序）
 				// console.log(this); //当前排序的 th 对象
+				var search = $('.search').val();
+				var stock_type = $('.stock_type').val();
 				var where = { //请求参数（注意：这里面的参数可任意定义，并非下面固定的格式）
 						field: obj.field //排序字段
 						, order: obj.type //排序方式
+						, search: search
+						, stock_type: stock_type
 					};
 				if(!obj.type){
-					where = {}
+					where = {
+						search: search
+						, stock_type: stock_type
+					};
 				}
 
 				table.reload('idTest', {
 					initSort: obj //记录初始排序，如果不设的话，将无法标记表头的排序状态。
 					, where: where
+					, cols: cols
 				});
 			});
 
@@ -155,6 +168,10 @@
 						curr: 1 //重新从第 1 页开始
 					}
 					, cols: cols
+					, initSort: {
+						field: 'num' //排序字段，对应 cols 设定的各字段名
+						, type: 'null' //排序方式  asc: 升序、desc: 降序、null: 默认排序
+					}
 				});
 			}
 

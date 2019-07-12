@@ -58,7 +58,7 @@ class StockAll{
                     $query->where('g.number|g.name|st.name|s.name|p.name', 'like', '%'.$params['search'].'%');    
                 }
             })
-            ->field('ps.*, p.name as project_name, st.name as stock_name, g.name, g.number, g.image, s.name as supply_name, u.name as unit')
+            ->field('ps.*, (ps.have + ps.offer) as ho, p.name as project_name, st.name as stock_name, g.name, g.number, g.image, s.name as supply_name, u.name as unit')
             ->order($field, $order)
             ->paginate($params['nums'], false);
 
