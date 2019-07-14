@@ -41,7 +41,7 @@
                         <div class="layui-inline">
                             <label class="layui-form-label">类型:</label>
                             <div class="layui-input-inline" style="width: 185px;">
-                                <select name="from" class="from" required lay-verify="required" lay-filter="from" lay-verType="tips" lay-search="">
+                                <select name="from" class="from" id="lasta" required lay-verify="required" lay-filter="from" lay-verType="tips" lay-search="">
                                     {volist name="buy_from" id="from"}
                                     <option value="{$key}">{$from}</option>
                                     {/volist}
@@ -107,24 +107,12 @@
         <div style="padding-left: 10px; text-align: center;">
 
             <button class="layui-btn layui-btn-normal" lay-submit lay-filter="formDemo">立即提交</button>
-
+            <button type="button" class="layui-btn layui-btn-normal dc" data-title="导出excel"><i class="layui-icon">&#xe601;</i>导出excel</button>
         </div>
     </form>
     <script src="__STATIC__/admin/layui/layui.js" type="text/javascript" charset="utf-8"></script>
     <script src="__STATIC__/admin/js/common.js" type="text/javascript" charset="utf-8"></script>
     <script>
-        function selectRole(e,d,f,c) {
-            console.log(e);
-            console.log(d);
-            console.log(f);
-            parent.layer.open({ //在父窗口打开
-                //layer提供了5种层类型。可传入的值有：0（信息框，默认）1（页面层）2（iframe层）3（加载层）4（tips层）
-                type: 2,
-                title: "调拨",
-                area: ['80%', '80%'],
-                content: "{:url('allocation/index')}?project_id="+d+"&supply_goods_id="+e+"&is_type="+f+"&goods_name="+c,
-            });
-        }
         layui.use(['form', 'jquery', 'laydate', 'layer', 'laypage', 'dialog', 'tool', 'element', 'layedit'], function () {
             var form = layui.form,
                 layer = layui.layer,
@@ -134,7 +122,25 @@
                 layedit = layui.layedit,
                 tool = layui.tool,
                 element = layui.element,
+                table = layui.table,
                 dialog = layui.dialog;
+
+            $(".addBtn12").click(function(){
+                selectRole();
+            });
+
+            window.selectRole = function (e,d,f,c) {
+                parent.layer.open({ //在父窗口打开
+                    //layer提供了5种层类型。可传入的值有：0（信息框，默认）1（页面层）2（iframe层）3（加载层）4（tips层）
+                    type: 2,
+                    title: "调拨",
+                    area: ['80%', '80%'],
+                    content: "{:url('allocation/index')}?project_id="+d+"&supply_goods_id="+e+"&is_type="+f+"&goods_name="+c,
+                    end : function() {
+                        get_need_data($('.project_id').data('url'), $('.project_id').data('pid'))
+                    }
+                });
+            }
 
             //自定义验证规则
             form.verify({
@@ -222,11 +228,11 @@
                         str += '    <td></td>';
                         str += '    <td>'+ data[i]['need'] +'</td>';
                         str += '    <td>'+ data[i]['buy_num'] +'</td>';
-                        str += '    <td>'+ data[i]['project_num'] +'</td>';
                         str += '    <td>'+ data[i]['have_num'] +'</td>';
+                        str += '    <td>'+ data[i]['project_num'] +'</td>';
                         str += '<td>';
                         str += '<div class="layui-input-inline">';
-                        str += '<button type="button" class="layui-btn layui-btn-sm layui-btn-normal addBtn btn_tips" onclick="selectRole('+ data[i]['goods_id'] +','+ data[i]['project_id'] +','+data[i]['type']+')" data-title="调拨材料"  data-url="" data-h="400px"><i class="layui-icon">&#xe609;</i></button>';
+                        str += '<button type="button" class="layui-btn layui-btn-sm layui-btn-normal addBtn12 btn_tips" onclick="selectRole('+ data[i]['goods_id'] +','+ data[i]['project_id'] +','+data[i]['type']+')" data-title="调拨材料"  data-url="" data-h="400px"><i class="layui-icon">&#xe609;</i></button>';
                         str += '</div>';
                         str += '</td>';
                         str += '    <td style="padding: 0px;">';
@@ -236,10 +242,17 @@
                         str += '</tr>';
                     }
                     $('.stock_order_table').find('tbody').html(str);
+                        window.exportData=str;
                     form.render('select');
                 })
             }
 
+            $(".dc").click(function(){
+                var project_id = $('.project_id').val();
+                var selecta = $('#lasta option:selected').val();
+                var url = "{:url('allocation/excl')}?id="+project_id+"&from="+selecta;
+                window.open(url);
+            });
             form.on('select(supply)', function (data) {
                 if(data.value == ''){
                     $(data.elem).parents('td').next('td').html('');
