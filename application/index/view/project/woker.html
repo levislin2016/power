@@ -40,7 +40,12 @@
 									<option value="0571">删除</option>
 								</select>
 							</div> -->
-							<button class="layui-btn layui-btn-normal" type="submit" lay-submit="search">搜索</button>
+							<div class="layui-inline">
+								<button class="layui-btn layui-btn-sm layui-btn-normal" type="submit" lay-submit="search">搜索</button>
+							</div>
+							<div class="layui-inline tool-btn">
+								<button type="button" class="layui-btn layui-btn-sm layui-btn-normal btn_tips" onclick="window.location.reload();" data-title="刷新"><i class="layui-icon">&#xe666;</i></button>
+							</div>
 						</div>
 					</form>
 					<div class="layui-form" id="table-list">

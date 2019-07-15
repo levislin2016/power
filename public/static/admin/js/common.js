@@ -180,7 +180,7 @@ layui.use(['form', 'jquery', 'laydate', 'layer', 'laypage', 'dialog',   'element
                     ids += $(this).data('id') + ',';
                 });
                 //layer.msg('删除了'+ ids);
-                delAjax(url, {ids: ids});
+                setAjax(url, {ids: ids});
             },
             cancel:function(){
                 layer.msg('取消')
@@ -325,6 +325,26 @@ layui.use(['form', 'jquery', 'laydate', 'layer', 'laypage', 'dialog',   'element
             });
 		});
 	}
+
+    function setAjax(url, data){
+        loading = layer.load(2, {
+            shade: [0.2, '#000']
+        });
+        $.get(url, data, function(data){
+            layer.close(loading);
+            console.dir(data);
+            if(data.error_code){
+                layer.msg(data.msg, {icon: 2, shade: 0.1, time: 1000}, function(){
+
+                });
+                return false;
+            }
+            layer.msg(data.msg, {icon: 1, shade: 0.1, time: 1000}, function () {
+                var index = parent.layer.getFrameIndex(window.name);
+                parent.layer.close(index);//关闭当前页
+            });
+        });
+    }
 
     function delAjax1(url, data){
         loading = layer.load(2, {

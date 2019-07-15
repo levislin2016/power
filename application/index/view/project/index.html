@@ -33,7 +33,12 @@
 									<option value="0571">删除</option>
 								</select>
 							</div> -->
-							<button class="layui-btn layui-btn-normal" type="submit" lay-submit="search">搜索</button>
+							<div class="layui-inline">
+								<button class="layui-btn layui-btn-sm layui-btn-normal" type="submit" lay-submit="search">搜索</button>
+							</div>
+							<div class="layui-inline tool-btn">
+								<button type="button" class="layui-btn layui-btn-sm layui-btn-normal btn_tips" onclick="window.location.reload();" data-title="刷新"><i class="layui-icon">&#xe666;</i></button>
+							</div>
 						</div>
 					</form>
 					<div class="layui-form" id="table-list">
@@ -77,7 +82,7 @@
 											{in  name="vo.status" value="1,2"}
 												<a class="layui-btn layui-btn-sm btn_tips" data-title="设定预算" href="{:url('need/index', array('id'=>$vo['id']))}" style="margin: 0px;"><i class="layui-icon">&#xe63c;</i></a>
 												{egt name="vo.id|ifBuy" value="1"}
-													<button class="layui-btn layui-btn-sm layui-btn-normal edit-btn btn_tips" data-title="采购" data-id="{$vo['id']}" data-url="{:url('buy/add')}" data-w="700px" data-h="650px"  style="margin: 0px;"><i class="layui-icon">&#xe657;</i></button>
+													<button class="layui-btn layui-btn-sm layui-btn-normal edit-btn btn_tips" data-title="采购" data-id="{$vo['id']}" data-url="{:url('buy/add')}" data-w="900px" data-h="650px"  style="margin: 0px;"><i class="layui-icon">&#xe657;</i></button>
 												{/egt}
 											{/in}
 											<!-- <button class="layui-btn layui-btn-sm layui-btn-normal start_work btn_tips" data-title="开始工程" data-url="{:url('project/start_work', array('id'=>$vo['id']))}"><i class="layui-icon">&#xe66c;</i></button>											 -->
@@ -95,7 +100,7 @@
 											<!-- <button class="layui-btn layui-btn-sm layui-btn-danger btn_tips" data-title="工程结算" data-url=""><i class="layui-icon">&#xe66c;</i></button> -->
 											
 											{eq name="vo.status" value="4"}
-												<button class="layui-btn layui-btn-sm layui-btn-warm edit-btn btn_tips" data-title="甲供退回" data-id="{$vo['id']}" data-url="{:url('project/balance_back')}"  data-w="900px" style="margin: 0px;"><i class="layui-icon">&#xe66b;</i></button>
+												<button class="layui-btn layui-btn-sm layui-btn-warm edit-btn btn_tips" data-title="甲供退回" data-id="{$vo['id']}" data-url="{:url('project/balance_back')}"  data-w="1000px" style="margin: 0px;"><i class="layui-icon">&#xe66b;</i></button>
 											{/eq}
 
 											<div class="layui-dropdown dropdown-click dropdown-right">
@@ -126,13 +131,13 @@
 													{case 3}
 													<hr>
 													<li>
-														<a href="javascript:;" class="edit-btn" data-title="{$vo['name']}-工程结算盘库" data-url="{:url('project/balance', array('id'=>$vo['id']))}" data-w="900px">工程结算</a>
+														<a href="javascript:;" class="edit-btn" data-title="{$vo['name']}-工程结算盘库" data-url="{:url('project/balance', array('id'=>$vo['id']))}" data-w="1000px">工程结算</a>
 													</li>
 													{/case}
 													{case 4}
 													<hr>
 													<li>
-														<a href="javascript:;" class="edit-btn" data-title="{$vo['name']}-工程结算记录" data-url="{:url('project/balance_show', array('id'=>$vo['id']))}" data-w="900px">结算记录</a>
+														<a href="javascript:;" class="edit-btn" data-title="{$vo['name']}-工程结算记录" data-url="{:url('project/balance_show', array('id'=>$vo['id']))}" data-w="1000px">结算记录</a>
 													</li>
 													{/case}
 												{/switch}

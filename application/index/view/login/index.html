@@ -78,7 +78,9 @@
                             layer.msg(data.msg, {icon: 2, shade: 0.3, time: 1000}, function(){ 
                                 $('.verifyImg').click();
                                 $('.captcha').val('');
-                                $('.password').val('');
+                                if(data.error_code == 20002){
+                                    $('.password').val('');
+                                }
                             });
                             return false;
                         }

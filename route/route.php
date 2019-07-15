@@ -189,6 +189,9 @@ Route::post('purchase_excel', 'purchase/excel_purchase');
 
 //领取和退还记录
 Route::any('order_get_back', 'stock_order/order_get_back');
+Route::any('order_water', 'stock_order/order_water');
+Route::any('order_water_data', 'stock_order/order_water_data');
+Route::any('order_water_data_info', 'stock_order/order_water_data_info');
 
 //调拨记录
 Route::any('stock_order_index', 'stock_order/stock_order_index');
@@ -206,6 +209,6 @@ Route::post('get_have', 'buy/get_have');
 Route::get('buy_apply_for', 'buy/apply_for');
 Route::post('buy_select_supply', 'buy/select_supply');
 Route::get('buy_status', 'buy/save_status');
-Route::get('buy_water', 'buy/water');
+
 
 

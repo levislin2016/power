@@ -45,6 +45,7 @@
 								<th>仓库</th>
 								<th>材料</th>
 								<th>数量</th>
+								<th>单位</th>
 								<th>调拨类型</th>
 								<th>添加时间</th>
 							</tr>
@@ -60,6 +61,7 @@
 								<td>{$vor['stock_name']}</td>
 								<td>{$vor['supply_goods_name']}</td>
 								<td>{$vor['num']}</td>
+								<td>{$vor['unit_name']}</td>
 								<td><span class="layui-badge {eq name='vor.type' value='1'}layui-bg-green{/eq}{eq name='vor.type' value='2'}layui-bg-black{/eq}">{$vor['type_name']}</span></td>
 								<td>{$vor['create_time']}</td>
 							</tr>

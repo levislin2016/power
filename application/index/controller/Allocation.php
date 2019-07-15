@@ -12,7 +12,11 @@ use app\lib\exception\BaseException;
 use app\index\validate\ProjectValidate;
 use app\index\validate\AllotValidate;
 use think\Cookie;
+use think\Db;
 use think\Session;
+use app\index\service\Need as NeedService;
+use app\index\model\SupplyGoods as SupplyGoodsModel;
+use app\index\model\Buy as BuyModel;
 
 class Allocation extends Base
 {
@@ -34,7 +38,6 @@ class Allocation extends Base
         }else{
             $goods_name['name'] = '';
         }
-
         $this->assign('project_all_list', $project_all_list);
         $this->assign('goods_name', $goods_name);
 
@@ -50,6 +53,7 @@ class Allocation extends Base
 
     public function project_list(){
         $params = input('get.');
+        cookie('is_type', '');
         $project_list = (new AllocationService)->project_list($params);
         cookie('check_shop', '');
         return json(["code"=>"0","msg"=>"","count" => $project_list['count'], "data"=>$project_list['list']]);
@@ -57,6 +61,7 @@ class Allocation extends Base
 
     public function banlance_list(){
         $params = input('get.');
+        cookie('is_type', '');
         $balance_list = (new AllocationService)->balance_list($params);
         cookie('check_shop', '');
         return json(["code"=>"0","msg"=>"","count" => $balance_list['count'], "data"=>$balance_list['list']]);
@@ -64,6 +69,7 @@ class Allocation extends Base
 
     public function banlance_type_list(){
         $params = input('get.');
+        cookie('is_type', '');
         $project_type_list = (new AllocationService)->balance_type_list($params);
         cookie('check_shop', '');
         return json(["code"=>"0","msg"=>"","count" => $project_type_list['count'], "data"=>$project_type_list['list']]);
@@ -72,30 +78,6 @@ class Allocation extends Base
 
     //调拨材料页面
     public function allocation_goods(){
-        $project_id = input('get.project_id');
-        $search = input('get.search');
-        $goods_list = \Db::table('pw_project_woker')->alias('pw')
-                        ->leftJoin('supply_goods sg','sg.id = pw.supply_goods_id')
-                        ->leftJoin('goods g','g.id = sg.g_id')
-                        ->leftJoin('woker w','w.id = pw.woker_id')
-                        ->leftJoin('contract c','c.id = pw.woker_id')
-                        ->field('pw.supply_goods_id as id, pw.woker_id, g.name as goods_name,w.name, pw.not')
-                        ->where('pw.project_id', 'eq', $project_id)
-                        ->where(function ($query) use($search) {
-                            if(!empty($search)){
-                                $query->where('g.name', 'like', '%'.$search.'%');
-                            }
-                        })
-                        ->where('pw.delete_time', 0)
-                        ->select();
-        $goods_list = $goods_list->toArray();
-        foreach ($goods_list as $k => &$v){
-            $v['is_can_num'] = $v['not'];
-            if($v['is_can_num'] == 0){
-                unset($goods_list[$k]);
-            }
-        }
-        $this->assign('supply_goods_list', $goods_list);
         return $this->fetch();
     }
 
@@ -198,5 +180,62 @@ class Allocation extends Base
             'msg' => '操作成功',
         ];
     }
+
+
+
+    public function excl()
+    {
+        $params = input('get.');
+//        header("Content-type:application/vnd.ms-excel");
+//        header("Content-Disposition:filename=采购单.xls");
+        $list = (new NeedService())->select_list($params, 2);
+        foreach($list as &$vo){
+            $sg_kist = SupplyGoodsModel::alias('sg')
+                ->leftJoin('supply s','s.id = sg.s_id')
+                ->where('sg.g_id', $vo['goods_id'])
+                ->field('sg.price, s.name, s.phone, s.id')
+                ->select();
+            $vo['supply'] = $sg_kist;
+            $stock_nums = Db::table('pw_stock_order')->alias('so')
+                ->leftJoin('stock_order_info soi', 'soi.stock_order_id = so.id')
+                ->leftJoin('supply_goods sg', 'sg.id = soi.supply_goods_id')
+                ->where('sg.g_id', $vo['goods_id'])
+                ->where('so.project_id', $params['id'])
+                ->where('so.type', 'in',['10','12'])
+                ->group('so.type')
+                ->field('so.type, sum(soi.num) as num')
+                ->select();
+            $stock_nums = $stock_nums->toArray();
+            $vo['have_num'] = $vo['project_num'] = 0;
+            foreach($stock_nums as $stock_num){
+                if($stock_num['type'] == 10){
+                    $vo['project_num'] = $stock_num['num'];
+                }
+                if($stock_num['type'] == 12){
+                    $vo['have_num'] = $stock_num['num'];
+                }
+            }
+
+            //已采购数量（非已入库）
+            $vo['buy_num'] = BuyModel::useGlobalScope(false)->alias('b')
+                ->leftJoin('buy_info bi','b.id = bi.buy_id')
+                ->where('b.status', 'in', '1,2,3')
+                ->where('b.project_id', $params['id'])
+                ->where('bi.goods_id', $vo['goods_id'])
+                ->sum('num');
+        }
+        $strexport = "材料编号\t材料名称\t价格\t预算\t已采购\t结余调拨数量\t工程调拨数量\r";
+        foreach ($list as $row) {
+            $strexport .= $row['number'] . "\t";
+            $strexport .= $row['name'] . "\t";
+            $strexport .= $row['need'] . "\t";
+            $strexport .= $row['buy_num'] . "\t";
+            $strexport .= $row['have_num'] . "\t";
+            $strexport .= $row['project_num'] . "\r";
+        }
+        $strexport = iconv('UTF-8', "GB2312//IGNORE", $strexport);
+        exit($strexport);
+    }
+
 
 }

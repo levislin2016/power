@@ -12,11 +12,13 @@
 	<body>
 	<form class="layui-form column-content-detail" method="post" action="{:url('allocation/shopping_cart_add')}">
 		<input type="text" name="passive_project_id" style="display: none" lay-verify="required" lay-verType="tips" autocomplete="off" class="layui-input" value="{$_GET['project_id']}">
-		<input type="text" name="contract_id" style="display: none"  lay-verType="tips" autocomplete="off" class="layui-input" value="{$_GET['contract_id']}|">
+		<input type="text" name="contract_id" style="display: none"  lay-verType="tips" autocomplete="off" class="layui-input" value="{$_GET['contract_id']}">
 		<input type="text" name="passive_woker_id" style="display: none" lay-verType="tips" autocomplete="off" class="layui-input" value="{$_GET['woker_id']}">
 		<input type="text" name="type_id" style="display: none" required lay-verify="required" lay-verType="tips" autocomplete="off" class="layui-input" value="{$_GET['type_id']}">
 		<input type="text" name="stock_id" style="display: none"  lay-verType="tips" autocomplete="off" class="layui-input" value="{$_GET['stock_id']}">
 		<input type="text" name="project_id" style="display: none"  lay-verType="tips" autocomplete="off" class="layui-input" value="{$_GET['is_project_id']}">
+		<input type="text" name="passive_woker_id" style="display: none" lay-verType="tips" autocomplete="off" class="layui-input" value="{$_GET['passive_woker_id']}">
+		<input type="text" name="supply_goods_id" style="display: none" lay-verType="tips" autocomplete="off" class="layui-input" value="{$_GET['supply_goods_id']}">
 					<div class="layui-tab">
 						<!-- <ul class="layui-tab-title">
 							<li class="layui-this">文章内容</li>
@@ -27,25 +29,6 @@
 
 								<div class="layui-form-item">
 									<div class="layui-inline">
-										<label class="layui-form-label">调拨材料：</label>
-										<div class="layui-input-block">
-											<select name="woker_goods_id" lay-filter="woker_goods_id" required lay-verify="required" lay-verType="tips" lay-search="">
-												{if condition="$_GET['supply_goods_id'] eq NULL"}
-													<option value="" >请选择材料</option>
-													{volist name="supply_goods_list" id="vo"}
-														<option value="{$vo['id']},{$vo['woker_id']}">{$vo['name']}的材料{$vo['goods_name']}可调拨数量{$vo['is_can_num']}</option>
-													{/volist}
-												{else /}
-													<option value="{$_GET['supply_goods_id']}" selected disabled>材料{$_GET['supply_goods_name']}可领取{$_GET['have']}</option>
-												{/if}
-
-											</select>
-										</div>
-									</div>
-								</div>
-
-								<div class="layui-form-item">
-									<div class="layui-inline">
 										<label class="layui-form-label">数量：</label>
 										<div class="layui-input-block">
 											<input type="number" name="num" required lay-verify="required|number" lay-verType="tips" placeholder="请输入数量" autocomplete="off" class="layui-input" value="">
@@ -53,14 +36,6 @@
 									</div>
 								</div>
 
-								<div class="layui-form-item">
-									<div class="layui-inline">
-										<label class="layui-form-label">备注：</label>
-										<div class="layui-input-inline" >
-											<input type="text" name="note" lay-verify="" lay-verType="tips" placeholder="请输入备注" autocomplete="off" class="layui-input note" value="">
-										</div>
-									</div>
-								</div>
 							</div>
 						</div>
 					</div>
@@ -118,23 +93,20 @@
                     $.post(url, param, function (data) {
                     	layer.close(loading);
 						console.dir(data);
-                    	if(data.error_code){ 
-                            layer.msg(data.msg, {icon: 2, shade: 0.1, time: 1000}, function(){ 
+                    	if(data.error_code){
+                            layer.msg(data.msg, {icon: 2, shade: 0.1, time: 1000}, function(){
 
                             });
                             return false;
                         } 
                     	layer.msg(data.msg, {icon: 1, shade: 0.1, time: 1000}, function () {
-                            parent.refresh();
+                            var index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index);//关闭当前页
                         });
                     });
                     
                 	return false;
                 });
-
-				
-
-
 			});
 	</script>
 	</body>
