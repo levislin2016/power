@@ -14,7 +14,7 @@ use think\Db;
 
 class Allocation{
 
-    public function project_list($params){
+    public function  project_list($params){
         $page=$params['page']?$params['page']:1;
         $page=intval($page);
         $limit=$params['limit']?$params['limit']:10;
@@ -37,9 +37,9 @@ class Allocation{
                     $query->where('g.id', 'eq', $params['supply_goods_id']);
                 }
                 $query->where('status', 2);
+                $query->where('not', '>', 0);
             })
             ->order('p.create_time', 'desc')
-            ->group('p.id')
             ->count();
 
         $list = ProjectModel::useGlobalScope(false)->alias('p')
@@ -48,6 +48,7 @@ class Allocation{
             ->leftJoin('project_woker pw','pw.project_id = p.id')
             ->leftJoin('supply_goods sg','sg.id = pw.supply_goods_id')
             ->leftJoin('goods g','g.id = sg.g_id')
+            ->leftJoin('woker w','w.id = pw.woker_id')
             ->where(function ($query) use($params) {
                 if(!empty($params['search'])){
                     $query->where('g.name', 'like', '%'.$params['search'].'%');
@@ -59,31 +60,37 @@ class Allocation{
                     $query->where('g.id', 'eq', $params['supply_goods_id']);
                 }
                 $query->where('status', 2);
+                $query->where('not', '>', 0);
             })
-            ->field('p.id, max(p.company_id) as company_id, max(pw.woker_id) as woker_id, max(p.contract_id) as contract_id, max(c.number) as contract_number, max(p.name) as name, max(p.status) as status, max(p.create_time) as create_time, max(o.id) as owner_id, max(o.name) as owner_name')
+            ->field('p.id, p.company_id, pw.woker_id, p.contract_id, c.number as contract_number, p.name as name, p.status as status, p.create_time as create_time, o.id as owner_id, o.name as owner_name, pw.supply_goods_id as supply_goods_id, w.name as woker_name')
             ->order('p.create_time', 'desc')
-            ->group('p.id')
             ->limit($start,$limit)
             ->select()->toArray();
+        $is_type = \Db::table('pw_need')->field('type')->where('project_id',$params['project_id'])->find();
+        if($is_type['type'] == 1){
+            cookie('is_type', 1, 40);
+        }else{
+            cookie('is_type', 2, 40);
+        }
         $project_status = config('extra.project_status');
 
         foreach ($list as &$v){
-            $str = '<table border="0" width="100%" style="text-align: left;"  rules=none cellspacing=0 align=center><tr width="100%"><th width="30%" style="border:0px;">材料</th><th  style="border:0px;width:25%">可领</th><th width="25%" style="border:0px;">已领</th><th width="10%" style="border:0px;">未领</th></tr>';
             $project_list = \Db::table('pw_project_woker')->alias('pw')
                 ->leftJoin('woker w','w.id = pw.woker_id')
                 ->leftJoin('supply_goods sg','sg.id = pw.supply_goods_id')
                 ->leftJoin('goods g','g.id = sg.g_id')
-                ->field('pw.id, pw.supply_goods_id, sum(pw.not) as not_num, g.number as goods_number, g.name as goods_name')
+                ->field('pw.id, pw.supply_goods_id, pw.not as not_num, g.number as goods_number, g.name as goods_name')
                 ->where(function ($query) use($params) {
                     if(!empty($params['search'])){
                         $query->where('g.name', 'like', '%'.$params['search'].'%');
                     }
                 })
                 ->where([
-                    'pw.project_id'  => $v['id'],
-                    'pw.delete_time' => 0
+                    'pw.project_id'      => $v['id'],
+                    'pw.supply_goods_id' => $v['supply_goods_id'],
+                    'pw.delete_time'     => 0,
+                    'pw.woker_id'        => $v['woker_id']
                 ])
-                ->group('goods_number')
                 ->select();
             $project_list = $project_list->toArray();
             if($project_list) {
@@ -103,7 +110,7 @@ class Allocation{
                     unset($val['woker_id']);
                     unset($val['supply_goods_id']);
                     unset($val['id']);
-                    $v['goods'] = $val['goods_name'] . '/' . $val['goods_number'];
+                    $v['goods'] = $val['goods_name'] . ' / ' . $val['goods_number'];
                     $v['can_num'] = $val['can_num'];
                     $v['get_num'] = $val['get_num'];
                     $v['not_num'] = $val['not_num'];
@@ -146,11 +153,20 @@ class Allocation{
                 }
                 $query->where('ps.have', '>', 0);
             })
-            ->field('p.id, max(ps.have) as have, max(p.name) as project_name, max(ps.stock_id) as stock_id, max(g.name) as supply_goods_name,max(sg.id) as supply_goods_id, max(p.name) as num, max(s.name) as stock_name, max(c.owner_id) owner_id')
+            ->field('p.id, max(ps.have) as have, max(p.name) as project_name, max(ps.stock_id) as stock_id, max(g.name) as supply_goods_name,max(sg.id) as supply_goods_id, max(p.name) as num, max(s.name) as stock_name, max(c.owner_id) as owner_id, max(c.number) as c_number, max(g.number) as g_number')
             ->order('p.create_time', 'desc')
             ->group('p.id')
             ->limit($start,$limit)
             ->select()->toArray();
+        $is_type = \Db::table('pw_need')->field('type')->where('project_id',$params['project_id'])->find();
+        if($is_type['type'] == 1){
+            cookie('is_type', 1, 40);
+        }else{
+            cookie('is_type', 2, 40);
+        }
+        foreach ($list as &$val){
+            $val['supply_goods_name'] = $val['supply_goods_name'].' / '.$val['g_number'];
+        }
         $count = ProjectStockModel::useGlobalScope(false)->alias('ps')
             ->leftJoin('stock s','s.id = ps.stock_id ')
             ->leftJoin('supply_goods sg','sg.id = ps.supply_goods_id')
@@ -213,6 +229,12 @@ class Allocation{
             ->paginate(10, false, [
                 'query'     => $params,
             ]);
+        $is_type = \Db::table('pw_need')->field('type')->where('project_id',$params['project_id'])->find();
+        if($is_type['type'] == 1){
+            cookie('is_type', 1, 40);
+        }else{
+            cookie('is_type', 2, 40);
+        }
         foreach ($list as &$v){
             $project_list = \Db::table('pw_project_woker')->alias('pw')
                 ->leftJoin('woker w','w.id = pw.woker_id')
@@ -283,8 +305,6 @@ class Allocation{
                 $query->where('ps.have', '>', 0);
                 $query->where('c.owner_id', $p_owner['owner_id']);
             })
-            ->field('p.id, max(ps.have) as have, max(p.name) as project_name, max(ps.stock_id) as stock_id, max(g.name) as supply_goods_name,max(sg.id) as supply_goods_id, max(p.name) as num, max(s.name) as stock_name, max(c.owner_id) owner_id')
-            ->order('p.create_time', 'desc')
             ->group('p.id')
             ->count();
         $list = ProjectStockModel::useGlobalScope(false)->alias('ps')
@@ -306,10 +326,19 @@ class Allocation{
                 $query->where('ps.have', '>', 0);
                 $query->where('c.owner_id', $p_owner['owner_id']);
             })
-            ->field('p.id, max(ps.have) as have, max(p.name) as project_name, max(ps.stock_id) as stock_id, max(g.name) as supply_goods_name,max(sg.id) as supply_goods_id, max(p.name) as num, max(s.name) as stock_name, max(c.owner_id) owner_id')
+            ->field('p.id, max(ps.have) as have, max(p.name) as project_name, max(ps.stock_id) as stock_id, max(g.name) as supply_goods_name,max(sg.id) as supply_goods_id, max(p.name) as num, max(s.name) as stock_name, max(c.owner_id) as owner_id, max(c.number) as c_number, max(g.number) as g_number')
             ->order('p.create_time', 'desc')
             ->group('p.id')
             ->select()->toArray();
+        $is_type = \Db::table('pw_need')->field('type')->where('project_id',$params['project_id'])->find();
+        if($is_type['type'] == 1){
+            cookie('is_type', 1, 40);
+        }else{
+            cookie('is_type', 2, 40);
+        }
+        foreach ($list as &$val){
+            $val['supply_goods_name'] = $val['supply_goods_name'].' / '.$val['g_number'];
+        }
         return ['count' => $count, 'list' => $list];
     }
 
@@ -620,11 +649,8 @@ class Allocation{
 
     public function shopping_cart_add($params){
         if($params['type_id'] == 1) {
-            if (!empty($params['woker_goods_id'])) {
-                $arr = explode(',', $params['woker_goods_id']);
-                $params['passive_woker_id'] = $arr['1'];
-                $params['supply_goods_id'] = $arr['0'];
-            }
+            $params['passive_woker_id'] = $params['passive_woker_id'];
+            $params['supply_goods_id'] = $params['supply_goods_id'];
             $project_info = \Db::table('pw_project_woker')->field('id, can, get, not, back')
                 ->where([
                     'project_id'       => $params['passive_project_id'],
@@ -664,16 +690,16 @@ class Allocation{
                 'stock_id' => $params['stock_id'],
                 'project_id' => $params['project_id'],
                 'num' => $params['num'],
-                'type' => $params['type_id'],
+                'type' => 1,
                 'status' => 1,
-                'note' => $params['note'],
+                'note' => '',
                 'user_id' => session('power_user.company_id'),
                 'create_time' => time(),
                 'update_time' => time(),
             ];
             $res = ShoppingCartModel::insert($data);
         }else{
-            $params['supply_goods_id'] = $params['woker_goods_id'];
+            $params['supply_goods_id'] = $params['supply_goods_id'];
             $project_info = \Db::table('pw_project_stock')->field('id, have')
                 ->where([
                     'project_id'       => $params['passive_project_id'],
@@ -685,7 +711,7 @@ class Allocation{
             if($params['num'] > $project_info['have']){
                 throw new BaseException(
                     [
-                        'msg' => '超过可调拨材料数！',
+                        'msg' => '超过可调拨材料数'.$project_info['have'],
                         'errorCode' => 301
                     ]);
             }
@@ -696,9 +722,9 @@ class Allocation{
                 'stock_id' => $params['stock_id'],
                 'project_id' => $params['project_id'],
                 'num' => $params['num'],
-                'type' => $params['type_id'],
+                'type' => 2,
                 'status' => 1,
-                'note' => $params['note'],
+                'note' => '',
                 'user_id' => session('power_user.company_id'),
                 'create_time' => time(),
                 'update_time' => time(),
@@ -720,7 +746,7 @@ class Allocation{
     }
 
     public function allocation_set($params){
-        if($params['type_id'] == 9){
+        if($params['type_id'] == 1){
             if(!empty($params['woker_goods_id'])){
                 $arr = explode(',', $params['woker_goods_id']);
                 $params['passive_woker_id'] = $arr['1'];
@@ -744,7 +770,7 @@ class Allocation{
             if($project_info['not'] < $params['num']){
                 throw new BaseException(
                     [
-                        'msg' => '超过项目可领材料数！',
+                        'msg' => '超过项目可领材料数'.$project_info['not'],
                         'errorCode' => 301
                     ]);
             }
@@ -806,7 +832,7 @@ class Allocation{
             if($params['num'] > $project_info['have']){
                 throw new BaseException(
                     [
-                        'msg' => '超过可调拨材料数！',
+                        'msg' => '超过可调拨材料数'.$project_info['have'],
                         'errorCode' => 301
                     ]);
             }
