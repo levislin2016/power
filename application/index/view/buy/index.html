@@ -80,9 +80,9 @@
 									<td>{$vo['project_name']}</td>
 									<td>
 										{switch vo.status}
-											{case 1 }<span class="layui-badge layui-bg-green">{$buy_status[$vo['status']]}</span>{/case}
+											{case 1 }<span class="layui-badge layui-bg-blue">{$buy_status[$vo['status']]}</span>{/case}
 											{case 2 }<span class="layui-badge layui-bg-cyan">{$buy_status[$vo['status']]}</span>{/case}
-											{case 3 }<span class="layui-badge layui-bg-blue">{$buy_status[$vo['status']]}</span>{/case}
+											{case 3 }<span class="layui-badge layui-bg-green">{$buy_status[$vo['status']]}</span>{/case}
 											{case 4 }<span class="layui-badge layui-bg-gray">{$buy_status[$vo['status']]}</span>{/case}
 											{case 5 }<span class="layui-badge layui-bg-orange">{$buy_status[$vo['status']]}</span>{/case}
 											{case 6 }<span class="layui-badge">{$buy_status[$vo['status']]}</span>{/case}
@@ -97,9 +97,9 @@
                                             {in name="vo['status']" value="1,2"}
 												<button class="layui-btn layui-btn-sm layui-btn-primary edit-btn btn_tips" data-title="采购入库" data-id="{$vo['id']}" data-url="{:url('buy/put')}" data-h="500px">入库</button>
 											{/in}
-											{eq name="vo['status']" value="2"}
-												<!-- <button class="layui-btn layui-btn-sm layui-btn-normal edit-btn btn_tips" data-title="采购流水" data-id="{$vo['id']}" data-url="{:url('buy/water')}" data-h="500px">流水</button> -->
-											{/eq}
+											{in name="vo['status']" value="2,3"}
+												<button class="layui-btn layui-btn-sm layui-btn-normal tab_btn" data-tab="64" data-title="出入库流水" data-url="{:url('stock_order/order_water')}?number={$vo['number']}&tid=1">流水</button>
+											{/in}
 											{eq name="vo['status']" value="5"}
 											<button class="layui-btn layui-btn-sm ts-btn" data-title="确认审核通过？" data-url="{:url('buy/save_status')}?id={$vo['id']}&type=y">审核通过</button>
 											<button class="layui-btn layui-btn-sm layui-btn-danger ts-btn" data-title="确认审核失败？" data-url="{:url('buy/save_status')}?id={$vo['id']}&type=n">审核失败</button>
@@ -113,7 +113,7 @@
 							{/volist}	
 							</tbody>
 						</table>
-						<div class="page-wrap"></div>{$list->render()|raw}</div>
+						<div class="page-wrap">{$list->render()|raw}</div>
 					</div>
 				</div>
 		</div>
