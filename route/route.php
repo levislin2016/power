@@ -196,6 +196,8 @@ Route::any('order_water_data_info', 'stock_order/order_water_data_info');
 
 //调拨记录
 Route::any('stock_order_index', 'stock_order/stock_order_index');
+//调拨记录excel导出
+Route::any('stock_order_index_excel', 'stock_order/stock_order_index_excel');
 
 //创建采购订单页面
 Route::get('buy_add', 'buy/add');

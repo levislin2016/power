@@ -22,4 +22,23 @@ class Excel{
         return $data;
     }
 
+
+    public static function excl($strexport,$title)
+    {
+        header("Content-type:application/vnd.ms-excel");
+        header("Content-Disposition:filename=".$title.".xls");
+//        $strexport = "材料编号\t材料名称\t价格\t预算\t已采购\t结余调拨数量\t工程调拨数量\r";
+//        foreach ($list as $row) {
+//            $strexport .= $row['number'] . "\t";
+//            $strexport .= $row['name'] . "\t";
+//            $strexport .= $row['need'] . "\t";
+//            $strexport .= $row['buy_num'] . "\t";
+//            $strexport .= $row['have_num'] . "\t";
+//            $strexport .= $row['project_num'] . "\r";
+//        }
+
+        $strexport = iconv('UTF-8', "GB2312//IGNORE", $strexport);
+        exit($strexport);
+    }
+
 } 

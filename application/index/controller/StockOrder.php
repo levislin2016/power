@@ -139,6 +139,13 @@ class StockOrder extends Base
         return $this->fetch();
     }
 
+    public function stock_order_index_excel(){
+        $params = input('param.');
+        $list = (new StockOrderService)->allocation_order_list_excle($params, array(9,10,11,12));
+        $this->assign('list', $list);
+        return $this->fetch();
+    }
+
     public function order_water(){
         $tl = $params = input('param.tl', '');
         $project_list = ProjectModel::all();
