@@ -159,6 +159,8 @@
                 $(document).ready(function(){
                     var selecta = $('#project_id option:selected').val();
                     if(selecta != ''){
+                        var url = "{:url('stock_order/stock_order_index')}?is_project_id="+$('#project_id option:selected').val();
+                        $(".addBtn2").attr('data-url', url);
                         $(".addBtn2").css('display','block');
                         $(".table_list").css('display','block');
                     }
@@ -234,6 +236,8 @@
                     var project_id = data.value;
                     var selecta = $('#project_id option:selected').val();
                     if(selecta != ''){
+                        var url = "{:url('stock_order/stock_order_index')}?is_project_id="+$('#project_id option:selected').val();
+                        $(".addBtn2").attr('data-url', url);
                         $(".addBtn2").css('display','block');
                         $(".table_list").css('display','block');
                     }
@@ -473,7 +477,7 @@
                             //layer提供了5种层类型。可传入的值有：0（信息框，默认）1（页面层）2（iframe层）3（加载层）4（tips层）
                             type: 2,
                             title: "调拨",
-                            area: ['50%', '50%'],
+                            area: ['20%', '30%'],
                             content: "{:url('allocation/allocation_goods')}?project_id="+data.id+"&contract_id="+data.contract_id+"&type_id=2&stock_id="+data.stock_id+"&supply_goods_id="+data.supply_goods_id+"&search="+$("#search").val()+"&woker_id="+data.woker_id+"&is_type=2&owner_id="+data.owner_id+"&is_project_id="+$('#project_id option:selected').val()+"&is_poject=1&passive_woker_id="+data.woker_id
                         });
                     }
@@ -502,7 +506,7 @@
                             //layer提供了5种层类型。可传入的值有：0（信息框，默认）1（页面层）2（iframe层）3（加载层）4（tips层）
                             type: 2,
                             title: "调拨",
-                            area: ['50%', '50%'],
+                            area: ['20%', '30%'],
                             content: "{:url('allocation/allocation_goods')}?project_id="+data.id+"&contract_id="+data.contract_id+"&type_id=1&stock_id=&supply_goods_id="+data.supply_goods_id+"&search="+$("#search").val()+"&woker_id="+data.woker_id+"&is_type=1&is_project_id="+$('#project_id option:selected').val()+"&is_poject=2&passive_woker_id="+data.woker_id+"&stock_id="+data.stock_id
 							,success: function(layero, index){
                                 layer.close(index);

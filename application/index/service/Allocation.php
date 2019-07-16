@@ -411,7 +411,7 @@ class Allocation{
         }
         $need = \Db::table('pw_need')->alias('n')
             ->leftJoin('pw_supply_goods sg','n.goods_id = sg.g_id')
-            ->field('id,stock_id,freeze,in,num')
+            ->field('n.id')
             ->where([
                 'n.project_id' => $data['project_id'],
                 'sg.id' => $data['supply_goods_id'],
@@ -480,7 +480,7 @@ class Allocation{
         }
         $need = \Db::table('pw_need')->alias('n')
             ->leftJoin('pw_supply_goods sg','n.goods_id = sg.g_id')
-            ->field('id,stock_id,freeze,in,num')
+            ->field('n.id')
             ->where([
                 'n.project_id' => $data['project_id'],
                 'sg.id' => $data['supply_goods_id'],
@@ -635,7 +635,7 @@ class Allocation{
         }
         $need = \Db::table('pw_need')->alias('n')
             ->leftJoin('pw_supply_goods sg','n.goods_id = sg.g_id')
-            ->field('id,stock_id,freeze,in,num')
+            ->field('n.id')
             ->where([
                 'n.project_id' => $data['project_id'],
                 'sg.id' => $data['supply_goods_id'],

@@ -17,6 +17,8 @@ use think\Session;
 use app\index\service\Need as NeedService;
 use app\index\model\SupplyGoods as SupplyGoodsModel;
 use app\index\model\Buy as BuyModel;
+use app\index\model\BuyInfo as BuyInfoModel;
+
 
 class Allocation extends Base
 {
@@ -186,52 +188,26 @@ class Allocation extends Base
     public function excl()
     {
         $params = input('get.');
-//        header("Content-type:application/vnd.ms-excel");
-//        header("Content-Disposition:filename=采购单.xls");
-        $list = (new NeedService())->select_list($params, 2);
-        foreach($list as &$vo){
-            $sg_kist = SupplyGoodsModel::alias('sg')
-                ->leftJoin('supply s','s.id = sg.s_id')
-                ->where('sg.g_id', $vo['goods_id'])
-                ->field('sg.price, s.name, s.phone, s.id')
-                ->select();
-            $vo['supply'] = $sg_kist;
-            $stock_nums = Db::table('pw_stock_order')->alias('so')
-                ->leftJoin('stock_order_info soi', 'soi.stock_order_id = so.id')
-                ->leftJoin('supply_goods sg', 'sg.id = soi.supply_goods_id')
-                ->where('sg.g_id', $vo['goods_id'])
-                ->where('so.project_id', $params['id'])
-                ->where('so.type', 'in',['10','12'])
-                ->group('so.type')
-                ->field('so.type, sum(soi.num) as num')
-                ->select();
-            $stock_nums = $stock_nums->toArray();
-            $vo['have_num'] = $vo['project_num'] = 0;
-            foreach($stock_nums as $stock_num){
-                if($stock_num['type'] == 10){
-                    $vo['project_num'] = $stock_num['num'];
-                }
-                if($stock_num['type'] == 12){
-                    $vo['have_num'] = $stock_num['num'];
-                }
-            }
-
-            //已采购数量（非已入库）
-            $vo['buy_num'] = BuyModel::useGlobalScope(false)->alias('b')
-                ->leftJoin('buy_info bi','b.id = bi.buy_id')
-                ->where('b.status', 'in', '1,2,3')
-                ->where('b.project_id', $params['id'])
-                ->where('bi.goods_id', $vo['goods_id'])
-                ->sum('num');
-        }
-        $strexport = "材料编号\t材料名称\t价格\t预算\t已采购\t结余调拨数量\t工程调拨数量\r";
+        header("Content-type:application/vnd.ms-excel");
+        header("Content-Disposition:filename=采购单.xls");
+        $buy = BuyModel::get(input('get.id', ''));
+        $this->assign('buy', $buy);
+        $list = BuyInfoModel::alias('bi')
+            ->leftJoin('supply s','bi.supply_id = s.id')
+            ->leftJoin('goods g','bi.goods_id = g.id')
+            ->leftJoin('unit u','g.unit_id = u.id')
+            ->where('bi.buy_id', input('get.id', ''))
+            ->field('bi.*, s.name as supply_name, g.name, g.image, g.number, u.name as unit')
+            ->select();
+        $this->assign('list', $list);
+        $strexport = "材料编号\t材料名称\t供应商\t价格(元)\t采购数量\t已入库数量\r";
         foreach ($list as $row) {
             $strexport .= $row['number'] . "\t";
             $strexport .= $row['name'] . "\t";
-            $strexport .= $row['need'] . "\t";
-            $strexport .= $row['buy_num'] . "\t";
-            $strexport .= $row['have_num'] . "\t";
-            $strexport .= $row['project_num'] . "\r";
+            $strexport .= $row['supply_name'] . "\t";
+            $strexport .= $row['price']/100 . "\t";
+            $strexport .= $row['num'] . "\t";
+            $strexport .= $row['num_ok'] . "\r";
         }
         $strexport = iconv('UTF-8', "GB2312//IGNORE", $strexport);
         exit($strexport);
