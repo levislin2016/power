@@ -87,6 +87,7 @@ Route::get('allocation', 'allocation/index');
 Route::get('allocation_banlance_list', 'allocation/banlance_list');
 Route::get('allocation_banlance_type_list', 'allocation/banlance_type_list');
 Route::get('allocation_project_list', 'allocation/project_list');
+Route::get('allocation_excl', 'allocation/excl');
 Route::get('allocation_goods', 'allocation/allocation_goods');
 
 
@@ -155,7 +156,8 @@ Route::get('stock_del', 'stock/del');
 //库存
 Route::get('stock_all', 'stock_all/index');
 Route::get('stock_all_data', 'stock_all/get_data');
-
+Route::get('stock_all_allot', 'stock_all/allot');
+Route::get('stock_all_record', 'stock_all/record');
 
 //工程队
 Route::get('woker', 'woker/index');
@@ -195,6 +197,8 @@ Route::any('order_water_data_info', 'stock_order/order_water_data_info');
 
 //调拨记录
 Route::any('stock_order_index', 'stock_order/stock_order_index');
+//调拨记录excel导出
+Route::any('stock_order_index_excel', 'stock_order/stock_order_index_excel');
 
 //创建采购订单页面
 Route::get('buy_add', 'buy/add');

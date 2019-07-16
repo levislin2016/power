@@ -13,6 +13,8 @@ use app\lib\exception\BaseException;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use Samples\Sample10\MyReadFilter;
 use think\Db;
+use app\index\service\Excel as ExcelService;
+
 
 class StockOrder{
     
@@ -55,10 +57,6 @@ class StockOrder{
 
 
     public function allocation_order_list($params, $type){
-        $sids = 1;
-        if(!empty($params['is_project_id'])){
-            $sids = \Db::table('pw_stock_order')->where('project_id', $params['is_project_id'])->where('type', 'in', $type)->column('sid');
-        }
         $list = StockOrderModel::useGlobalScope(false)->alias('so')
             ->leftJoin('Stock s','so.stock_id = s.id')
             ->leftJoin('project p','so.project_id = p.id')
@@ -66,9 +64,9 @@ class StockOrder{
             ->leftJoin('stock_order_info soi','soi.stock_order_id = so.id')
             ->leftJoin('supply_goods sg','soi.supply_goods_id = sg.id')
             ->leftJoin('goods g','g.id = sg.g_id')
-            ->where(function ($query) use($params, $type, $sids) {
+            ->where(function ($query) use($params, $type) {
                 if(!empty($params['search'])){
-                    $query->where('so.sid|s.name|p.name|w.name|g.name', 'like', '%'.$params['search'].'%');
+                    $query->where('p.name|g.name', 'like', '%'.$params['search'].'%');
                 }
                 if(!empty($params['type'])){
                     $query->where('so.type', $params['type']);
@@ -79,8 +77,8 @@ class StockOrder{
                         $query->where('so.type', $type);
                     }
                 }
-                if($sids != 1){
-                    $query->where('so.sid', 'in',$sids);
+                if(!empty($params['is_project_id']) && empty($params['search'])){
+                    $query->where('so.project_id', $params['is_project_id']);
                 }
                 if(!empty($params['time'])){
                     $query->where('so.create_time', 'between time', explode(' ~ ', $params['time']));
@@ -97,6 +95,63 @@ class StockOrder{
         return $list;
 
     }
+
+    public function allocation_order_list_excle($params, $type){
+        $list = StockOrderModel::useGlobalScope(false)->alias('so')
+            ->leftJoin('Stock s','so.stock_id = s.id')
+            ->leftJoin('project p','so.project_id = p.id')
+            ->leftJoin('woker w','so.woker_id = w.id')
+            ->leftJoin('stock_order_info soi','soi.stock_order_id = so.id')
+            ->leftJoin('supply_goods sg','soi.supply_goods_id = sg.id')
+            ->leftJoin('goods g','g.id = sg.g_id')
+            ->where(function ($query) use($params, $type) {
+                if(!empty($params['search'])){
+                    $query->where('p.name|g.name', 'like', '%'.$params['search'].'%');
+                }
+                if(!empty($params['type'])){
+                    $query->where('so.type', $params['type']);
+                }else{
+                    if(is_array($type)){
+                        $query->where('so.type', 'in', $type);
+                    }else{
+                        $query->where('so.type', $type);
+                    }
+                }
+                if(!empty($params['is_project_id']) && empty($params['search'])){
+                    $query->where('so.project_id', $params['is_project_id']);
+                }
+                if(!empty($params['time'])){
+                    $query->where('so.create_time', 'between time', explode(' ~ ', $params['time']));
+                }
+                if(!empty($params['pid'])){
+                    $query->where('so.project_id', $params['pid']);
+                }
+            })
+            ->field('so.*, s.name as stock_name, p.name as project_name, w.name as woker_name,g.name as goods_name, soi.num')
+            ->order('so.create_time', 'desc')
+            ->select();
+        $strexport = "调拨号\t工程\t工程队\t商品\t仓库\t调拨类型\t数量\t备注\t时间\r";
+        if($list) {
+            $list = $list->toArray();
+            foreach ($list as $row) {
+                $typeName = config('extra.order_type');
+                $strexport .= $row['number'] . "\t";
+                $strexport .= $row['project_name'] . "\t";
+                $strexport .= $row['woker_name'] . "\t";
+                $strexport .= $row['goods_name'] . "\t";
+                $strexport .= $row['stock_name'] . "\t";
+                $strexport .= $typeName[$row['type']] . "\t";
+                $strexport .= $row['num'] . "\t";
+                $strexport .= $row['note'] . "\t";
+                $strexport .= $row['create_time'] . "\r";
+            }
+        }
+        ExcelService::excl($strexport,'调拨记录');
+        return $list;
+
+    }
+
+
     public function purchase_list($params){
         $list = StockOrderModel::useGlobalScope(false)->alias('so')
             ->leftJoin('Stock s','so.stock_id = s.id')

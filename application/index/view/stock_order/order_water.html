@@ -71,7 +71,7 @@
                 <ul class="layui-tab-title">
                     <li class="layui-this">详情</li>
                 </ul>
-                <div class="layui-tab-content" style="height: 230px;">
+                <div class="layui-tab-content" style="height: 280px;">
                     <div class="layui-tab-item layui-show">
                         <table id="order_info" lay-filter="order_info"></table>
                     </div>
@@ -94,13 +94,13 @@
 
 			var order_cols = [[
 				{ field: 'number', title: '订单号' },
-				{ field: 'project_name', title: '项目' },
+				{ field: 'project_name', title: '工程项目' },
 				{ field: 'woker_name', title: '工程队' },
 				{ field: 'stock_name', title: '仓库' },
 				{ field: 'type_name', title: '类型'},
 				{ field: 'user_name', title: '操作人'},
 				{ field: 'note', title: '备注'},
-				{ field: 'create_time', title: '创建时间', sort: true},
+				{ field: 'create_time', title: '时间', sort: true},
 			]];
 
 			var order_info_cols = [[
@@ -117,7 +117,7 @@
 			tableIns = table.render({
 				elem: '#demo'
 				, id: 'idTest'
-				, height: 'full-400'
+				, height: 'full-450'
 				, url: "{:Url('stock_order/order_water_data')}" //数据接口
 				// , parseData: function (res) { //res 即为原始返回的数据
 				// 	return {
@@ -160,7 +160,7 @@
             tableInsInfo = table.render({
 				elem: '#order_info'
 				, id: 'idTestInfo'
-				, height: '220'
+				, height: '270'
 				, url: "{:Url('stock_order/order_water_data_info')}" //数据接口
 				, request: {
 					pageName: 'page' //页码的参数名称，默认：page

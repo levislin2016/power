@@ -71,8 +71,8 @@
 				{ field: 'number', title: '商品编号' },
 				{ field: 'supply_name', title: '供应商' },
 				{ field: 'num', title: '库存', sort: true },
-				{ field: 'in', title: '已分配', sort: true },
-				{ field: 'freeze', title: '未分配', sort: true },
+				{ field: 'freeze', title: '已分配', sort: true },
+				{ field: 'in', title: '未分配', sort: true },
 				{ field: 'ho', title: '结余', sort: true},
 				{ field: 'extra', title: '材料补充', sort: true},
 			]];
@@ -142,6 +142,23 @@
 				});
 			});
 
+			//监听行双击事件
+			table.on('rowDouble(test)', function(obj){
+				if($('.stock_type').val() == 2){
+					console.log(obj.data);
+					parent.layer.tab({
+						area: ['900px', '600px'],
+						tab: [{
+							title: '分配',
+							content: '<div class="tab_url" style="display: none;">{:url("stock_all/allot")}?sg='+obj.data.supply_goods_id+'&sid='+obj.data.stock_id+'&pid='+obj.data.project_id+'</div>'
+						}, {
+							title: '出入库记录', 
+							content: '<div class="tab_url" style="display: none;">{:url("stock_all/record")}?sg='+obj.data.supply_goods_id+'&sid='+obj.data.stock_id+'&pid='+obj.data.project_id+'</div>'
+						}]
+					});
+					parent.getContent();
+				}
+			});
 
 			form.on('submit(form_search)', function (data) {
 				var param = data.field;
@@ -165,6 +182,7 @@
 				tableIns.reload({
 					where: param
 					, page: {
+						theme: '#1E9FFF',
 						curr: 1 //重新从第 1 页开始
 					}
 					, cols: cols
