@@ -186,8 +186,8 @@ class Allocation extends Base
     public function excl()
     {
         $params = input('get.');
-//        header("Content-type:application/vnd.ms-excel");
-//        header("Content-Disposition:filename=采购单.xls");
+        header("Content-type:application/vnd.ms-excel");
+        header("Content-Disposition:filename=采购单.xls");
         $list = (new NeedService())->select_list($params, 2);
         foreach($list as &$vo){
             $sg_kist = SupplyGoodsModel::alias('sg')
