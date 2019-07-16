@@ -68,11 +68,108 @@
                 </div>
             </div>
         </div>
-
+        <div style="padding-left: 10px; text-align: center;">
+            <button type="button" class="layui-btn layui-btn-normal dc" data-title="导出excel"><i class="layui-icon">&#xe601;</i>导出excel</button>
+            <button type="button" class="layui-btn layui-btn-normal" id="bt" data-title="打印采购单"><i class="layui-icon">&#xe621;</i>打印采购单</button>
+        </div>
+        <!--打印区域 开始-->
+        <div id="div_print" style="display: block">
+            <div style="width: 100%;">
+                <div >
+                    <div style="width:56%;height: 100px;float: left;">
+                        <b style="font-size: 20px;line-height: 40px">郑州亚拓软件有限公司采购入库单</b>
+                        <span style="width:100%; display:inline-block;line-height: 30px">地址：浙江省杭州市西湖区文一西路将皇大厦</span>
+                        <div style="width: 50%; float:left;line-height: 30px">联系电话：0371-6357392739</div><div style="width: 48%; float: right;line-height: 35px">传真：0273-1863492792</div>
+                    </div>
+                    <div style="width: 42%;height: 100px; float:right;text-align: center">
+                        <img style="height: 100px;" src="/public/img/12.jpg">
+                    </div>
+                </div>
+                <div style="width:100%;clear: both">
+                    <div id="Date" style="width: 50%;float: left"></div>
+                    <div id="gongchen" style="width: 30%;float: left"></div>
+                    <div id="lx" style="width:20%;float: left"></div>
+                </div>
+                <div style="clear: both; padding-top: 10px">
+                    <table class="layui-table stock_order_table" lay-size="sm">
+                        <colgroup>
+                            <col>
+                            <col>
+                            <col>
+                            <col>
+                            <col>
+                        </colgroup>
+                        <thead>
+                        <tr>
+                            <th>材料编号</th>
+                            <th>材料名称</th>
+                            <th>供应商</th>
+                            <th>价格(元)</th>
+                            <th>采购数量</th>
+                            <th>已入库数量</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {volist name="list" id="vo"}
+                        <tr>
+                            <td>{$vo.number}</td>
+                            <td>{$vo.name}</td>
+                            <td>{$vo.supply_name}</td>
+                            <td>{$vo.price / 100}</td>
+                            <td>{$vo.num}</td>
+                            <td>{$vo.num_ok}</td>
+                        </tr>
+                        {/volist}
+                        </tbody>
+                    </table>
+                </div>
+                <div style="width:100%;clear: both">
+                    <div id="user" style="width: 20%;float: left">制单人员：管理员</div>
+                    <div id="Date1" style="width: 40%;float: left"></div>
+                    <div id="gongchen" style="width: 20%;float: left">经手人：</div>
+                    <div id="lx" style="width:20%;float: left">核单人</div>
+                </div>
+            </div>
+        </div>
+        <!--打印区域 结束-->
     </form>
     <script src="__STATIC__/admin/layui/layui.js" type="text/javascript" charset="utf-8"></script>
     <script src="__STATIC__/admin/js/common.js" type="text/javascript" charset="utf-8"></script>
+    <script src="http://libs.baidu.com/jquery/2.1.4/jquery.min.js"></script>
+
     <script>
+        function printdiv(printpage) {
+            var newstr = printpage.innerHTML;
+            var oldstr = document.body.innerHTML;
+            document.body.innerHTML = newstr;
+            window.print();
+            document.body.innerHTML = oldstr;
+            return false;
+        }
+
+        window.onload=function(){
+            var bt = document.getElementById("bt");
+            var div_print = document.getElementById("div_print");
+            bt.onclick = function(){
+                printdiv(div_print);
+            }
+            document.getElementById('gongchen').innerHTML='工程：'+$('#project_id option:selected').text();
+            document.getElementById('lx').innerHTML='类型：'+$('#from option:selected').text();
+            setInterval(function(){
+                var date=new Date();
+                var year=date.getFullYear(); //获取当前年份
+                var mon=date.getMonth()+1; //获取当前月份
+                var da=date.getDate(); //获取当前日
+                var day=date.getDay(); //获取当前星期几
+                var h=date.getHours(); //获取小时
+                var m=date.getMinutes(); //获取分钟
+                var s=date.getSeconds(); //获取秒
+                var d=document.getElementById('Date');
+                var d1=document.getElementById('Date1');
+                d.innerHTML='单据日期：'+year+'年'+mon+'月'+da+'日';
+                d1.innerHTML='制单时间：'+year+'年'+mon+'月'+da+'日   '+h+':'+m+':'+s;
+            },1000)
+        }
         layui.use(['form', 'jquery', 'laydate', 'layer', 'laypage', 'dialog', 'tool', 'element', 'layedit'], function () {
             var form = layui.form,
                 layer = layui.layer,
@@ -84,6 +181,12 @@
                 element = layui.element,
                 dialog = layui.dialog;
 
+            $(".dc").click(function(){
+                var project_id = $('.project_id').val();
+                var selecta = $('#lasta option:selected').val();
+                var url = "{:url('allocation/excl')}?id="+"{$_GET['id']}";
+                window.open(url);
+            });
         });     
     </script>
 </body>
