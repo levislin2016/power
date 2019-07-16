@@ -163,6 +163,30 @@
     <script src="__STATIC__/admin/layui/layui.js" type="text/javascript" charset="utf-8"></script>
     <script src="__STATIC__/admin/js/common.js" type="text/javascript" charset="utf-8"></script>
     <script src="__STATIC__/admin/js/main.js" type="text/javascript" charset="utf-8"></script>
-    
+    <script>
+      var $;
+      layui.use(['jquery'], function () {
+        $ = layui.jquery;
+        $(document).on('click', '.layui-layer-tab>.layui-layer-title>span', function(){
+          //setTimeout(function(){getContent();},500);
+          getContent();
+        })
+
+
+      })
+      var k = 1;
+      function getContent(){
+        var obj = $('.layui-layer-tab').find('.layui-layer-content').find('.layui-layer-tabli:visible');
+        var tab_url = $(obj).find('.tab_url');
+        if($(tab_url).length == 0){
+          return false;
+        }
+        var content = $(tab_url).html();
+        if(content.indexOf('http') != 0){
+          return false;
+        }
+        $(obj).html('<iframe src="' + content + '" name="iframe_tab' + k + '" class="iframe_tab" framborder="0" id="iframe_tab' + k + '" data-id="' + k + '" scrolling="auto" width="100%"  height="557" style="border:none;"></iframe>');
+      }
+    </script>
   </body>
 </html>
