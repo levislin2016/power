@@ -19,15 +19,13 @@
 							<div class="layui-inline tool-btn">
 							</div>
 							<div class="layui-inline">
-								<input type="text" name="search" id="search" placeholder="请输入被调拨工程/被调拨工程队/商品名/调拨工程队" autocomplete="off" class="layui-input" value="{$Think.get.search}" />
+								<input type="text" name="search" id="search" placeholder="请输入工程/商品名" autocomplete="off" class="layui-input" value="{$Think.get.search}" />
 							</div>
 							<div class="layui-inline">
 								<select name="type" id="type" lay-filter="status">
 									<option value="">请选择一个类型</option>
-									<option {eq name="Request.param.type" value="9"}selected{/eq} value="9">工程调拨入库</option>
-									<option {eq name="Request.param.type" value="10"}selected{/eq} value="10">工程调拨出库</option>
-									<option {eq name="Request.param.type" value="11"}selected{/eq} value="11">结余调拨入库</option>
-									<option {eq name="Request.param.type" value="12"}selected{/eq} value="12">结余调拨出库</option>
+									<option {eq name="Request.param.type" value="10"}selected{/eq} >工程调拨入库</option>
+									<option {eq name="Request.param.type" value="12"}selected{/eq} >结余调拨入库</option>
 								</select>
 							</div>
 							<button class="layui-btn layui-btn-normal" type="submit" lay-submit="search">搜索</button>
@@ -97,7 +95,7 @@
                 $(".dc").click(function(){
                     var type = $('#type option:selected').val();
                     var search = $("#search").val()
-                    var url = "{:url('stock_order/stock_order_index_excel')}?search="+search+"&type="+type;
+                    var url = "{:url('stock_order/stock_order_index_excel')}?search="+search+"&type="+type+'&is_project_id='+"{$_GET['is_project_id']}";
                     window.open(url);
                 });
 			})
