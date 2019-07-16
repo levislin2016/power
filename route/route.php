@@ -156,7 +156,8 @@ Route::get('stock_del', 'stock/del');
 //库存
 Route::get('stock_all', 'stock_all/index');
 Route::get('stock_all_data', 'stock_all/get_data');
-
+Route::get('stock_all_allot', 'stock_all/allot');
+Route::get('stock_all_record', 'stock_all/record');
 
 //工程队
 Route::get('woker', 'woker/index');
