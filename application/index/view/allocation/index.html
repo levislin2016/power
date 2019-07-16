@@ -159,6 +159,8 @@
                 $(document).ready(function(){
                     var selecta = $('#project_id option:selected').val();
                     if(selecta != ''){
+                        var url = "{:url('stock_order/stock_order_index')}?is_project_id="+$('#project_id option:selected').val();
+                        $(".addBtn2").attr('data-url', url);
                         $(".addBtn2").css('display','block');
                         $(".table_list").css('display','block');
                     }
