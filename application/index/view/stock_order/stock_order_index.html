@@ -19,10 +19,10 @@
 							<div class="layui-inline tool-btn">
 							</div>
 							<div class="layui-inline">
-								<input type="text" name="search" placeholder="请输入被调拨工程/被调拨工程队/商品名/调拨工程队" autocomplete="off" class="layui-input" value="{$Think.get.search}" />
+								<input type="text" name="search" id="search" placeholder="请输入被调拨工程/被调拨工程队/商品名/调拨工程队" autocomplete="off" class="layui-input" value="{$Think.get.search}" />
 							</div>
 							<div class="layui-inline">
-								<select name="type" lay-filter="status">
+								<select name="type" id="type" lay-filter="status">
 									<option value="">请选择一个类型</option>
 									<option {eq name="Request.param.type" value="9"}selected{/eq} value="9">工程调拨入库</option>
 									<option {eq name="Request.param.type" value="10"}selected{/eq} value="10">工程调拨出库</option>
@@ -31,6 +31,7 @@
 								</select>
 							</div>
 							<button class="layui-btn layui-btn-normal" type="submit" lay-submit="search">搜索</button>
+							<button type="button" class="layui-btn layui-btn-normal dc" data-title="导出excel"><i class="layui-icon">&#xe601;</i>导出excel</button>
 						</div>
 					</form>
 					<div class="layui-form" id="table-list">
@@ -55,14 +56,14 @@
 									<th>调拨类型</th>
 									<th>数量</th>
 									<th>备注</th>
-									<th>调拨时间</th>
+									<th>时间</th>
 									<th>操作</th>
 								</tr>
 							</thead>
 							<tbody>
 							{volist name="list" id="vo"}
 								<tr>								
-									<td>{$vo['sid']}</td>
+									<td>{$vo['number']}</td>
 									<td>{$vo['project_name']}</td>
 									<td>{$vo['woker_name']}</td>
 									<td>{$vo['goods_name']}</td>
@@ -93,6 +94,12 @@
 				var form = layui.form,
 					$ = layui.jquery,
 					element = layui.element
+                $(".dc").click(function(){
+                    var type = $('#type option:selected').val();
+                    var search = $("#search").val()
+                    var url = "{:url('stock_order/stock_order_index_excel')}?search="+search+"&type="+type;
+                    window.open(url);
+                });
 			})
 		</script>
 	</body>

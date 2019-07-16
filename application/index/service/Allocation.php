@@ -409,6 +409,21 @@ class Allocation{
                     'errorCode' => 301
                 ]);
         }
+        $need = \Db::table('pw_need')->alias('n')
+            ->leftJoin('pw_supply_goods sg','n.goods_id = sg.g_id')
+            ->field('id,stock_id,freeze,in,num')
+            ->where([
+                'n.project_id' => $data['project_id'],
+                'sg.id' => $data['supply_goods_id'],
+            ])
+            ->find();
+        if(!$need){
+            throw new BaseException(
+                [
+                    'msg' => '暂无该材料的需求',
+                    'errorCode' => 301
+                ]);
+        }
         $allocation_list = \Db::table('pw_project_stock')->field('id, num')->where(['supply_goods_id' => $data['supply_goods_id'], 'project_id' => $data['project_id']])->find();
         \Db::startTrans();
         try {
@@ -460,6 +475,21 @@ class Allocation{
             throw new BaseException(
                 [
                     'msg' => '超过最大可调拨材料数'.$project_info['not'],
+                    'errorCode' => 301
+                ]);
+        }
+        $need = \Db::table('pw_need')->alias('n')
+            ->leftJoin('pw_supply_goods sg','n.goods_id = sg.g_id')
+            ->field('id,stock_id,freeze,in,num')
+            ->where([
+                'n.project_id' => $data['project_id'],
+                'sg.id' => $data['supply_goods_id'],
+            ])
+            ->find();
+        if(!$need){
+            throw new BaseException(
+                [
+                    'msg' => '暂无该材料的需求',
                     'errorCode' => 301
                 ]);
         }
@@ -602,6 +632,21 @@ class Allocation{
                 'msg' => '编号为'.$data['id'].'超过最大可调拨材料数'.$project_info['not'],
                 'code' => 301
             ];
+        }
+        $need = \Db::table('pw_need')->alias('n')
+            ->leftJoin('pw_supply_goods sg','n.goods_id = sg.g_id')
+            ->field('id,stock_id,freeze,in,num')
+            ->where([
+                'n.project_id' => $data['project_id'],
+                'sg.id' => $data['supply_goods_id'],
+            ])
+            ->find();
+        if(!$need){
+            throw new BaseException(
+                [
+                    'msg' => '暂无该材料的需求',
+                    'errorCode' => 301
+                ]);
         }
         $allocation_list = \Db::table('pw_project_stock')->field('id, num')->where(['supply_goods_id' => $data['supply_goods_id'], 'project_id' => $data['project_id']])->find();
         $project_stock = \Db::table('pw_project_stock')

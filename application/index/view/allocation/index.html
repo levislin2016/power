@@ -29,7 +29,7 @@
 								<input type="text" name="search" id="search" lay-verify="required" placeholder="请输入材料" autocomplete="off" class="layui-input" value={if condition="$_GET['supply_goods_id'] neq null"}"{$goods_name['name']}" disabled="disabled"{else/}"{$Think.get.search}"{/if} />
 							</div>
 							<div class="layui-inline" style="position:relative; z-index:66;" >
-								<select name="project_id" required  lay-filter="filter" lay-search=""  style="width:195px;z-index: 2" id="project_id" >
+								<select name="project_id" required  lay-filter="filter" lay-search=""  style="width:195px;z-index: 2" id="project_id" {if condition="$_GET['project_id'] neq ''"}disabled="disabled"{else/}{/if}>
 									<option value="" >请选择调拨工程</option>
 									{volist name="project_all_list" id="vo"}
 									<option value="{$vo['id']}" {if condition="$_GET['project_id'] eq $vo['id']"}selected{else/}{/if}>{$vo['name']}</option>
@@ -473,7 +473,7 @@
                             //layer提供了5种层类型。可传入的值有：0（信息框，默认）1（页面层）2（iframe层）3（加载层）4（tips层）
                             type: 2,
                             title: "调拨",
-                            area: ['80%', '80%'],
+                            area: ['50%', '50%'],
                             content: "{:url('allocation/allocation_goods')}?project_id="+data.id+"&contract_id="+data.contract_id+"&type_id=2&stock_id="+data.stock_id+"&supply_goods_id="+data.supply_goods_id+"&search="+$("#search").val()+"&woker_id="+data.woker_id+"&is_type=2&owner_id="+data.owner_id+"&is_project_id="+$('#project_id option:selected').val()+"&is_poject=1&passive_woker_id="+data.woker_id
                         });
                     }
@@ -502,7 +502,7 @@
                             //layer提供了5种层类型。可传入的值有：0（信息框，默认）1（页面层）2（iframe层）3（加载层）4（tips层）
                             type: 2,
                             title: "调拨",
-                            area: ['80%', '80%'],
+                            area: ['50%', '50%'],
                             content: "{:url('allocation/allocation_goods')}?project_id="+data.id+"&contract_id="+data.contract_id+"&type_id=1&stock_id=&supply_goods_id="+data.supply_goods_id+"&search="+$("#search").val()+"&woker_id="+data.woker_id+"&is_type=1&is_project_id="+$('#project_id option:selected').val()+"&is_poject=2&passive_woker_id="+data.woker_id+"&stock_id="+data.stock_id
 							,success: function(layero, index){
                                 layer.close(index);

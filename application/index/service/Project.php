@@ -149,7 +149,6 @@ class Project{
         $data_passive['order'] = [
             'company_id'  => '',
             'contract_id' => '',
-            'number'      => '',
             'stock_id'    => !empty($params['stock_id']) ? $params['stock_id'] : 0,
             'project_id'  => $params['passive_project_id'] ?: 0,
             'woker_id'    => $params['passive_woker_id'] ?: 0,
@@ -173,7 +172,6 @@ class Project{
         $data['order'] = [
             'company_id'  => '',
             'contract_id' => '',
-            'number'      => '',
             'stock_id'    => !empty($params['stock_id']) ? $params['stock_id'] : 0,
             'project_id'  => $params['project_id'],
             'woker_id'    => '',
@@ -199,7 +197,7 @@ class Project{
 
 
     public static function allocationRecord($sid, $data){
-        $data['order']['sid'] = $sid;
+        $data['order']['number'] = $sid;
         $data['order']['status'] = 1;
         $res = StockOrderModel::insertGetId($data['order']);
         $data['info']['stock_order_id'] = $res;

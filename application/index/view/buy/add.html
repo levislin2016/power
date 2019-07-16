@@ -30,7 +30,7 @@
                         <div class="layui-inline">
                             <label class="layui-form-label" style="width: 70px;">工程：</label>
                             <div class="layui-input-inline" style="width: 185px;">
-                                <select name="project_id" {notempty name="Request.param.id"}disabled="true"{/notempty} data-pid="{$Request.param.id}" class="project_id" data-url="{:url('buy/get_need')}" required lay-verify="required" lay-filter="project_id" lay-verType="tips" lay-search="">
+                                <select name="project_id" id="project_id" {notempty name="Request.param.id"}disabled="true"{/notempty} data-pid="{$Request.param.id}" class="project_id" data-url="{:url('buy/get_need')}" required lay-verify="required" lay-filter="project_id" lay-verType="tips" lay-search="">
                                     <option value="">请选择工程</option>
                                     {volist name="project_list" id="project"}
                                     <option {eq name="project.id" value="$Request.param.id"} selected {/eq} value="{$project.id}">{$project.name}</option>
@@ -41,7 +41,7 @@
                         <div class="layui-inline">
                             <label class="layui-form-label">类型:</label>
                             <div class="layui-input-inline" style="width: 185px;">
-                                <select name="from" class="from" id="lasta" required lay-verify="required" lay-filter="from" lay-verType="tips" lay-search="">
+                                <select name="from" id="from" class="from" id="lasta" required lay-verify="required" lay-filter="from" lay-verType="tips" lay-search="">
                                     {volist name="buy_from" id="from"}
                                     <option value="{$key}">{$from}</option>
                                     {/volist}
@@ -81,9 +81,9 @@
                         <tbody>
                         </tbody>
                     </table>
-                    
+
                     <input type="hidden" class="apply_for_v" value="1" />
-                    
+
                     <div class="layui-form-item apply_for_k" style="display: none;">
                         <div class="layui-inline">
                             <label class="layui-form-label" style="width: 70px;">申请原因：</label>
@@ -99,7 +99,7 @@
                         <div class="layui-inline">
                             <label class="layui-form-label" style="width: 70px;"></label>
                             <div class="layui-input-inline" style="width: 700px;">
-                                <textarea name="note" placeholder="请输入原因" class="layui-textarea note"></textarea>                              
+                                <textarea name="note" placeholder="请输入原因" class="layui-textarea note"></textarea>
                             </div>
                         </div>
                     </div>
@@ -111,11 +111,96 @@
 
             <button class="layui-btn layui-btn-normal" lay-submit lay-filter="formDemo">立即提交</button>
             <button type="button" class="layui-btn layui-btn-normal dc" data-title="导出excel"><i class="layui-icon">&#xe601;</i>导出excel</button>
+            <button type="button" class="layui-btn layui-btn-normal" id="bt" data-title="打印采购单"><i class="layui-icon">&#xe621;</i>打印采购单</button>
+        </div>
+        <div id="div_print" style="display: block">
+            <div style="width: 100%;">
+                <div >
+                    <div style="width:56%;height: 100px;float: left;">
+                        <b style="font-size: 20px;line-height: 40px">郑州亚拓软件有限公司采购入库单</b>
+                        <span style="width:100%; display:inline-block;line-height: 30px">地址：浙江省杭州市西湖区文一西路将皇大厦</span>
+                        <div style="width: 50%; float:left;line-height: 30px">联系电话：0371-6357392739</div><div style="width: 48%; float: right;line-height: 35px">传真：0273-1863492792</div>
+                    </div>
+                    <div style="width: 42%;height: 100px; float:right;text-align: center">
+                        <img style="height: 100px;" src="/public/img/12.jpg">
+                    </div>
+                </div>
+                <div style="width:100%;clear: both">
+                    <div id="Date" style="width: 50%;float: left"></div>
+                    <div id="gongchen" style="width: 30%;float: left"></div>
+                    <div id="lx" style="width:20%;float: left"></div>
+                </div>
+                <div style="clear: both; padding-top: 10px">
+                    <table class="layui-table stock_order_table1">
+                        <colgroup>
+                            <col>
+                            <col>
+                            <col>
+                            <col>
+                            <col>
+                            <col>
+                            <col>
+                        </colgroup>
+                        <thead>
+                        <tr>
+                            <th>材料编号</th>
+                            <th>材料名称</th>
+                            <th>价格</th>
+                            <th>预算</th>
+                            <th>已采购</th>
+                            <th>结余调拨数量</th>
+                            <th>工程调拨数量</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+                <div style="width:100%;clear: both">
+                    <div id="user" style="width: 20%;float: left">制单人员：管理员</div>
+                    <div id="Date1" style="width: 40%;float: left"></div>
+                    <div id="gongchen" style="width: 20%;float: left">经手人：</div>
+                    <div id="lx" style="width:20%;float: left">核单人</div>
+                </div>
+            </div>
         </div>
     </form>
     <script src="__STATIC__/admin/layui/layui.js" type="text/javascript" charset="utf-8"></script>
     <script src="__STATIC__/admin/js/common.js" type="text/javascript" charset="utf-8"></script>
+    <script src="http://libs.baidu.com/jquery/2.1.4/jquery.min.js"></script>
     <script>
+        function printdiv(printpage) {
+            var newstr = printpage.innerHTML;
+            var oldstr = document.body.innerHTML;
+            document.body.innerHTML = newstr;
+            window.print();
+            document.body.innerHTML = oldstr;
+            return false;
+        }
+
+        window.onload=function(){
+            var bt = document.getElementById("bt");
+            var div_print = document.getElementById("div_print");
+            bt.onclick = function(){
+                printdiv(div_print);
+            }
+            document.getElementById('gongchen').innerHTML='工程：'+$('#project_id option:selected').text();
+            document.getElementById('lx').innerHTML='类型：'+$('#from option:selected').text();
+            setInterval(function(){
+                var date=new Date();
+                var year=date.getFullYear(); //获取当前年份
+                var mon=date.getMonth()+1; //获取当前月份
+                var da=date.getDate(); //获取当前日
+                var day=date.getDay(); //获取当前星期几
+                var h=date.getHours(); //获取小时
+                var m=date.getMinutes(); //获取分钟
+                var s=date.getSeconds(); //获取秒
+                var d=document.getElementById('Date');
+                var d1=document.getElementById('Date1');
+                d.innerHTML='单据日期：'+year+'年'+mon+'月'+da+'日';
+                d1.innerHTML='制单时间：'+year+'年'+mon+'月'+da+'日   '+h+':'+m+':'+s;
+            },1000)
+        }
         layui.use(['form', 'jquery', 'laydate', 'layer', 'laypage', 'dialog', 'tool', 'element', 'layedit'], function () {
             var form = layui.form,
                 layer = layui.layer,
@@ -192,6 +277,7 @@
             });
 
             form.on('select(from)', function (data) {
+                document.getElementById('lx').innerHTML='类型：'+$('#from option:selected').text();
                 var project_id = $('.project_id').val();
                 var url = $('.project_id').data('url');
                 get_need_data(url, project_id);
@@ -209,10 +295,11 @@
                 loading = layer.load(2, {
                     shade: [0.2, '#000']
                 });
-                $.post(url, {id: project_id, from: from}, function(data){ 
+                $.post(url, {id: project_id, from: from}, function(data){
                     console.dir(data);
                     layer.close(loading);
                     var str = '';
+                    var str1 = '';
                     for(var i in data){
                         str += '<tr>';
                         str += '    <td>'+ data[i]['number'] +'</td>';
@@ -243,8 +330,19 @@
                         str += '        <input type="number" min="0" data-max="'+ max_num +'" data-id="'+ data[i]['goods_id'] +'" class="layui-input num" lay-verify="number|buy_num" lay-verType="tips" style="border: none; text-align: center; padding: 0px;" value="0" />';
                         str += '    </td>';
                         str += '</tr>';
+
+                        str1 += '<tr>';
+                        str1 += '    <td>'+ data[i]['number'] +'</td>';
+                        str1 += '    <td>'+ data[i]['name'] +'</td>';
+                        str1 += '    <td></td>';
+                        str1 += '    <td>'+ data[i]['need'] +'</td>';
+                        str1 += '    <td>'+ data[i]['buy_num'] +'</td>';
+                        str1 += '    <td>'+ data[i]['have_num'] +'</td>';
+                        str1 += '    <td>'+ data[i]['project_num'] +'</td>';
+                        str1 += '</tr>';
                     }
                     $('.stock_order_table').find('tbody').html(str);
+                    $('.stock_order_table1').find('tbody').html(str1);
                         window.exportData=str;
                     form.render('select');
                 })
@@ -312,7 +410,7 @@
                     note = $('.note_select').val() + $('.note').val();
                 }
                 num = JSON.stringify(num);
-                
+
                 loading = layer.load(2, {
                     shade: [0.2, '#000']
                 });
