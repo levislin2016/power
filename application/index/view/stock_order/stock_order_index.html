@@ -27,6 +27,7 @@
 									<option value="">请选择一个类型</option>
 									<option {eq name="Request.param.type" value="10"}selected{/eq} value="10" >工程调拨入库</option>
 									<option {eq name="Request.param.type" value="12"}selected{/eq} value="12">结余调拨入库</option>
+									<option {eq name="Request.param.type" value="12"}selected{/eq} value="15">工程库存调拨入库</option>
 								</select>
 							</div>
 							<button class="layui-btn layui-btn-normal" type="submit" lay-submit="search">搜索</button>
@@ -67,7 +68,7 @@
 									<td>{$vo['woker_name']}</td>
 									<td>{$vo['goods_name']}</td>
 									<td>{$vo['stock_name']}</td>
-									<td><span class="layui-badge {eq name='vo.type' value='9'}layui-bg-green{/eq}{eq name='vo.type' value='10'}layui-bg-blue{/eq}{eq name='vo.type' value='11'}layui-bg-cyan{/eq}{eq name='vo.type' value='12'}layui-bg-gray{/eq}">{$vo['type_name']}</span></td>
+									<td><span class="layui-badge {eq name='vo.type' value='15'}layui-bg-gray{/eq}{eq name='vo.type' value='10'}layui-bg-blue{/eq}{eq name='vo.type' value='11'}layui-bg-cyan{/eq}">{$vo['type_name']}</span></td>
 									<td>{$vo['num']}</td>
 									<td>{$vo['note']}</td>
 									<td>{$vo['create_time']}</td>
