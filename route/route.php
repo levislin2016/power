@@ -69,6 +69,10 @@ Route::get('project_woker', 'project/woker');
 Route::get('project_woker_add', 'project/woker_add');
 Route::post('project_allot', 'project/allot');
 Route::get('project_allocation', 'project/allocation_goods');
+Route::get('woker_balance', 'project/woker_balance');
+Route::get('woker_data', 'project/woker_data');
+Route::get('woker_list_data', 'project/woker_list_data');
+Route::post('woker_balance_save', 'project/woker_balance_save');
 //添加调拨清单
 //Route::get('allocation_shopping_cart_add', 'allocation/shopping_cart_add');
 

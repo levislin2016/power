@@ -92,9 +92,12 @@
 											{eq name="vo.status" value="2"}
 												<!-- <button class="layui-btn layui-btn-sm layui-btn-warm edit-btn btn_tips" data-title="采购申请" data-id="{$vo['id']}" data-url="{:url('buy/apply_for')}" data-h="500px" style="margin: 0px;"><i class="layui-icon">&#xe657;</i></button> -->
 											{/eq}
-											{in  name="vo.status" value="2,3"}
+											{eq  name="vo.status" value="2"}
 												<a class="layui-btn layui-btn-sm layui-btn-primary btn_tips" data-title="分配材料" href="{:url('project/woker', array('id'=>$vo['id']))}" style="margin: 0px;"><i class="layui-icon">&#xe656;</i></a>
-											{/in}
+											{/eq}
+											{eq name="vo.status" value="3"}
+												<a class="layui-btn layui-btn-sm layui-btn-normal btn_tips" data-title="工程队结算" href="{:url('project/woker_balance', array('id'=>$vo['id']))}" style="margin: 0px;"><i class="layui-icon">&#xe66c;</i></a>
+											{/eq}
 											<!-- <button class="layui-btn layui-btn-sm layui-btn-normal btn_tips tab_btn" data-tab="61" data-title="领退记录" data-url="{:url('stock_order/order_get_back')}?pid={$vo['id']}"><i class="layui-icon">&#xe63c;</i></button> -->
 											<!-- <button class="layui-btn layui-btn-sm layui-btn-warm btn_tips" data-title="工程完成" data-url=""><i class="layui-icon">&#xe66c;</i></button>											 -->
 											<!-- <button class="layui-btn layui-btn-sm layui-btn-danger btn_tips" data-title="工程结算" data-url=""><i class="layui-icon">&#xe66c;</i></button> -->
