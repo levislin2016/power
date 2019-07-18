@@ -57,10 +57,6 @@ class StockOrder{
 
 
     public function allocation_order_list($params, $type){
-        $sids = 1;
-        if(!empty($params['is_project_id'])){
-            $sids = \Db::table('pw_stock_order')->where('project_id', $params['is_project_id'])->where('type', 'in', $type)->column('number');
-        }
         $list = StockOrderModel::useGlobalScope(false)->alias('so')
             ->leftJoin('Stock s','so.stock_id = s.id')
             ->leftJoin('project p','so.project_id = p.id')
@@ -68,9 +64,9 @@ class StockOrder{
             ->leftJoin('stock_order_info soi','soi.stock_order_id = so.id')
             ->leftJoin('supply_goods sg','soi.supply_goods_id = sg.id')
             ->leftJoin('goods g','g.id = sg.g_id')
-            ->where(function ($query) use($params, $type, $sids) {
+            ->where(function ($query) use($params, $type) {
                 if(!empty($params['search'])){
-                    $query->where('so.number|s.name|p.name|w.name|g.name', 'like', '%'.$params['search'].'%');
+                    $query->where('p.name|g.name', 'like', '%'.$params['search'].'%');
                 }
                 if(!empty($params['type'])){
                     $query->where('so.type', $params['type']);
@@ -81,8 +77,8 @@ class StockOrder{
                         $query->where('so.type', $type);
                     }
                 }
-                if($sids != 1){
-                    $query->where('so.number', 'in',$sids);
+                if(!empty($params['is_project_id']) && empty($params['search'])){
+                    $query->where('so.project_id', $params['is_project_id']);
                 }
                 if(!empty($params['time'])){
                     $query->where('so.create_time', 'between time', explode(' ~ ', $params['time']));
@@ -91,30 +87,27 @@ class StockOrder{
                     $query->where('so.project_id', $params['pid']);
                 }
             })
-            ->field('so.*, s.name as stock_name, p.name as project_name, w.name as woker_name,g.name as goods_name, soi.num')
+            ->field('so.*, s.name as stock_name, p.name as project_name, w.name as woker_name,g.name as goods_name, soi.num, so.type')
             ->order('so.create_time', 'desc')
             ->paginate(10, false, [
                 'query'     => $params,
             ]);
+
         return $list;
 
     }
 
     public function allocation_order_list_excle($params, $type){
-        $sids = 1;
-        if(!empty($params['is_project_id'])){
-            $sids = \Db::table('pw_stock_order')->where('project_id', $params['is_project_id'])->where('type', 'in', $type)->column('number');
-        }
-        $list = StockOrderModel::useGlobalScope(false)->alias('so')
+        $list = \Db::table('pw_stock_order')->alias('so')
             ->leftJoin('Stock s','so.stock_id = s.id')
             ->leftJoin('project p','so.project_id = p.id')
             ->leftJoin('woker w','so.woker_id = w.id')
             ->leftJoin('stock_order_info soi','soi.stock_order_id = so.id')
             ->leftJoin('supply_goods sg','soi.supply_goods_id = sg.id')
             ->leftJoin('goods g','g.id = sg.g_id')
-            ->where(function ($query) use($params, $type, $sids) {
+            ->where(function ($query) use($params, $type) {
                 if(!empty($params['search'])){
-                    $query->where('so.number|s.name|p.name|w.name|g.name', 'like', '%'.$params['search'].'%');
+                    $query->where('p.name|g.name', 'like', '%'.$params['search'].'%');
                 }
                 if(!empty($params['type'])){
                     $query->where('so.type', $params['type']);
@@ -125,8 +118,8 @@ class StockOrder{
                         $query->where('so.type', $type);
                     }
                 }
-                if($sids != 1){
-                    $query->where('so.number', 'in',$sids);
+                if(!empty($params['is_project_id']) && empty($params['search'])){
+                    $query->where('so.project_id', $params['is_project_id']);
                 }
                 if(!empty($params['time'])){
                     $query->where('so.create_time', 'between time', explode(' ~ ', $params['time']));
@@ -135,7 +128,7 @@ class StockOrder{
                     $query->where('so.project_id', $params['pid']);
                 }
             })
-            ->field('so.*, s.name as stock_name, p.name as project_name, w.name as woker_name,g.name as goods_name, soi.num')
+            ->field('so.*, s.name as stock_name, p.name as project_name, w.name as woker_name,g.name as goods_name, soi.num, so.typr')
             ->order('so.create_time', 'desc')
             ->select();
         $strexport = "调拨号\t工程\t工程队\t商品\t仓库\t调拨类型\t数量\t备注\t时间\r";

@@ -28,6 +28,9 @@ class Allocation extends Base
 
     public function index(){
         cookie('check_shop', '');
+        if(empty(input('get.is_type'))){
+            cookie('is_type', '1');
+        }
         $params = input('get.');
 
         $project_all_list = \Db::table('pw_project')->alias('p')
@@ -57,6 +60,14 @@ class Allocation extends Base
         $params = input('get.');
         cookie('is_type', '');
         $project_list = (new AllocationService)->project_list($params);
+        cookie('check_shop', '');
+        return json(["code"=>"0","msg"=>"","count" => $project_list['count'], "data"=>$project_list['list']]);
+    }
+
+    public function project_stock_list(){
+        $params = input('get.');
+        cookie('is_type', '');
+        $project_list = (new AllocationService)->project_stock_list($params);
         cookie('check_shop', '');
         return json(["code"=>"0","msg"=>"","count" => $project_list['count'], "data"=>$project_list['list']]);
     }
@@ -200,10 +211,10 @@ class Allocation extends Base
             ->field('bi.*, s.name as supply_name, g.name, g.image, g.number, u.name as unit')
             ->select();
         $this->assign('list', $list);
-        $strexport = "材料编号\t材料名称\t供应商\t价格(元)\t采购数量\t已入库数量\r";
+        $strexport = "材料名称\t材料编号\t供应商\t价格(元)\t采购数量\t已入库数量\r";
         foreach ($list as $row) {
-            $strexport .= $row['number'] . "\t";
             $strexport .= $row['name'] . "\t";
+            $strexport .= $row['number'] . "\t";
             $strexport .= $row['supply_name'] . "\t";
             $strexport .= $row['price']/100 . "\t";
             $strexport .= $row['num'] . "\t";

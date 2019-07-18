@@ -45,7 +45,7 @@
 								<input type="text" name="is_type"  id="is_type" style="display: none" lay-verType="tips" autocomplete="off" class="layui-input" value="{$_GET['is_type']}">
 							</div>
 							<div class="layui-inline">
-								<button type="button" class="layui-btn  layui-btn-normal addBtn2 btn_tips" data-title="查询调拨记录"  data-url="" style="display: none" data-w="1000px" data-h="748px"><i class="layui-icon">&#xe705;</i>查询调拨记录</button>
+								<button type="button" class="layui-btn  layui-btn-normal addBtn2 btn_tips" data-title="查询调拨记录"  data-url="" style="display: none" data-w="1200px" data-h="748px"><i class="layui-icon">&#xe705;</i>查询调拨记录</button>
 							</div>
 							<div class="layui-inline">
 							<button id="search_school" lay-filter="lat" class="layui-btn layui-btn-normal ztc" type="submit" lay-submit="search">搜索</button>
@@ -62,11 +62,12 @@
 							{if condition="$_GET.is_type eq 2"}
 								<li class="layui-this">甲供结余调拨</li>
 							{else/}
-								{if condition="$Think.cookie.is_type neq 2"}
-									<li  class="layui-this">结余调拨</li>
-									<li>工程调拨</li>
-								{else/}
-									<li class="layui-this">甲供结余调拨</li>
+								{if condition="$Think.cookie.is_type eq 2"}
+                                    <li class="layui-this">甲供结余调拨{$Think.cookie.is_type}</li>
+                                {else/}
+                                    <li  class="layui-this">结余调拨</li>
+                                    <li>工程调拨</li>
+                                    <li>工程库存调拨</li>
 								{/if}
 							{/if}
 						</ul>
@@ -81,31 +82,39 @@
 									</div>
 								</div>
 							{else/}
-								{if condition="$Think.cookie.is_type neq 2"}
-									<!--结余调拨-->
-									<div class="layui-tab-item layui-show">
-										<div class="layui-form" id="table-list" >
-											<table class="layui-table all1"  lay-filter="school_table" >
-											</table>
-										</div>
-									</div>
+								{if condition="$Think.cookie.is_type eq 2"}
+                                    <!--甲供结余调拨-->
+                                    <div class="layui-tab-item layui-show">
+                                        <div class="layui-form" id="table-list">
+                                            <table class="layui-table all3" lay-filter="school_table" >
 
-									<!--工程调拨-->
-									<div class="layui-tab-item">
-										<div class="layui-form" id="table-list">
-											<table class="layui-table all2" lay-filter="school_table1" >
-											</table>
-										</div>
-									</div>
+                                            </table>
+                                        </div>
+                                    </div>
 								{else/}
-									<!--甲供结余调拨-->
-									<div class="layui-tab-item layui-show">
-										<div class="layui-form" id="table-list">
-											<table class="layui-table all3" lay-filter="school_table" >
+                                    <!--结余调拨-->
+                                    <div class="layui-tab-item layui-show">
+                                        <div class="layui-form" id="table-list" >
+                                            <table class="layui-table all1"  lay-filter="school_table" >
+                                            </table>
+                                        </div>
+                                    </div>
 
-											</table>
-										</div>
-									</div>
+                                    <!--工程调拨-->
+                                    <div class="layui-tab-item">
+                                        <div class="layui-form" id="table-list">
+                                            <table class="layui-table all2" lay-filter="school_table1" >
+                                            </table>
+                                        </div>
+                                    </div>
+
+                                    <!--工程库存调拨-->
+                                    <div class="layui-tab-item">
+                                        <div class="layui-form" id="table-list">
+                                            <table class="layui-table all4" lay-filter="school_table2" >
+                                            </table>
+                                        </div>
+                                    </div>
 								{/if}
 							{/if}
 
@@ -135,6 +144,11 @@
 			<!--{:url('allocation/allocation_goods')}?project_id='+d.id+'&contract_id='+d.contract_id+'&type_id=1&stock_id=&supply_goods_id=&woker_id='+d.woker_id+'&is_type=1&is_project_id='+"{$_GET['project_id']}"+-->
 
 		</script>
+        <script type="text/html" id="barDemo2">
+            <button type="button" class="layui-btn layui-btn-sm layui-btn-normal addBtn1 btn_tips" data-title="调拨材料" lay-event="shopp2" data-h="568px" ><i class="layui-icon">&#xe698;</i></button>
+            <!--{:url('allocation/allocation_goods')}?project_id='+d.id+'&contract_id='+d.contract_id+'&type_id=1&stock_id=&supply_goods_id=&woker_id='+d.woker_id+'&is_type=1&is_project_id='+"{$_GET['project_id']}"+-->
+
+        </script>
 	   <script type="text/html" id="status_name">
          {{#  if(d.status === 1){ }}
 					<span class="layui-badge layui-bg-gray" >待开工</span>
@@ -192,7 +206,6 @@
                         , url: "{:url('allocation/project_list')}?search="+$("#search").val()+"&project_id="+$('#project_id option:selected').val()+"&is_type="
                         , page: true
                         , cols: [[
-                            , {field: 'id', title: 'ID', width:80,sort: true}
                             , {field: 'contract_number', width:150,title: '合同编号', sort: true}
                             , {field: 'owner_name',width:150, title: '业主'}
                             , {field: 'name', width:190,title: '项目名'}
@@ -226,6 +239,22 @@
                             , {field: 'supply_goods_name', width:210,title: '材料'}
                             , {field: 'have', width:210,title: '可调拨数',overflow:scroll}
                             , {fixed: 'right', title:'操作',width:80, align: 'center', toolbar: '#barDemo'} //这里的toolbar值是模板元素的选择器
+                        ]]
+                    });
+                    table.render({
+                        elem: '.all4'
+                        , url: "{:url('allocation/project_stock_list')}?search="+$("#search").val()+"&project_id="+$('#project_id option:selected').val()+"&is_type="
+                        , page: true
+                        , cols: [[
+                            , {field: 'contract_number', width:150,title: '合同编号', sort: true}
+                            , {field: 'owner_name',width:150, title: '业主'}
+                            , {field: 'name', width:190,title: '项目名'}
+                            , {field: 'status_name', title: '状态', width:80, templet: '#status_name'}
+                            , {field: 'goods', width:120,title: '材料'}
+                            , {field: 'can_num',width:80,title: '可领'}
+                            , {field: 'get_num', width:80,title: '已领'}
+                            , {field: 'in', width:80,title: '可调拨数量'}
+                            , {fixed: 'right', title:'操作', width:70,align: 'center', toolbar: '#barDemo2'} //这里的toolbar值是模板元素的选择器
                         ]]
                     });
 
@@ -270,7 +299,6 @@
                         , url: "{:url('allocation/project_list')}?search="+$("#search").val()+"&project_id="+$('#project_id option:selected').val()+"&is_type="
                         , page: true
                         , cols: [[
-                            , {field: 'id', title: 'ID', width:80,sort: true}
                             , {field: 'contract_number', width:150,title: '合同编号', sort: true}
                             , {field: 'owner_name',width:150, title: '业主'}
                             , {field: 'name', width:190,title: '项目名'}
@@ -306,6 +334,23 @@
                             , {fixed: 'right', title:'操作',width:80, align: 'center', toolbar: '#barDemo'} //这里的toolbar值是模板元素的选择器
                         ]]
                     });
+                    table.render({
+                        elem: '.all4'
+                        , url: "{:url('allocation/project_stock_list')}?search="+$("#search").val()+"&project_id="+$('#project_id option:selected').val()+"&is_type="
+                        , page: true
+                        , cols: [[
+                            , {field: 'contract_number', width:150,title: '合同编号', sort: true}
+                            , {field: 'owner_name',width:150, title: '业主'}
+                            , {field: 'name', width:190,title: '项目名'}
+                            , {field: 'status_name', title: '状态', width:80, templet: '#status_name'}
+                            , {field: 'goods', width:120,title: '材料'}
+                            , {field: 'can_num',width:80,title: '可领'}
+                            , {field: 'get_num', width:80,title: '已领'}
+                            , {field: 'in', width:80,title: '可调拨数量'}
+                            , {fixed: 'right', title:'操作', width:70,align: 'center', toolbar: '#barDemo2'} //这里的toolbar值是模板元素的选择器
+                        ]]
+                    });
+
 
                     return false;
 //                    get_need_data1(project_id);
@@ -351,7 +396,6 @@
                                 , url: "{:url('allocation/project_list')}?search="+$("#search").val()+"&project_id="+$('#project_id option:selected').val()+"&is_type="
                                 , page: true
                                 , cols: [[
-                                    , {field: 'id', title: 'ID', width:80,sort: true}
                                     , {field: 'contract_number', width:150,title: '合同编号', sort: true}
                                     , {field: 'owner_name',width:150, title: '业主'}
                                     , {field: 'name', width:190,title: '项目名'}
@@ -387,6 +431,23 @@
                                     , {fixed: 'right', title:'操作',width:80, align: 'center', toolbar: '#barDemo'} //这里的toolbar值是模板元素的选择器
                                 ]]
                             });
+                            table.render({
+                                elem: '.all4'
+                                , url: "{:url('allocation/project_stock_list')}?search="+$("#search").val()+"&project_id="+$('#project_id option:selected').val()+"&is_type="
+                                , page: true
+                                , cols: [[
+                                    , {field: 'contract_number', width:150,title: '合同编号', sort: true}
+                                    , {field: 'owner_name',width:150, title: '业主'}
+                                    , {field: 'name', width:190,title: '项目名'}
+                                    , {field: 'status_name', title: '状态', width:80, templet: '#status_name'}
+                                    , {field: 'goods', width:120,title: '材料'}
+                                    , {field: 'can_num',width:80,title: '可领'}
+                                    , {field: 'get_num', width:80,title: '已领'}
+                                    , {field: 'in', width:80,title: '可调拨数量'}
+                                    , {fixed: 'right', title:'操作', width:70,align: 'center', toolbar: '#barDemo2'} //这里的toolbar值是模板元素的选择器
+                                ]]
+                            });
+
                         }
                     });
                 }
@@ -419,7 +480,6 @@
                         , url: "{:url('allocation/project_list')}?search="+$("#search").val()+"&project_id="+$('#project_id option:selected').val()+"&is_type="
                         , page: true
                         , cols: [[
-                            , {field: 'id', title: 'ID', width:80,sort: true}
                             , {field: 'contract_number', width:150,title: '合同编号', sort: true}
                             , {field: 'owner_name',width:150, title: '业主'}
                             , {field: 'name', width:190,title: '项目名'}
@@ -455,6 +515,23 @@
                             , {fixed: 'right', title:'操作',width:80, align: 'center', toolbar: '#barDemo'} //这里的toolbar值是模板元素的选择器
                         ]]
                     });
+                    table.render({
+                        elem: '.all4'
+                        , url: "{:url('allocation/project_stock_list')}?search="+$("#search").val()+"&project_id="+$('#project_id option:selected').val()+"&is_type="
+                        , page: true
+                        , cols: [[
+                            , {field: 'contract_number', width:150,title: '合同编号', sort: true}
+                            , {field: 'owner_name',width:150, title: '业主'}
+                            , {field: 'name', width:190,title: '项目名'}
+                            , {field: 'status_name', title: '状态', width:80, templet: '#status_name'}
+                            , {field: 'goods', width:120,title: '材料'}
+                            , {field: 'can_num',width:80,title: '可领'}
+                            , {field: 'get_num', width:80,title: '已领'}
+                            , {field: 'in', width:80,title: '可调拨数量'}
+                            , {fixed: 'right', title:'操作', width:70,align: 'center', toolbar: '#barDemo2'} //这里的toolbar值是模板元素的选择器
+                        ]]
+                    });
+
                 })
 
                 table.on('tool(school_table)', function(obj){ //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
@@ -515,6 +592,39 @@
                     }
                 });
 
+                table.on('tool(school_table2)', function(obj){ //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+                    var data = obj.data; //获得当前行数据
+                    var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+                    var tr = obj.tr; //获得当前行 tr 的DOM对象
+
+                    if(layEvent === 'shopp2'){ //编辑
+                        //do something
+                        if($('#project_id option:selected').val() == ""){
+                            layer.msg('请选择调拨工程');
+                            return false;
+                        }
+                        if($("#search").val() == ""){
+                            layer.msg('请填写调拨材料');
+                            return false;
+                        }
+                        if($("#search").val() == ""){
+                            layer.msg('请填写调拨材料');
+                            return false;
+                        }
+                        parent.layer.open({ //在父窗口打开
+                            //layer提供了5种层类型。可传入的值有：0（信息框，默认）1（页面层）2（iframe层）3（加载层）4（tips层）
+                            type: 2,
+                            title: "调拨",
+                            area: ['20%', '30%'],
+                            content: "{:url('allocation/allocation_goods')}?project_id="+data.id+"&contract_id="+data.contract_id+"&type_id=3&stock_id=&supply_goods_id="+data.supply_goods_id+"&search="+$("#search").val()+"&woker_id=&is_type=1&is_project_id="+$('#project_id option:selected').val()+"&is_poject=2&passive_woker_id=&stock_id="+data.stock_id
+                            ,success: function(layero, index){
+                                layer.close(index);
+                            }
+                        });
+                    }
+                });
+
+
                 $(document).on('click','#search_school',function(){
                     if($('#project_id option:selected').val() != '' && $("#search").val() != "") {
                         var url = "{:url('stock_order/stock_order_index')}?is_project_id="+$('#project_id option:selected').val();
@@ -548,7 +658,6 @@
                             , url: "{:url('allocation/project_list')}?search="+$("#search").val()+"&project_id="+$('#project_id option:selected').val()+"&is_type="
                             , page: true
                             , cols: [[
-                                , {field: 'id', title: 'ID', width:80,sort: true}
                                 , {field: 'contract_number', width:150,title: '合同编号', sort: true}
                                 , {field: 'owner_name',width:150, title: '业主'}
                                 , {field: 'name', width:190,title: '项目名'}
@@ -584,6 +693,23 @@
                                 , {fixed: 'right', title:'操作',width:80, align: 'center', toolbar: '#barDemo'} //这里的toolbar值是模板元素的选择器
                             ]]
                         });
+                        table.render({
+                            elem: '.all4'
+                            , url: "{:url('allocation/project_stock_list')}?search="+$("#search").val()+"&project_id="+$('#project_id option:selected').val()+"&is_type="
+                            , page: true
+                            , cols: [[
+                                , {field: 'contract_number', width:150,title: '合同编号', sort: true}
+                                , {field: 'owner_name',width:150, title: '业主'}
+                                , {field: 'name', width:190,title: '项目名'}
+                                , {field: 'status_name', title: '状态', width:80, templet: '#status_name'}
+                                , {field: 'goods', width:120,title: '材料'}
+                                , {field: 'can_num',width:80,title: '可领'}
+                                , {field: 'get_num', width:80,title: '已领'}
+                                , {field: 'in', width:80,title: '可调拨数量'}
+                                , {fixed: 'right', title:'操作', width:70,align: 'center', toolbar: '#barDemo2'} //这里的toolbar值是模板元素的选择器
+                            ]]
+                        });
+
                     }
 
 

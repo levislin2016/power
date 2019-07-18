@@ -19,15 +19,15 @@
 							<div class="layui-inline tool-btn">
 							</div>
 							<div class="layui-inline">
-								<input type="text" name="search" id="search" placeholder="请输入被调拨工程/被调拨工程队/商品名/调拨工程队" autocomplete="off" class="layui-input" value="{$Think.get.search}" />
+								<input type="text" name="search" id="search" placeholder="请输入工程/商品名" autocomplete="off" class="layui-input" value="{$Think.get.search}" />
+								<input type="text" name="is_project_id" id="is_project_id" placeholder="请输入工程/商品名" autocomplete="off" style="display: none" class="layui-input" value="{$_GET['is_project_id']}" />
 							</div>
 							<div class="layui-inline">
 								<select name="type" id="type" lay-filter="status">
 									<option value="">请选择一个类型</option>
-									<option {eq name="Request.param.type" value="9"}selected{/eq} value="9">工程调拨入库</option>
-									<option {eq name="Request.param.type" value="10"}selected{/eq} value="10">工程调拨出库</option>
-									<option {eq name="Request.param.type" value="11"}selected{/eq} value="11">结余调拨入库</option>
-									<option {eq name="Request.param.type" value="12"}selected{/eq} value="12">结余调拨出库</option>
+									<option {eq name="Request.param.type" value="10"}selected{/eq} value="10" >工程调拨入库</option>
+									<option {eq name="Request.param.type" value="12"}selected{/eq} value="12">结余调拨入库</option>
+									<option {eq name="Request.param.type" value="12"}selected{/eq} value="15">工程库存调拨入库</option>
 								</select>
 							</div>
 							<button class="layui-btn layui-btn-normal" type="submit" lay-submit="search">搜索</button>
@@ -68,7 +68,7 @@
 									<td>{$vo['woker_name']}</td>
 									<td>{$vo['goods_name']}</td>
 									<td>{$vo['stock_name']}</td>
-									<td><span class="layui-badge {eq name='vo.type' value='9'}layui-bg-green{/eq}{eq name='vo.type' value='10'}layui-bg-blue{/eq}{eq name='vo.type' value='11'}layui-bg-cyan{/eq}{eq name='vo.type' value='12'}layui-bg-gray{/eq}">{$vo['type_name']}</span></td>
+									<td><span class="layui-badge {eq name='vo.type' value='15'}layui-bg-gray{/eq}{eq name='vo.type' value='10'}layui-bg-blue{/eq}{eq name='vo.type' value='11'}layui-bg-cyan{/eq}">{$vo['type_name']}</span></td>
 									<td>{$vo['num']}</td>
 									<td>{$vo['note']}</td>
 									<td>{$vo['create_time']}</td>
@@ -97,7 +97,7 @@
                 $(".dc").click(function(){
                     var type = $('#type option:selected').val();
                     var search = $("#search").val()
-                    var url = "{:url('stock_order/stock_order_index_excel')}?search="+search+"&type="+type;
+                    var url = "{:url('stock_order/stock_order_index_excel')}?search="+search+"&type="+type+'&is_project_id='+"{$_GET['is_project_id']}";
                     window.open(url);
                 });
 			})

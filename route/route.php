@@ -91,6 +91,7 @@ Route::get('allocation', 'allocation/index');
 Route::get('allocation_banlance_list', 'allocation/banlance_list');
 Route::get('allocation_banlance_type_list', 'allocation/banlance_type_list');
 Route::get('allocation_project_list', 'allocation/project_list');
+Route::get('allocation_project_stock_list', 'allocation/project_stock_list');
 Route::get('allocation_excl', 'allocation/excl');
 Route::get('allocation_goods', 'allocation/allocation_goods');
 
