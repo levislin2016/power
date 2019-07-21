@@ -166,10 +166,11 @@
                 return false;
             });
 
-
-
-
         });
+        {gt name="is_balance" value="0"}
+            parent.layer.closeAll();
+            parent.layer.alert('请先结算所有工程队');
+        {/gt}
     </script>
 </body>
 

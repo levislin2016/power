@@ -9,6 +9,7 @@ use app\index\model\ProjectEndInfo as ProjectEndInfoModel;
 use app\index\model\StockOrder as StockOrderModel;
 use app\index\model\Contract as ContractModel;
 use app\index\model\Woker as WokerModel;
+use app\index\model\ProjectWoker as ProjectWokerModel;
 use app\index\service\ProjectWoker as ProjectWokerService;
 use app\lib\exception\BaseException;
 use app\index\validate\ProjectValidate;
@@ -214,6 +215,11 @@ class Project extends Base
     //结算页面
     public function balance(){
         $id = input('param.id', '');
+
+        //判断工程队结算是否完成
+        $is_balance = ProjectWokerModel::where('project_id', $id)->where('is_balance', 1)->count();
+        $this->assign('is_balance', $is_balance);
+
         $project = ProjectModel::get($id);
         $this->assign('project', $project);
         $list = ProjectEndModel::useGlobalScope(false)->alias('pe')
@@ -326,6 +332,85 @@ class Project extends Base
         $params['num'] = json_decode($params['num'], true);
         $res = (new BalanceService)->balance_back($params);
         return $res;
+    }
+
+    public function woker_balance(){
+        $id = input('param.id', '');
+        $project = ProjectModel::get($id);
+        $this->assign('project', $project);
+        return $this->fetch();
+    }
+
+    public function woker_data(){
+        $project_id = input('param.pid', '');
+        $woker_name = input('param.woker_name', '');
+        $nums = input('param.nums', '');
+        
+        $list = ProjectWokerModel::useGlobalScope(false)->alias('pw')
+            ->leftJoin('woker w','w.id = pw.woker_id')
+            ->where('pw.project_id', $project_id)
+            ->where('w.name', 'like', '%'.$woker_name.'%')
+            ->group('pw.woker_id')
+            ->field('w.*, sum(pw.can) as can_s, sum(pw.get) as get_s, sum(pw.not) as not_s, sum(pw.back) as back_s, min(pw.is_balance) as is_balance')
+            // ->fetchSql(true)
+            // ->select();
+            ->paginate($nums, false);
+        
+            // dump($list);
+            // die();
+        $list = $list->toArray();
+        $list['code'] = 200;
+        $list['msg'] = '数据加载成功';
+        return json($list);
+    }
+
+    public function woker_list_data(){
+        $project_id = input('param.pid', '');
+        $woker_id = input('param.id', '');
+        $nums = input('param.nums', '');
+        if(!$woker_id){
+            $list['data'] = [];
+            $list['code'] = 200;
+            $list['msg'] = '数据加载成功';
+            return json($list);
+        }
+        $list = ProjectWokerModel::useGlobalScope(false)->alias('pw')
+            ->leftJoin('supply_goods sg','pw.supply_goods_id = sg.id')
+            ->leftJoin('supply s','sg.s_id = s.id')
+            ->leftJoin('goods g','sg.g_id = g.id')
+            ->leftJoin('unit u','g.unit_id = u.id')
+            ->where('pw.project_id', $project_id)
+            ->where('pw.woker_id', $woker_id)
+            ->field('pw.*, g.number, g.id as goods_id, g.name as goods_name, u.name as unit, s.name as supply_name, s.id as supply_id')
+            ->paginate($nums, false);
+
+        $list = $list->toArray();
+        $list['code'] = 200;
+        $list['msg'] = '数据加载成功';
+        return json($list);
+    }
+
+    public function woker_balance_save(){
+        $project_id = input('param.pid', '');
+        $woker_id = input('param.id', '');
+        $is_balance = input('param.is_balance', '');
+        $res = (new ProjectWokerModel)->save([
+            'is_balance'    =>  $is_balance
+        ],[
+            'project_id'    =>  $project_id,
+            'woker_id'      =>  $woker_id
+        ]);
+        if(!$res){ 
+    		throw new BaseException(
+	            [
+	                'msg' => '工程队结算错误！',
+	                'errorCode' => 49001
+	            ]);
+        }
+
+        return [
+            'msg' => '工程队结算完成'
+        ];
     }
 
 }

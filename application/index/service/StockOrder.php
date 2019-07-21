@@ -87,17 +87,18 @@ class StockOrder{
                     $query->where('so.project_id', $params['pid']);
                 }
             })
-            ->field('so.*, s.name as stock_name, p.name as project_name, w.name as woker_name,g.name as goods_name, soi.num')
+            ->field('so.*, s.name as stock_name, p.name as project_name, w.name as woker_name,g.name as goods_name, soi.num, so.type')
             ->order('so.create_time', 'desc')
             ->paginate(10, false, [
                 'query'     => $params,
             ]);
+
         return $list;
 
     }
 
     public function allocation_order_list_excle($params, $type){
-        $list = StockOrderModel::useGlobalScope(false)->alias('so')
+        $list = \Db::table('pw_stock_order')->alias('so')
             ->leftJoin('Stock s','so.stock_id = s.id')
             ->leftJoin('project p','so.project_id = p.id')
             ->leftJoin('woker w','so.woker_id = w.id')
@@ -127,7 +128,7 @@ class StockOrder{
                     $query->where('so.project_id', $params['pid']);
                 }
             })
-            ->field('so.*, s.name as stock_name, p.name as project_name, w.name as woker_name,g.name as goods_name, soi.num')
+            ->field('so.*, s.name as stock_name, p.name as project_name, w.name as woker_name,g.name as goods_name, soi.num, so.typr')
             ->order('so.create_time', 'desc')
             ->select();
         $strexport = "调拨号\t工程\t工程队\t商品\t仓库\t调拨类型\t数量\t备注\t时间\r";
