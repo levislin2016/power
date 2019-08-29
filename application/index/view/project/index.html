@@ -82,6 +82,7 @@
 											{in  name="vo.status" value="1,2"}
 												<a class="layui-btn layui-btn-sm btn_tips" data-title="设定预算" href="{:url('need/index', array('id'=>$vo['id']))}" style="margin: 0px;"><i class="layui-icon">&#xe63c;</i></a>
 												{egt name="vo.id|ifBuy" value="1"}
+													<!-- <a class="layui-btn layui-btn-sm layui-btn-normal btn_tips" data-title="采购合同" href="{:url('buyContract/index', array('id'=>$vo['id']))}" style="margin: 0px;"><i class="layui-icon">&#xe655;</i></a> -->
 													<button class="layui-btn layui-btn-sm layui-btn-normal edit-btn btn_tips" data-title="采购" data-id="{$vo['id']}" data-url="{:url('buy/add')}" data-w="900px" data-h="650px"  style="margin: 0px;"><i class="layui-icon">&#xe657;</i></button>
 												{/egt}
 											{/in}

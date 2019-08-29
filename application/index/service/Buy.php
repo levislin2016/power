@@ -2,6 +2,7 @@
 namespace app\index\service;
 
 use app\index\model\SupplyGoods as SupplyGoodsModel;
+use app\index\model\Goods as GoodsModel;
 use app\index\model\Buy as BuyModel;
 use app\index\model\BuyInfo as BuyInfoModel;
 use app\index\model\StockOrder as StockOrderModel;
@@ -33,11 +34,15 @@ class Buy{
             $type = 2;
         }
 
+        $params['supply_id'] = $params['supply_id'] ? $params['supply_id'] : 0;
+
         //创建采购订单
         $buy = BuyModel::create([
             'company_id'    =>  session('power_user.company_id'),
             'user_id'       =>  session('power_user.id'),
             'number'        =>  create_order_no('C'),
+            'buy_contract'  =>  $params['buy_contract'],
+            'supply_id'     =>  $params['supply_id'],
             'project_id'    =>  $params['project_id'],
             'status'        =>  $status,
             'type'          =>  $type,
@@ -58,8 +63,10 @@ class Buy{
             $buyInfo = BuyInfoModel::create([
                 'buy_id'        =>  $buy->id,
                 'goods_id'      =>  $num['id'],
-                'supply_id'     =>  $num['sp'],
-                'price'         =>  SupplyGoodsModel::where('s_id', $num['sp'])->where('g_id', $num['id'])->value('price'),
+                // 'supply_id'     =>  $num['sp'],
+                // 'price'         =>  SupplyGoodsModel::where('s_id', $num['sp'])->where('g_id', $num['id'])->value('price'),
+                'supply_id'     =>  $params['supply_id'],
+                'price'         =>  $num['price'] * 100,
                 'num'           =>  $num['val'],
                 'num_ok'        =>  0
             ]);
@@ -71,6 +78,27 @@ class Buy{
                         'errorCode' => 61002
                     ]);
             }
+
+            //创建供应商材料关联
+            $supplyGoods = SupplyGoodsModel::where('s_id', $params['supply_id'])->where('g_id', $num['id'])->find();
+            if(!$supplyGoods){
+                $supplyGoods_res = SupplyGoodsModel::create([
+                    's_id'      =>  $params['supply_id'],
+                    'g_id'      =>  $num['id'],
+                    'price'     =>  $num['price'] * 100,
+                    'note'      =>  ''
+                    
+                ]);
+                if(!$supplyGoods_res){
+                    BuyModel::rollback();
+                throw new BaseException(
+                    [
+                        'msg' => '创建供应商材料关联错误！',
+                        'errorCode' => 61003
+                    ]);
+                }
+            }
+            
         }
 
 
@@ -138,6 +166,7 @@ class Buy{
             }
 
             $supplyGoods = SupplyGoodsModel::where('s_id', $buyInfo->supply_id)->where('g_id', $buyInfo->goods_id)->find();
+            // $supplyGoods = GoodsModel::get($buyInfo->goods_id);
 
             //创建入库单详情
             $stockOrderInfo = StockOrderInfoModel::create([
