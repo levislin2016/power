@@ -16,96 +16,65 @@
         <div class="m-logo" style="background-image: url('__STATIC__/admin/images/logo.png');">
         </div>
         <ul class="layui-nav layui-nav-tree" lay-filter="leftNav">
-          <li class="layui-nav-item layui-nav-itemed">
-            <a href="javascript:;"><i class="layui-icon">&#xe653;</i> 后台管理</a>
-            <dl class="layui-nav-child">
-              <dd><a href="javascript:;" data-url="{:url('user/index')}" data-id='11' data-text="后台用户管理"><span class="l-line"></span>后台用户管理</a></dd>
-              <!--<dd><a href="javascript:;" data-url="welcome.html" data-id='12' data-text="角色管理"><span class="l-line"></span>角色管理</a></dd>-->
-              <!--<dd><a href="javascript:;" data-url="welcome.html" data-id='13' data-text="权限管理"><span class="l-line"></span>权限管理</a></dd>-->
-            </dl>
-          </li>
-          <!-- <li class="layui-nav-item">
-            <a href="javascript:;" data-url="{:url('company/index')}" data-id='2' data-text="公司管理"><i class="layui-icon">&#xe857;</i> 公司管理</a>
-          </li> -->
-          <!-- <li class="layui-nav-item">
-            <a href="javascript:;" data-url="{:url('owner/index')}" data-id='3' data-text="业主管理"><i class="layui-icon">&#xe770;</i> 业主管理</a>
-          </li>
-          <li class="layui-nav-item">
-            <a href="javascript:;" data-url="{:url('contract/index')}" data-id='4' data-text="合同管理"><i class="layui-icon">&#xe621;</i> 合同管理</a>
-          </li>
-          <li class="layui-nav-item">
-            <a href="javascript:;" data-url="{:url('project/index')}" data-id='5' data-text="工程管理"><i class="layui-icon">&#xe632;</i> 工程管理</a>
-          </li>
-          <li class="layui-nav-item">
-              <a href="javascript:;"><i class="layui-icon">&#xe63c;</i> 订单管理</a>
+          {volist name="list" id="vo"}
+            <li class='layui-nav-item'>
+              <a href="javascript:;" {if condition="$vo.url != ''"}data-url="{$vo.url}"{/if}><i class="layui-icon">&#xe{$vo.graphical};</i> {$vo.name}</a>
+              {if condition="$vo['child_list'] != ''"}
+
               <dl class="layui-nav-child">
-                <dd><a href="javascript:;" data-url="{:url('stock_order/get_index')}" data-id='53' data-text="材料领取"><span class="l-line"></span>材料领取</a></dd>
-                <dd><a href="javascript:;" data-url="{:url('stock_order/back_index')}" data-id='54' data-text="材料退还"><span class="l-line"></span>材料退还</a></dd>
+                {volist name="vo.child_list" id="v"}
+                <dd><a href="javascript:;" data-url="{$v.url}" data-id='{$v.id}' data-text="{$v.description}"><span class="l-line"></span>{$v.name}</a></dd>
+                {/volist}
               </dl>
+              {/if}
             </li>
-          <li class="layui-nav-item">
-            <a href="javascript:;" data-url="{:url('goods/index')}" data-id='6' data-text="材料管理"><i class="layui-icon">&#xe656;</i> 材料管理</a>
-          </li>
-          <li class="layui-nav-item">
-            <a href="javascript:;" data-url="{:url('unit/index')}" data-id='7' data-text="材料单位管理"><i class="layui-icon">&#xe62e;</i> 材料单位管理</a>
-          </li>
-          <li class="layui-nav-item">
-            <a href="javascript:;" data-url="{:url('supply/index')}" data-id='8' data-text="供应商管理"><i class="layui-icon">&#xe770;</i> 供应商管理</a>
-          </li>
-          <li class="layui-nav-item">
-            <a href="javascript:;" data-url="{:url('purchase/index')}" data-id='9' data-text="采购导入"><i class="layui-icon">&#xe770;</i> 采购管理</a>
-          </li>
-          <li class="layui-nav-item">
-            <a href="javascript:;"><i class="layui-icon">&#xe653;</i> 仓库管理</a>
-            <dl class="layui-nav-child">
-              <dd><a href="javascript:;" data-url="{:url('stock/index')}" data-id='21' data-text="仓库"><span class="l-line"></span>仓库</a></dd>
-              <dd><a href="javascript:;" data-url="{:url('stock_all/index')}" data-id='22' data-text="库存"><span class="l-line"></span>库存</a></dd>
-            </dl>
-          </li>
-          <li class="layui-nav-item">
-            <a href="javascript:;" data-url="{:url('woker/index')}" data-id='31' data-text="工程队管理"><i class="layui-icon">&#xe770;</i> 工程队管理</a>
-          </li> -->
-
-
-          <li class="layui-nav-item">
-            <a href="javascript:;"><i class="layui-icon">&#xe621;</i> 文档管理</a>
-            <dl class="layui-nav-child">
-              <dd><a href="javascript:;" data-url="{:url('owner/index')}" data-id='21' data-text="业主管理"><span class="l-line"></span>业主管理</a></dd>
-              <dd><a href="javascript:;" data-url="{:url('contract/index')}" data-id='22' data-text="合同管理"><span class="l-line"></span>合同管理</a></dd>
-              <dd><a href="javascript:;" data-url="{:url('supply/index')}" data-id='23' data-text="供应商管理"><span class="l-line"></span>供应商管理</a></dd>
-              <dd><a href="javascript:;" data-url="{:url('woker/index')}" data-id='24' data-text="工程队管理"><span class="l-line"></span>工程队管理</a></dd>
-            </dl>
-          </li>
-          <li class="layui-nav-item">
-            <a href="javascript:;" data-url="{:url('project/index')}" data-id='3' data-text="工程管理"><i class="layui-icon">&#xe632;</i> 工程管理</a>
-          </li>
-          <li class="layui-nav-item">
-            <a href="javascript:;" data-url="{:url('allocation/index')}?project_id=&supply_goods_id=&is_type=" data-id='7' data-text="调拨管理"><i class="layui-icon">&#xe632;</i> 调拨管理</a>
-          </li>
-          <li class="layui-nav-item">
-            <a href="javascript:;"><i class="layui-icon">&#xe656;</i> 材料管理</a>
-            <dl class="layui-nav-child">
-              <dd><a href="javascript:;" data-url="{:url('goods/index')}" data-id='41' data-text="材料档案"><span class="l-line"></span>材料档案</a></dd>
-              <dd><a href="javascript:;" data-url="{:url('unit/index')}" data-id='42' data-text="材料单位管理"><span class="l-line"></span>材料单位管理</a></dd>
-            </dl>
-          </li>
-          <li class="layui-nav-item">
-            <a href="javascript:;"><i class="layui-icon">&#xe653;</i> 库存管理</a>
-            <dl class="layui-nav-child">
-              <dd><a href="javascript:;" data-url="{:url('buy/index')}" data-id='51' data-text="采购管理"><span class="l-line"></span>采购管理</a></dd>
-              <dd><a href="javascript:;" data-url="{:url('stock_all/index')}" data-id='52' data-text="库存管理"><span class="l-line"></span>库存管理</a></dd>
-              <dd><a href="javascript:;" data-url="{:url('stock/index')}" data-id='53' data-text="仓库管理"><span class="l-line"></span>仓库管理</a></dd>
-            </dl>
-          </li>
-          <li class="layui-nav-item">
-            <a href="javascript:;"><i class="layui-icon">&#xe63c;</i> 记录查询</a>
-            <dl class="layui-nav-child">
-              <dd><a href="javascript:;" data-url="{:url('stock_order/order_get_back')}" data-id='61' data-text="领退记录"><span class="l-line"></span>领退记录</a></dd>
-              <dd><a href="javascript:;" data-url="{:url('stock_order/stock_order_index')}?is_project_id=" data-id='62' data-text="调拨查询"><span class="l-line"></span>调拨查询</a></dd>
-              <!-- <dd><a href="javascript:;" data-url="welcome.html" data-id='63' data-text="报损查询"><span class="l-line"></span>报损查询</a></dd> -->
-              <dd><a href="javascript:;" data-url="{:url('stock_order/order_water')}" data-id='64' data-text="出入库流水"><span class="l-line"></span>出入库流水</a></dd>
-            </dl>
-          </li>
+          {/volist}
+          <!--<li class="layui-nav-item layui-nav-itemed">-->
+            <!--<a href="javascript:;" data-url=""><i class="layui-icon">&#xe653;</i> 后台管理</a>-->
+            <!--<dl class="layui-nav-child">-->
+              <!--<dd><a href="javascript:;" data-url="{:url('user/index')}" data-id='11' data-text="后台用户管理"><span class="l-line"></span>后台用户管理</a></dd>-->
+              <!--<dd><a href="javascript:;" data-url="{:url('user/role')}" data-id='13' data-text="权限管理"><span class="l-line"></span>权限管理</a></dd>-->
+            <!--</dl>-->
+          <!--</li>-->
+          <!--<li class="layui-nav-item">-->
+            <!--<a href="javascript:;"><i class="layui-icon">&#xe621;</i> 文档管理</a>-->
+            <!--<dl class="layui-nav-child">-->
+              <!--<dd><a href="javascript:;" data-url="{:url('owner/index')}" data-id='21' data-text="业主管理"><span class="l-line"></span>业主管理</a></dd>-->
+              <!--<dd><a href="javascript:;" data-url="{:url('contract/index')}" data-id='22' data-text="合同管理"><span class="l-line"></span>合同管理</a></dd>-->
+              <!--<dd><a href="javascript:;" data-url="{:url('supply/index')}" data-id='23' data-text="供应商管理"><span class="l-line"></span>供应商管理</a></dd>-->
+              <!--<dd><a href="javascript:;" data-url="{:url('woker/index')}" data-id='24' data-text="工程队管理"><span class="l-line"></span>工程队管理</a></dd>-->
+            <!--</dl>-->
+          <!--</li>-->
+          <!--<li class="layui-nav-item">-->
+            <!--<a href="javascript:;" data-url="{:url('project/index')}" data-id='3' data-text="工程管理"><i class="layui-icon">&#xe632;</i> 工程管理</a>-->
+          <!--</li>-->
+          <!--<li class="layui-nav-item">-->
+            <!--<a href="javascript:;" data-url="{:url('allocation/index')}?project_id=&supply_goods_id=&is_type=" data-id='7' data-text="调拨管理"><i class="layui-icon">&#xe632;</i> 调拨管理</a>-->
+          <!--</li>-->
+          <!--<li class="layui-nav-item">-->
+            <!--<a href="javascript:;"><i class="layui-icon">&#xe656;</i> 材料管理</a>-->
+            <!--<dl class="layui-nav-child">-->
+              <!--<dd><a href="javascript:;" data-url="{:url('goods/index')}" data-id='41' data-text="材料档案"><span class="l-line"></span>材料档案</a></dd>-->
+              <!--<dd><a href="javascript:;" data-url="{:url('unit/index')}" data-id='42' data-text="材料单位管理"><span class="l-line"></span>材料单位管理</a></dd>-->
+            <!--</dl>-->
+          <!--</li>-->
+          <!--<li class="layui-nav-item">-->
+            <!--<a href="javascript:;"><i class="layui-icon">&#xe653;</i> 库存管理</a>-->
+            <!--<dl class="layui-nav-child">-->
+              <!--<dd><a href="javascript:;" data-url="{:url('buy/index')}" data-id='51' data-text="采购管理"><span class="l-line"></span>采购管理</a></dd>-->
+              <!--<dd><a href="javascript:;" data-url="{:url('stock_all/index')}" data-id='52' data-text="库存管理"><span class="l-line"></span>库存管理</a></dd>-->
+              <!--<dd><a href="javascript:;" data-url="{:url('stock/index')}" data-id='53' data-text="仓库管理"><span class="l-line"></span>仓库管理</a></dd>-->
+            <!--</dl>-->
+          <!--</li>-->
+          <!--<li class="layui-nav-item">-->
+            <!--<a href="javascript:;"><i class="layui-icon">&#xe63c;</i> 记录查询</a>-->
+            <!--<dl class="layui-nav-child">-->
+              <!--<dd><a href="javascript:;" data-url="{:url('stock_order/order_get_back')}" data-id='61' data-text="领退记录"><span class="l-line"></span>领退记录</a></dd>-->
+              <!--<dd><a href="javascript:;" data-url="{:url('stock_order/stock_order_index')}?is_project_id=" data-id='62' data-text="调拨查询"><span class="l-line"></span>调拨查询</a></dd>-->
+              <!--&lt;!&ndash; <dd><a href="javascript:;" data-url="welcome.html" data-id='63' data-text="报损查询"><span class="l-line"></span>报损查询</a></dd> &ndash;&gt;-->
+              <!--<dd><a href="javascript:;" data-url="{:url('stock_order/order_water')}" data-id='64' data-text="出入库流水"><span class="l-line"></span>出入库流水</a></dd>-->
+            <!--</dl>-->
+          <!--</li>-->
 
           
           <!--<li class="layui-nav-item">-->

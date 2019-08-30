@@ -21,12 +21,16 @@ Route::post('gologin', 'login/gologin');
 
 //后台管理员列表页
 Route::get('user_index', 'user/index');
+Route::get('user_role', 'user/role');
 //后台管理员添加/修改页
 Route::get('user_add', 'user/add');
+//后台管理员角色添加/修改页
+Route::get('role_add', 'user/role_add');
 //后台管理员添加/修改操作
 Route::post('user_save', 'user/save');
 //后台管理员删除操作
 Route::get('user_del', 'user/del');
+Route::get('role_del', 'user/role_del');
 
 //合同列表页
 Route::get('contract', 'contract/index');
