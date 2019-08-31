@@ -19,9 +19,17 @@ class Index extends Base
             ->select();
         $left_list = $left_list->toArray();
         foreach ($left_list as &$v){
+            if($v['url']) {
+                $v['url'] = 'http://' . $_SERVER['SERVER_NAME'] . '/' . $v['url'];
+            }
             $child_list=[];
             $childs = explode(',', $v['child_id']);
             $child_list = Menu::field('id, name, graphical, url, description')->where('id', 'in', $childs)->select();
+            foreach ($child_list as &$va){
+                if($va['url']) {
+                    $va['url'] = 'http://' . $_SERVER['SERVER_NAME'] . '/' . $va['url'];
+                }
+            }
             $v['child_list'] = $child_list->toArray();
             unset($v['child_id']);
         }
