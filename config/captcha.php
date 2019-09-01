@@ -2,5 +2,5 @@
     return [
         'imageH'    =>  '82',
         'imageW'    =>  '260',
-        'fontSize'  =>  '30'
+        'fontSize'  =>  '32'
     ];
