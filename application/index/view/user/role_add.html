@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="renderer" content="webkit">
+  		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title>电网system</title>
+		<link rel="stylesheet" type="text/css" href="__STATIC__/admin/layui/css/layui.css"/>
+		<link rel="stylesheet" type="text/css" href="__STATIC__/admin/css/admin.css"/>
+		<link rel="stylesheet" type="text/css" href="__STATIC__/admin/css/metroStyle.css"/>
+		<script type="text/javascript" src="__STATIC__/admin/js/jquery-1.4.4.min.js"></script>
+		<script src="__STATIC__/admin/js/jquery.ztree.core.js" type="text/javascript" charset="utf-8"></script>
+		<script src="__STATIC__/admin/js/jquery.ztree.excheck.js" type="text/javascript" charset="utf-8"></script>
+		<script src="__STATIC__/admin/js/fuzzysearch.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+	<body>
+	<form class="layui-form column-content-detail" method="post" action="{:url('user/role_save',array('id'=>$Request.param.id))}">
+					<div class="layui-tab">
+						<div class="layui-tab-content">
+							<div class="layui-tab-item layui-show">
+								<div class="layui-form-item">
+									<label class="layui-form-label">管理角色名：</label>
+									<div class="layui-input-block">
+										<input type="text" name="name" required lay-verify="required|username" lay-verType="tips" placeholder="请输入管理角色名" autocomplete="off" class="layui-input" value="{$list['name']|default=''}">
+									</div>
+								</div>
+
+								<div class="layui-form-item">
+									<label class="layui-form-label">权限：</label>
+									<div class="layui-input-block" style="overflow-y:auto;">
+										<ul id="treeDemo" class="ztree"></ul>
+									</div>
+								</div>
+
+							</div>
+						</div>
+					</div>
+					<div class="layui-form-item" style="padding-left: 10px;">
+						<div class="layui-input-block">
+							<button class="layui-btn layui-btn-normal" lay-submit lay-filter="formDemo">立即提交</button>
+							<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+						</div>
+					</div>
+				</form>
+	<script src="__STATIC__/admin/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+	<script src="__STATIC__/admin/js/common.js" type="text/javascript" charset="utf-8"></script>
+	<script src="__STATIC__/admin/js/jquery.ztree.exedit.min.js" type="text/javascript" charset="utf-8"></script>
+	<SCRIPT type="text/javascript">
+        <!--
+
+        //-->
+	</SCRIPT>
+	<script>
+        var setting = {
+            view: {
+                showIcon: false,
+            },
+            check: {
+                enable: true
+            },
+            data: {
+                simpleData: {
+                    enable: true
+                }
+            }
+        };
+
+        var zNodes=JSON.parse(html_decode("{$menu_list}"));
+        function showIconForTree(treeId, treeNode) {
+            return !treeNode.isParent;
+        };
+        function html_decode(str)
+        {
+            var s = "";
+            if (str.length == 0) return "";
+            s = str.replace(/&amp;/g, "&");
+            s = s.replace(/&lt;/g, "<");
+            s = s.replace(/&gt;/g, ">");
+            s = s.replace(/&nbsp;/g, " ");
+            s = s.replace(/&#39;/g, "\'");
+            s = s.replace(/&quot;/g, "\"");
+            s = s.replace(/<br\/>/g, "\n");
+            return s;
+        }
+
+        $(document).ready(function(){
+            $.fn.zTree.init($("#treeDemo"), setting, zNodes);
+        });
+        function check_ids() {
+            var check_id=[];
+            var zTreeObj = $.fn.zTree.getZTreeObj("treeDemo");
+            var nocheckCount = zTreeObj.getCheckedNodes(false);
+            var check_arr=zTreeObj.getCheckedNodes(true);
+            for(var i in check_arr){
+                check_id.push(check_arr[i].id);
+            }
+			console.log(nocheckCount);
+            return check_id.toString(',');
+        }
+		layui.use(['form', 'jquery', 'laydate', 'layer', 'laypage', 'dialog', 'tool', 'element', 'layedit'], function() {
+				var form = layui.form,
+					layer = layui.layer,
+					$ = layui.jquery,
+					laypage = layui.laypage,
+					laydate = layui.laydate,
+					layedit = layui.layedit,
+					tool = layui.tool,
+					element = layui.element,
+					dialog = layui.dialog;
+
+                form.on('submit(formDemo)', function (data) {
+                    var url = data.form.action;
+                    var param = data.field;
+                    loading = layer.load(2, {
+                        shade: [0.2, '#000']
+                    });
+                    param['menu'] = check_ids();
+					$.post(url, param, function (data) {
+                        console.log(param);
+                    	layer.close(loading);
+						console.dir(data);
+                    	if(data.error_code){ 
+                            layer.msg(data.msg, {icon: 2, shade: 0.1, time: 1000}, function(){ 
+
+                            });
+                            return false;
+                        } 
+                    	layer.msg(data.msg, {icon: 1, shade: 0.1, time: 1000}, function () {
+                            parent.refresh();
+                        });
+                    });
+                    
+                	return false;
+                });
+
+				
+
+
+			});
+	</script>
+	</body>
+</html>

@@ -7,6 +7,7 @@ use app\index\model\Project as ProjectModel;
 use app\index\model\Stock as StockModel;
 use app\index\model\StockAll as StockAllModel;
 use app\index\model\SupplyGoods as SupplyGoodsModel;
+use app\index\model\Supply as SupplyModel;
 use app\index\model\StockOrder as StockOrderModel;
 use app\index\model\BuyInfo as BuyInfoModel;
 use app\index\model\Buy as BuyModel;
@@ -24,8 +25,10 @@ class Buy extends Base{
     public function add(){
         $project_list = ProjectModel::all();
         $stock_list = StockModel::all();
+        $supply_list = SupplyModel::all();
         $this->assign('project_list', $project_list);
         $this->assign('stock_list', $stock_list);
+        $this->assign('supply_list', $supply_list);
 
         $buy_from = config('extra.buy_from');
         $this->assign('buy_from', $buy_from);
@@ -36,12 +39,12 @@ class Buy extends Base{
         $params = input('post.', '');
         $list = (new NeedService())->select_list($params, 2);
         foreach($list as &$vo){
-            $sg_kist = SupplyGoodsModel::alias('sg')
-            ->leftJoin('supply s','s.id = sg.s_id')
-            ->where('sg.g_id', $vo['goods_id'])
-            ->field('sg.price, s.name, s.phone, s.id')
-            ->select();
-            $vo['supply'] = $sg_kist;
+            // $sg_kist = SupplyGoodsModel::alias('sg')
+            // ->leftJoin('supply s','s.id = sg.s_id')
+            // ->where('sg.g_id', $vo['goods_id'])
+            // ->field('sg.price, s.name, s.phone, s.id')
+            // ->select();
+            // $vo['supply'] = $sg_kist;
             // $have = SupplyGoodsModel::alias('sg')
             // ->leftJoin('stock_all sa','sg.id = sa.supply_goods_id')
             // ->where('sg.g_id', $vo['goods_id'])

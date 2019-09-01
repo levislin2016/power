@@ -48,6 +48,23 @@
                                 </select>
                             </div>
                         </div>
+                        <div class="layui-inline contract_k">
+                            <label class="layui-form-label" style="width: 70px;">采购合同：</label>
+                            <div class="layui-input-inline" style="width: 185px;">
+                                <input type="text" name="buy_contract" class="layui-input buy_contract" lay-verify="buy_contract" lay-verType="tips" value="" />
+                            </div>
+                        </div>
+                        <div class="layui-inline contract_k">
+                            <label class="layui-form-label">供应商:</label>
+                            <div class="layui-input-inline" style="width: 185px;">
+                                <select name="supply_id" class="supply_id" id="supply_id" lay-verify="buy_contract" lay-verType="tips" lay-search="">
+                                    <option value="">请选择供应商</option>
+                                    {volist name="supply_list" id="supply"}
+                                    <option value="{$supply.id}">{$supply.name}</option>
+                                    {/volist}
+                                </select>
+                            </div>
+                        </div>
                     </div>
 
 
@@ -55,8 +72,8 @@
                         <colgroup>
                             <col>
                             <col>
-                            <col>
-                            <col>
+                            <!-- <col> -->
+                            <col width="70">
                             <col>
                             <col>
                             <col>
@@ -68,7 +85,7 @@
                             <tr>
                                 <th>材料编号</th>
                                 <th>材料名称</th>
-                                <th>供应商</th>
+                                <!-- <th>供应商</th> -->
                                 <th>价格</th>
                                 <th>预算</th>
                                 <th>已采购</th>
@@ -158,6 +175,14 @@
                         return '请输入正整数';
                     }
                 },
+                buy_price: function(value, item) {
+                    var num = $(item).parents('tr').find('.num').val();
+                    if(num * 1 > 0){
+                        if(value * 1 <= 0){
+                            return '请输入价格';
+                        }
+                    }
+                },
                 supply: function(value, item) {
                     var num = $(item).parents('tr').find('.num').val();
                     if(num * 1 > 0){
@@ -166,6 +191,14 @@
                         }
                     }
                 },
+                buy_contract: function(value, item) {
+                    var from = $('#from').val();
+                    if(from == 1){
+                        if(!value){
+                            return '必输';
+                        }
+                    }
+                }
             });
 
             $(document).on('change', '.num', function(){
@@ -197,6 +230,12 @@
             form.on('select(from)', function (data) {
                 var project_id = $('.project_id').val();
                 var url = $('.project_id').data('url');
+                var from = data.value;
+                if(from == 1){
+                    $('.contract_k').show();
+                }else{
+                    $('.contract_k').hide();
+                }
                 get_need_data(url, project_id);
             });
 
@@ -221,18 +260,18 @@
                         str += '<tr>';
                         str += '    <td>'+ data[i]['number'] +'</td>';
                         str += '    <td>'+ data[i]['name'] +'</td>';
-                        str += '    <td style="padding: 0px;">';
-                        str += '        <select lay-verify="supply" lay-filter="supply" class="supply" lay-verType="tips" lay-search="">';
-                        str += '            <option value="">请选择供应商</option>';
+                        // str += '    <td style="padding: 0px;">';
+                        // str += '        <select lay-verify="supply" lay-filter="supply" class="supply" lay-verType="tips" lay-search="">';
+                        // str += '            <option value="">请选择供应商</option>';
 
-                        var data2 = data[i]['supply'];
-                        for(var j in data2){
-                            str += '            <option value="{id:'+data2[j]['id']+', price:'+data2[j]['price']+'}">'+data2[j]['name']+'</option>';
-                        }
+                        // var data2 = data[i]['supply'];
+                        // for(var j in data2){
+                        //     str += '            <option value="{id:'+data2[j]['id']+', price:'+data2[j]['price']+'}">'+data2[j]['name']+'</option>';
+                        // }
 
-                        str += '        </select>';
-                        str += '    </td>';
-                        str += '    <td></td>';
+                        // str += '        </select>';
+                        // str += '    </td>';
+                        str += '    <td style="padding: 0px;"><input type="number" min="0" class="layui-input price" lay-verify="buy_price" lay-verType="tips" style="border: none; text-align: center; padding: 0px;" value="" /></td>';
                         str += '    <td>'+ data[i]['need'] +'</td>';
                         str += '    <td>'+ data[i]['buy_num'] +'</td>';
                         str += '    <td>'+ data[i]['have_num'] +'</td>';
@@ -271,25 +310,25 @@
                 var url = "{:url('allocation/excl')}?id="+project_id+"&from="+selecta;
                 window.open(url);
             });
-            form.on('select(supply)', function (data) {
-                if(data.value == ''){
-                    $(data.elem).parents('td').next('td').html('');
-                    //$(data.elem).parents('td').next('td').next('td').next('td').html('');
-                    return false;
-                }
-                var supply = eval('(' + data.value + ')');
-                $(data.elem).parents('td').next('td').html(supply.price / 100);
-                // var url = $('.stock_order_table').data('url');
-                // loading = layer.load(2, {
-                //     shade: [0.2, '#000']
-                // });
-                // var that = $(data.elem);
-                // $.post(url, {id: supply.id}, function(data){
-                //     console.dir(data);
-                //     layer.close(loading);
-                //     $(that).parents('td').next('td').next('td').next('td').html(data.have);
-                // });
-            });
+            // form.on('select(supply)', function (data) {
+            //     if(data.value == ''){
+            //         $(data.elem).parents('td').next('td').html('');
+            //         //$(data.elem).parents('td').next('td').next('td').next('td').html('');
+            //         return false;
+            //     }
+            //     var supply = eval('(' + data.value + ')');
+            //     $(data.elem).parents('td').next('td').html(supply.price / 100);
+            //     // var url = $('.stock_order_table').data('url');
+            //     // loading = layer.load(2, {
+            //     //     shade: [0.2, '#000']
+            //     // });
+            //     // var that = $(data.elem);
+            //     // $.post(url, {id: supply.id}, function(data){
+            //     //     console.dir(data);
+            //     //     layer.close(loading);
+            //     //     $(that).parents('td').next('td').next('td').next('td').html(data.have);
+            //     // });
+            // });
 
             function empty_table(){
                 $('.stock_order_table').find('tbody').html('');
@@ -300,20 +339,23 @@
 
                 var url = data.form.action;
                 var project_id = $('.project_id').val();
+                var buy_contract = $('.buy_contract').val();
+                var supply_id = $('.supply_id').val();
                 var from = $('.from').val();
                 var num = [];
                 $('.stock_order_table').find('tbody').find('tr').each(function(e){
 
                     var val = $(this).find('.num').val();
                     var id = $(this).find('.num').data('id');
-                    var supply = $(this).find('.supply').val();
-                    var sp = '';
-                    if(supply){
-                        supply = eval('(' + supply + ')');
-                        sp = supply.id;
-                    }
+                    // var supply = $(this).find('.supply').val();
+                    // var sp = '';
+                    // if(supply){
+                    //     supply = eval('(' + supply + ')');
+                    //     sp = supply.id;
+                    // }
+                    var price = $(this).find('.price').val();
                     if(val * 1 > 0){
-                        num.push({id: id, sp: sp, val: val});
+                        num.push({id: id, price: price, val: val});
                     }
                 });
 
@@ -321,6 +363,7 @@
                     layer.msg('请填写采购的数量', { icon: 2, shade: 0.1, time: 1000 });
                     return false;
                 }
+
                 var type = $('.apply_for_v').val();
                 var note = '';
                 if(type == 2){
@@ -332,7 +375,7 @@
                     shade: [0.2, '#000']
                 });
 
-                $.post(url, {project_id: project_id, num: num, note: note, type: type, from: from}, function (data) {
+                $.post(url, {project_id: project_id, buy_contract: buy_contract, supply_id: supply_id, num: num, note: note, type: type, from: from}, function (data) {
                     layer.close(loading);
                     console.dir(data);
                     if (data.error_code) {
