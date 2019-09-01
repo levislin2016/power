@@ -25,10 +25,18 @@
 								<input type="text" name="search" placeholder="请输入搜索内容" autocomplete="off" class="layui-input" value="{$Request.param.search}" />
 							</div>
 							<div class="layui-inline">
-								<select name="pid" lay-filter="status">
+								<select name="pid" lay-filter="status" lay-search="">
 									<option value="">请选择一个项目</option>
 									{volist name="project_list" id="vo"}
 									<option {eq name="Request.param.pid" value="$vo['id']"}selected{/eq} value="{$vo['id']}">{$vo['name']}</option>
+									{/volist}
+								</select>
+							</div>
+							<div class="layui-inline">
+								<select name="sid" lay-filter="status" lay-search="">
+									<option value="">请选择一个供应商</option>
+									{volist name="supply_list" id="vo"}
+									<option {eq name="Request.param.sid" value="$vo['id']"}selected{/eq} value="{$vo['id']}">{$vo['name']}</option>
 									{/volist}
 								</select>
 							</div>
@@ -37,6 +45,14 @@
                                     <option value="">请选择一个状态</option>
                                     {volist name="buy_status" key="k" id="vo"}
                                         <option {eq name="Request.param.status" value="$k"}selected{/eq} value="{$k}">{$vo}</option>
+                                    {/volist}
+								</select>
+							</div>
+							<div class="layui-inline">
+								<select name="from" lay-filter="status">
+                                    <option value="">请选择一个类型</option>
+                                    {volist name="buy_from" key="k" id="vo"}
+                                        <option {eq name="Request.param.from" value="$k"}selected{/eq} value="{$k}">{$vo}</option>
                                     {/volist}
 								</select>
                             </div>
@@ -61,13 +77,18 @@
 								<col>
 								<col>
 								<col>
-								
+								<col>
+								<col>
+								<col>
 							</colgroup>
 							<thead>
 								<tr>
 									<th>订单号</th>
 									<th>项目</th>
+									<th>采购合同</th>
+									<th>供应商</th>
 									<th>类型</th>
+									<th>状态</th>
 									<th>操作人</th>
 									<th>创建时间</th>
 									<th>操作</th>
@@ -78,6 +99,9 @@
 								<tr>								
 									<td>{$vo['number']}</td>
 									<td>{$vo['project_name']}</td>
+									<td>{$vo['buy_contract']}</td>
+									<td>{$vo['supply_name']}</td>
+									<td>{$buy_from[$vo['from']]}</td>
 									<td>
 										{switch vo.status}
 											{case 1 }<span class="layui-badge layui-bg-blue">{$buy_status[$vo['status']]}</span>{/case}
