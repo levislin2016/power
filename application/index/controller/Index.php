@@ -20,14 +20,14 @@ class Index extends Base
         $left_list = $left_list->toArray();
         foreach ($left_list as &$v){
             if($v['url']) {
-                $v['url'] = 'http://' . $_SERVER['SERVER_NAME'] . '/' . $v['url'];
+                $v['url'] = 'http://' . $_SERVER['HTTP_HOST'] . '/' . $v['url'];
             }
             $child_list=[];
             $childs = explode(',', $v['child_id']);
             $child_list = Menu::field('id, name, graphical, url, description')->where('id', 'in', $childs)->select();
             foreach ($child_list as &$va){
                 if($va['url']) {
-                    $va['url'] = 'http://' . $_SERVER['SERVER_NAME'] . '/' . $va['url'];
+                    $va['url'] = 'http://' . $_SERVER['HTTP_HOST'] . '/' . $va['url'];
                 }
             }
             $v['child_list'] = $child_list->toArray();

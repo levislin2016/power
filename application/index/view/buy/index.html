@@ -25,7 +25,7 @@
 								<input type="text" name="search" placeholder="请输入搜索内容" autocomplete="off" class="layui-input" value="{$Request.param.search}" />
 							</div>
 							<div class="layui-inline">
-								<select name="pid" lay-filter="status">
+								<select name="pid" lay-filter="status" lay-search="">
 									<option value="">请选择一个项目</option>
 									{volist name="project_list" id="vo"}
 									<option {eq name="Request.param.pid" value="$vo['id']"}selected{/eq} value="{$vo['id']}">{$vo['name']}</option>
@@ -33,7 +33,7 @@
 								</select>
 							</div>
 							<div class="layui-inline">
-								<select name="sid" lay-filter="status">
+								<select name="sid" lay-filter="status" lay-search="">
 									<option value="">请选择一个供应商</option>
 									{volist name="supply_list" id="vo"}
 									<option {eq name="Request.param.sid" value="$vo['id']"}selected{/eq} value="{$vo['id']}">{$vo['name']}</option>
