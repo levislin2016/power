@@ -38,6 +38,8 @@ class Index extends Base
     }
 
 
+
+
     public function unicode_encode($name)
     {
         $name = iconv('UTF-8', 'UCS-2', $name);

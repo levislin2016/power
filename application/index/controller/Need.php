@@ -16,6 +16,11 @@ class Need extends Base
     ];
 
     public function index(){
+        $data['project_id'] = input('param.id');
+        $data['goods'] = GoodsModel::all();
+
+        return view('index2', ['data' => $data]);
+
         $params = input('param.');
         $project_list = ProjectModel::get($params['id']);
         $this->assign('project_list', $project_list);
@@ -27,6 +32,42 @@ class Need extends Base
         $this->assign('buy_from', $buy_from);
         return $this->fetch();
     }
+
+    public function index2(){
+        $data['project_id'] = input('param.project_id');
+        $data['goods'] = GoodsModel::all();
+
+        return view('index2', ['data' => $data]);
+    }
+
+    # 获取工程的预算列表
+    public function ajaxNeedList(){
+        $project_id = input('param.project_id');
+        $list = NeedModel::all(['project_id' => $project_id], 'goods');
+
+        $arr = [];
+        foreach ($list as $k => $v){
+            $sort = $k+100;
+            $arr[] = [
+                'sort'        => $sort,
+                'goods_id'    => $v['goods_id'],
+                'unit'        => '个',
+                'need'        => $v['need'],
+                'note'        => $v['note'],
+                'create_time' => $v['create_time'],
+                'check'       => $v['check'],
+            ];
+        }
+
+        return json([
+            'data'  => $arr,
+            'code'  => 0,
+            'msg'   => '获取预算列表成功',
+            'count' => count($list),
+        ]);
+    }
+
+
 
     public function add(){ 
         //$goods_list = SupplyGoodsModel::with(['supply', 'goods'])->select();

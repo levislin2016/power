@@ -7,4 +7,7 @@ class Need extends Base{
         $query->where('company_id', session('power_user.company_id'));
     }
 
+    public function goods(){
+        return $this->hasOne('Goods', 'id', 'goods_id');
+    }
 }

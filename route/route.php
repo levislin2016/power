@@ -86,7 +86,10 @@ Route::get('allocation_shopping_index', 'allocation/shopping_list');
 Route::get('allocation_shopping_all_set', 'allocation/shopping_all_set');
 Route::get('allocation_shopping_set', 'allocation/shopping_set');
 
+// 预算设置
 Route::get('need_del', 'need/del');
+Route::get('need_index2', 'need/index2');
+Route::get('need_ajaxNeedList', 'need/ajaxNeedList');
 
 Route::get('project_worl_list', 'project/worl_list');
 
