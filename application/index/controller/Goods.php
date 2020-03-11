@@ -21,6 +21,17 @@ class Goods extends Base
         return $this->fetch();
     }
 
+    # ajax 获取页面数据
+    public function ajax_page(){
+        $data['list'] = (new GoodsService)->getList(input('get.'), 10000);
+
+        return view('ajax_page', ['data' => $data]);
+    }
+
+    # 弹框获取商品列表
+    public function get_list(){
+        return view('list');
+    }
 
     public function add(){
         //供应商列表

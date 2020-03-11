@@ -1,112 +1,242 @@
-<!DOCTYPE html>
-<html class="iframe-h">
+{include file="public/header"}
+<fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+	<legend>项目：{$data.project.name}</legend>
+</fieldset>
 
-	<head>
-		<meta charset="UTF-8">
-		<meta name="renderer" content="webkit">
-		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
-		<title>电网system</title>
-		<link rel="stylesheet" type="text/css" href="__STATIC__/admin/layui/css/layui.css" />
-		<link rel="stylesheet" type="text/css" href="__STATIC__/admin/css/admin.css" />
-	</head>
+<div class="wrap-container clearfix">
+	<div class="column-content-detail">
 
-	<body>
-		<div class="wrap-container clearfix">
-				
-				<div class="column-content-detail">
-						<fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
-								<legend>{$project_list.name}</legend>
-							  </fieldset>
-					<form class="layui-form" action="">
-						<div class="layui-form-item">
-							<div class="layui-inline tool-btn">
-								<button type="button" class="layui-btn layui-btn-sm layui-btn-normal btn_tips" onclick="window.history.back();" data-title="返回"><i class="layui-icon">&#xe65c;</i></button>
-								<button type="button" class="layui-btn layui-btn-sm layui-btn-normal addBtn btn_tips" data-title="添加材料" data-url="{:url('need/add')}?project_id={$Request.param.id}" data-h="460px"><i class="layui-icon">&#xe654;</i></button>
-								<button type="button" class="layui-btn layui-btn-sm layui-btn-danger delBtn btn_tips" data-title="批量删除" data-url="{:url('need/del')}"><i class="layui-icon">&#xe640;</i></button>
-								<!-- <button class="layui-btn layui-btn-sm layui-btn-warm listOrderBtn hidden-xs" data-url="article-add.html"><i class="iconfont">&#xe656;</i></button> -->
-							</div>
-							<!-- <div class="layui-inline">
-								<input type="text" name="search" placeholder="请输入合同编号/工程名" autocomplete="off" class="layui-input" value="{$Think.get.search}" />
-							</div> -->
-							<!-- <div class="layui-inline">
-								<select name="states" lay-filter="status">
-									<option value="">请选择一个状态</option>
-									<option value="010">正常</option>
-									<option value="021">停止</option>
-									<option value="0571">删除</option>
-								</select>
-							</div> -->
-							<!-- <button class="layui-btn layui-btn-normal" type="submit" lay-submit="search">搜索</button> -->
-						</div>
-					</form>
-					<div class="layui-form" id="table-list">
-						<table class="layui-table" lay-skin="line">
-							<colgroup>
-								<col width="50">
-								<!-- <col class="hidden-xs" width="80"> -->
-								<col>
-								<col>
-								<col>
-								<col>
-								<col>
-								<col>
-								<col>
-								<col>
-							</colgroup>
-							<thead>
-								<tr>
-									<th><input type="checkbox" name="" lay-skin="primary" lay-filter="allChoose"></th>
-									<!-- <th class="hidden-xs">编号</th> -->
-									<th>材料名称</th>
-									<th>材料编号</th>
-									<!-- <th>供应商</th> -->
-									<th>需求数量</th>
-									<th>单位</th>
-									<th>类型</th>
-									<th>备注</th>
-									<th>创建时间</th>
-									<th>操作</th>
-								</tr>
-							</thead>
-							<tbody>
-							{volist name="list" id="vo"}
-								<tr>
-									<td><input type="checkbox" name="" lay-skin="primary" data-id="{$vo['id']}"></td>
-									<!-- <td class="hidden-xs">{$vo['id']}</td>									 -->
-									<td>{$vo['name']}</td>
-									<td>{$vo['number']}</td>
-									<!-- <td></td> -->
-									<td>{$vo['need']}</td>
-									<td>{$vo['unit']}</td>
-									<td>{$buy_from[$vo['type']]}</td>
-									<td>{$vo['note']}</td>
-									<td>{$vo['create_time']}</td>
-									<td>
-										<div class="layui-inline">
-											<button class="layui-btn layui-btn-sm layui-btn-normal edit-btn btn_tips" data-title="修改工程" data-id="{$vo['id']}&project_id={$Request.param.id}" data-url="{:url('need/add')}" data-h="460px"><i class="layui-icon">&#xe642;</i></button>
-											<button class="layui-btn layui-btn-sm layui-btn-danger del-btn btn_tips" data-title="删除" data-id="{$vo['id']}" data-url="{:url('need/del')}"><i class="layui-icon">&#xe640;</i></button>
-										</div>
-									</td>
-								</tr>
-							{/volist}	
-							</tbody>
-						</table>
-						<div class="page-wrap">
-							
-						</div>
-					</div>
-				</div>
+		<div class="layui-row">
+			<div class="col-md-6">
+				<input type="text" name="keywords" placeholder='请输入商品编号 / 名称...' autocomplete="off" class="layui-input keywords" value="{$Think.get.keywords}" />
+			</div>
+			<div class="col-md-3">
+				<button type="button" class="layui-btn add_goods"><i class="layui-icon layui-icon-add-1" style="font-size: 13px"></i>添加</button>
+			</div>
+			<div class="col-md-3" style="text-align: right">
+				<button type="button" class="layui-btn layui-bg-gray" onclick="window.history.back(-1)"><i class="layui-icon layui-icon-return" style="font-size: 13px"></i>返回</button>
+			</div>
 		</div>
-		<script src="__STATIC__/admin/layui/layui.js" type="text/javascript" charset="utf-8"></script>
-		<script src="__STATIC__/admin/js/common.js" type="text/javascript" charset="utf-8"></script>
-		<script>
-			layui.use(['form', 'jquery', 'element'], function() { 
-				var form = layui.form,
-					$ = layui.jquery,
-					element = layui.element
-			})
-		</script>
-	</body>
+		<div class="layui-row">
+			<div class="ajax_page col-md-12">
+				<!--  用来存放ajax获取HTML内容的存放容器  -->
+			</div>
+		</div>
+	</div>
+</div>
 
-</html>
+{include file="public/script"}
+{include file="public/footer"}
+
+<!-- 商品列表 -->
+<div class="wrap-container clearfix" id="goods_list" style="display: none">
+	<div class="column-content-detail">
+
+		<div class="layui-row">
+			<div class="col-md-6 col-lg-offset-3">
+				<input type="text" name="keywords" placeholder="请输入商品编号 / 名称..." autocomplete="off" class="layui-input goods_keywords" value="{$Think.get.keywords}" />
+			</div>
+		</div>
+		<div class="layui-row">
+			<div class="goods_ajax_page col-md-12">
+				<!--  用来存放ajax获取HTML内容的存放容器  -->
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	layui.use(['form', 'jquery', 'element'], function() {
+		var form = layui.form,
+				$ = layui.jquery,
+				element = layui.element;
+
+		var url = "{:url('need/ajax_page')}";
+		var obj;
+
+		$(function(){
+			ajaxPage(url, 1);
+		});
+
+		// 判断输入框输入事件
+		$('.keywords').on('input propertychange', function(){
+			ajaxPage(url, 1)
+		});
+
+		form.on('switch(check)', function(data){
+			// console.log(data.elem); //得到checkbox原始DOM对象
+
+			console.log(data.elem.checked); //开关是否开启，true或者false
+
+			console.log(data.value); //开关value值，也可以通过data.elem.value得到
+			var edit_url = "{:url('need/edit')}";
+			var check_val;
+			if (data.elem.checked){
+				check_val = 1;
+			}else{
+				check_val = 0;
+			}
+
+			var form_data = {
+				'id'    : data.value,
+				'check' : check_val,
+			};
+			$.post(edit_url, form_data, function () {
+			})
+		});
+
+		// 点击分页触发的ajax
+		function ajaxPage(url, page){
+			layer.load(2);
+
+			var form_data = {
+				'page'       : page,
+				'keywords'   : $('.keywords').val(),
+				'project_id' : "{$data.project_id}",
+			};
+
+			console.log(form_data);
+			$.ajax({
+				url:url,
+				type:'GET',
+				async:false,
+				data:form_data,
+				success:function (ret) {
+					layer.closeAll('loading');
+					$('.ajax_page').html(ret);
+					// 重新渲染 checkbox框
+					form.render('checkbox');
+					// 绑定删除事件
+					bindDel();
+					// 绑定修改数量事件
+					bindEditNum()
+				}
+			});
+		}
+
+		// 弹出商品列表框
+		function editGoods(){
+			layer.open({
+				type: 1,
+				title: '选择商品',
+				anim:5,
+				shadeClose: true,
+				offset: ['10px'],
+				shade: 0.5,
+				scrollbar:false,
+				maxmin: true, //开启最大化最小化按钮
+				area: ['1200px', '700px'],
+				content: $('#goods_list'),
+			});
+		}
+
+		// 点击弹出商品框
+		$('.add_goods').click(function () {
+			editGoods();
+		});
+
+		// 绑定删除事件
+		function bindDel(){
+			// 删除一行
+			$('.btn_del').on('click', function () {
+				var form_data = {
+					'id' : $(this).data('id'),
+				};
+				$.post("{:url('need/del')}",form_data,function (ret) {
+					layer.msg(ret.msg);
+					if (ret.code == 200){
+						ajaxPage(url, 1)
+					}
+				})
+			});
+		}
+
+		// 绑定双击修改事件
+		function bindEditNum(){
+			$('.alert_need').dblclick(function () {
+				var obj = $(this);
+				var old_num = $(this).html();
+				var dom_input = "<input type=\"number\" lay-verify=\"required\" placeholder=\"请输入数量\" value="+ old_num +" class=\"layui-input input_need\">";
+				if ($(this).data('box') != 1){
+					$(this).html(dom_input);
+					$(this).data('box', 1);
+					$('.input_need').focus().select();
+				}
+				$('.input_need').blur(function () {
+					var edit_url = "{:url('need/edit')}";
+					var need = $(this).val();
+					if (!need){
+						need = 0;
+					}
+
+					var form_data = {
+						'id'   : obj.data('id'),
+						'need' : need,
+					};
+					$.post(edit_url, form_data, function (ret) {
+						layer.msg(ret.msg);
+						if (ret.code == 200){
+							obj.html(need);
+							obj.data('box', 0);
+						}
+					});
+				})
+			})
+		}
+
+
+		<!----------------------------- 商品列表 js ----------------------------------->
+		var goods_url = "{:url('goods/ajax_page')}";
+
+		$(function(){
+			goodsAjaxPage(goods_url, 1);
+		});
+
+		// 判断输入框输入事件
+		$('.goods_keywords').on('input propertychange', function(){
+			goodsAjaxPage(goods_url, 1)
+		});
+
+		// 点击分页触发的ajax
+		function goodsAjaxPage(ajax_url, page){
+			layer.load(2);
+
+			var form_data = {
+				'page'     : page,
+				'keywords' : $('.goods_keywords').val(),
+			};
+
+			console.log('商品分页');
+			console.log(form_data);
+
+			$.ajax({
+				url:ajax_url,
+				type:'GET',
+				async:false,
+				data:form_data,
+				success:function (ret) {
+					layer.closeAll('loading');
+					$('.goods_ajax_page').html(ret);
+
+					var project_id = "{$data.project_id}";
+
+					// 绑定双击事件 用来调出商品框
+					$('.tr_goods').dblclick(function () {
+						var form_data = {
+							'project_id' : "{$data.project_id}",
+							'goods_id'   : $(this).find('.td_id').html(),
+						};
+
+						$.post("{:url('need/add')}",form_data,function (ret) {
+							layer.msg(ret.msg);
+							if (ret.code == 200){
+								ajaxPage(url, 1)
+							}
+						});
+					})
+				}
+			});
+		}
+	});
+</script>
+

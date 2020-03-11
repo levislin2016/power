@@ -7,3 +7,4 @@ Thumbs.db
 /.vscode
 config/database.php
 public/static/upload/
+runtime/

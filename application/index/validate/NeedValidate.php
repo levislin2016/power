@@ -9,14 +9,14 @@ class NeedValidate extends BaseValidate
     protected $rule = [
         'goods_id' => 'require|isPositiveInteger|isGoodsId',
         'project_id' => 'require|isPositiveInteger',
-        'need' => 'require|isPositiveInteger',
-        'type' => 'require|isPositiveInteger',
+        'need' => 'isPositiveInteger',
+        'type' => 'isPositiveInteger',
         'note' => 'ok',
     ];
 
     protected $message = [
         'goods_id.require' => '材料编号不能为空',
-        'need.require' => '需求数量不能为空',
+//        'need.require'     => '需求数量不能为空',
     ];
 
     //材料是否已存在

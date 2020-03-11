@@ -2,33 +2,81 @@
 namespace app\index\service;
 
 use app\index\model\Need as NeedModel;
+use app\index\model\Goods as GoodsModel;
+use app\index\service\Type as TypeService;
 use app\lib\exception\BaseException;
+use think\Db;
 
 class Need{
 
-    public function select_list($params, $type = 1){ 
-        $list = NeedModel::useGlobalScope(false)->alias('n')
-            //->leftJoin('supply_goods sg','n.goods_id = sg.id')
-            //->leftJoin('goods g','sg.g_id = g.id')
-            ->leftJoin('goods g','n.goods_id = g.id')
-            ->leftJoin('unit u','g.unit_id = u.id')
-            //->leftJoin('supply s','sg.s_id = s.id')
-            ->where(function ($query) use($params, $type) {
-                $query->where('n.company_id', session('power_user.company_id'));
-                $query->where('n.project_id', $params['id']);
-                $query->where('g.company_id', session('power_user.company_id'));
-                $query->where('u.company_id', session('power_user.company_id'));
-                if($type != 1){
-                    $query->where('n.type', $params['from']);
-                }
-                //$query->where('s.company_id', session('power_user.company_id'));
-            })
-            ->field('n.id, n.company_id, n.project_id, n.goods_id, n.need, n.type, n.note, n.create_time, g.number, g.name, g.unit_id, g.image, u.name as unit')
-            //->field('n.id, n.company_id, n.project_id, n.goods_id, n.need, n.note, n.create_time, g.number, g.name, g.unit_id, s.id as supply_id, g.image, sg.price, u.name as unit, s.name as supply_name')
-            ->order('n.create_time', 'desc')
-            ->select();
+    // 获取材料列表
+    public function getList($params, $limit = 15, $order = 'desc'){
+        $js_path = "javascript:AjaxPage([PAGE]);";
 
+        $list = NeedModel::useGlobalScope(false)->alias('n')
+                            ->leftJoin('goods g','n.goods_id = g.id')
+                            ->leftJoin('unit u','g.unit_id = u.id')
+
+                            ->where(function ($query) use($params) {
+                                $query->where('n.project_id', $params['project_id']);
+                            })
+                            ->where(function ($query) use($params) {
+                                $query->where('g.name', 'like', '%' . $params['keywords'] . '%');
+                                $query->whereOr('g.number', 'like', '%' . $params['keywords'] . '%');
+                            })
+                            ->field('n.id, n.company_id, n.project_id, n.goods_id, n.need, n.type, n.check, n.note, g.type_id, n.create_time, g.number, g.name, g.unit_id, g.image, u.name as unit')
+                            ->order('n.create_time', $order)
+                            ->paginate($limit, false, ['path' => $js_path]);
+
+        if (!empty($params['debug'])) {
+            dump(Db::getLastSql());
+        }
         return $list;
+    }
+
+    // 获取带分类的列表
+    public function getListWithType($list){
+        if (!$list){
+            return $list;
+        }
+
+        // 获取分类
+        $type_list = (new TypeService())->getList();
+
+        $arr = [];
+        foreach ($list as $k => $v){
+            $arr[$v['type_id']]['type_name'] = $type_list[$v['type_id']];
+            $arr[$v['type_id']]['list'][] = $v;
+        }
+
+        return $arr;
+    }
+
+    public function add($data){
+        // 验证 登录 场景
+        $validate = validate('NeedValidate');
+        if (!$validate->scene('add')->check($data)){
+            return returnInfo('', 201, $validate->getError());
+        }
+
+        $ret_add = NeedModel::create($data);
+        if (!$ret_add){
+            return returnInfo('', 201, '添加预算材料错误！');
+        }
+
+        $goods = GoodsModel::with('unit')->get($data['goods_id']);
+
+        $ret_data = [
+            'id'     => $ret_add['id'],
+            'name'   => $goods['name'],
+            'number' => $goods['number'],
+            'unit'   => $goods['unit']['name'],
+            'create_time' => $ret_add['create_time'],
+        ];
+        // 获取商品序号
+        $ret_data['sort'] = NeedModel::where('project_id', '=', $data['project_id'])->count();
+
+        return returnInfo($ret_data, 200, "已添加 {$ret_data['number']} {$ret_data['name']}");
     }
 
     public function add_need($data){ 

@@ -1,0 +1,60 @@
+<style>
+	.layui-form-switch{
+		margin-top: 0px;
+	}
+</style>
+<div class="layui-form" id="table-list">
+	{volist name="data.list2" id="v0" key="k0"}
+		<table class="layui-table" lay-skin="line">
+			<colgroup>
+				<col width="50">
+				<col class="hidden-xs" width="80">
+				<col>
+				<col>
+				<col>
+				<col>
+			</colgroup>
+			<thead>
+			<tr>
+				<th colspan="8"><h4><b>{$v0.type_name}</b></h4></th>
+			</tr>
+			<tr>
+				<th width="10%" class="hidden-xs">编号</th>
+				<th width="30%">商品名称</th>
+				<th width="10%">编号</th>
+				<th width="10%">需求数量</th>
+				<th width="5%">单位</th>
+				<th width="10%">创建时间</th>
+				<th width="10%">核对</th>
+				<th width="20%">操作</th>
+
+			</tr>
+			</thead>
+			<tbody class="table_body">
+			{volist name="$v0.list" id="v" key="k"}
+			<tr>
+				<td class="hidden-xs">{$k}</td>
+				<td class="alert_goods" style="cursor: pointer" onselectstart="return false">{$v['goods']['name']}</td>
+				<td class="alert_number">{$v['goods']['number']}</td>
+				<td class="alert_need" data-id="{$v['id']}">{$v['need']}</td>
+				<td class="alert_unit">{$v['unit']}</td>
+				<td>{$v['create_time']}</td>
+				<td>
+					<div class="layui-input-inline">
+						<input type="checkbox" lay-skin="switch" data-id="{$v['id']}" lay-filter="check" value="{$v['id']}" {$v['check']==1 ? 'checked':''} lay-text="核对|取消">
+					</div>
+				</td>
+				<td>
+					<button class="layui-btn layui-btn-sm layui-btn-danger btn_tips btn_del" data-id="{$v['id']}"><i class="layui-icon">&#xe640;</i>删除</button>
+				</td>
+			</tr>
+			{/volist}
+			</tbody>
+		</table>
+		<div class="page-wrap">
+			{$data.list->render()|raw}
+		</div>
+	{/volist}
+</div>
+<script>
+</script>

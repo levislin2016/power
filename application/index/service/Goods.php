@@ -4,10 +4,27 @@ namespace app\index\service;
 use app\index\model\Goods as GoodsModel;
 use app\index\model\SupplyGoods as SupplyGoodsModel;
 use app\lib\exception\BaseException;
+use think\Db;
 use think\facade\App;
 
 
 class Goods{
+    // 获取材料列表
+    public function getList($params, $limit = 10, $order = 'desc'){
+        $where = [];
+        if (!empty($params['keywords'])){
+            $where[] = ['name|number', 'like','%' . $params['keywords'] . '%'];
+        }
+
+        $js_path = "javascript:AjaxPage([PAGE]);";
+        $list = GoodsModel::with(['unit'])->where($where)->order('create_time', $order)->paginate($limit, false, ['path' => $js_path]);
+
+        if (!empty($params['debug'])) {
+            dump(Db::getLastSql());
+        }
+        return $list;
+    }
+
     //材料列表
     public function selectList($params){
         $list = GoodsModel::with(['company'=>function($query){

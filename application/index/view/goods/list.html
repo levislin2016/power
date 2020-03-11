@@ -1,0 +1,55 @@
+{include file="public/header"}
+
+<div class="wrap-container clearfix">
+	<div class="column-content-detail">
+
+		<div class="layui-row">
+			<div class="col-md-6 col-lg-offset-3">
+				<input type="text" name="keywords" placeholder="请输入材料编号/名称" autocomplete="off" class="layui-input keywords" value="{$Think.get.keywords}" />
+			</div>
+		</div>
+		<div class="layui-row">
+			<div class="ajax_page col-md-12">
+				<!--  用来存放ajax获取HTML内容的存放容器  -->
+			</div>
+		</div>
+	</div>
+</div>
+
+{include file="public/script"}
+{include file="public/footer"}
+
+<script>
+	var url = "{:url('goods/ajax_page')}";
+
+	layui.use(['form', 'jquery', 'element'], function() {
+		var form = layui.form,
+				$ = layui.jquery,
+				element = layui.element;
+
+		$(function(){
+			AjaxPage(url, 1);
+		});
+
+		// 判断输入框输入事件
+		$('.keywords').on('input propertychange', function(){
+			AjaxPage(url, 1)
+		});
+
+		// 点击分页触发的ajax
+		function AjaxPage(url, page){
+			layer.load(2);
+
+			var form_data = {
+				'page'     : page,
+				'keywords' : $('.keywords').val(),
+			};
+
+			console.log(form_data);
+			$.get(url,form_data,function (ret) {
+				layer.closeAll('loading');
+				$('.ajax_page').html(ret);
+			});
+		}
+	});
+</script>

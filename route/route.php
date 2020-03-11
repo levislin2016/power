@@ -56,7 +56,10 @@ Route::get('need_add', 'need/add');
 //工程需求添加/修改操作
 Route::post('need_save', 'need/save');
 //工程需求删除操作
-Route::get('need_del', 'need/del');
+Route::post('need_del', 'need/del');
+Route::get('need_ajax_page', 'need/ajax_page');
+
+
 //工程开工
 Route::post('start_work', 'project/start_work');
 //工程完成
@@ -90,6 +93,7 @@ Route::get('allocation_shopping_set', 'allocation/shopping_set');
 Route::get('need_del', 'need/del');
 Route::get('need_index2', 'need/index2');
 Route::get('need_ajaxNeedList', 'need/ajaxNeedList');
+Route::post('need_add', 'need/add');
 
 Route::get('project_worl_list', 'project/worl_list');
 
@@ -113,6 +117,9 @@ Route::get('goods_edit', 'goods/edit');
 Route::any('goods_save', 'goods/save');
 //材料删除操作
 Route::get('goods_del', 'goods/del');
+Route::get('goods_get_list', 'goods/get_list');
+Route::get('goods_ajax_page', 'goods/ajax_page');
+
 
 //业主列表页
 Route::get('owner', 'owner/index');
