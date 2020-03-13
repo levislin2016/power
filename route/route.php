@@ -76,6 +76,7 @@ Route::get('project_woker', 'project/woker');
 Route::get('project_woker_add', 'project/woker_add');
 Route::post('project_allot', 'project/allot');
 Route::get('project_allocation', 'project/allocation_goods');
+Route::get('project_list_ajax', 'project/list_ajax');
 Route::get('woker_balance', 'project/woker_balance');
 Route::get('woker_data', 'project/woker_data');
 Route::get('woker_list_data', 'project/woker_list_data');
@@ -232,6 +233,13 @@ Route::post('get_have', 'buy/get_have');
 Route::get('buy_apply_for', 'buy/apply_for');
 Route::post('buy_select_supply', 'buy/select_supply');
 Route::get('buy_status', 'buy/save_status');
+Route::get('buy_get_buy_project_ajax', 'buy/get_buy_project_ajax');
+Route::get('buy_sel_project', 'buy/sel_project');
+Route::get('buy_sel_goods', 'buy/sel_goods');
+Route::post('buy_add_order', 'buy/add_order');
+Route::get('buy_sel_goods_list', 'buy/sel_goods_list');
+Route::get('buy_sel_goods_total', 'buy/sel_goods_total');
+Route::post('buy_del_info', 'buy/del_info');
 
 
 

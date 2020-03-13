@@ -5,14 +5,79 @@ use app\index\model\SupplyGoods as SupplyGoodsModel;
 use app\index\model\Goods as GoodsModel;
 use app\index\model\Buy as BuyModel;
 use app\index\model\BuyInfo as BuyInfoModel;
+use app\index\model\Need as NeedModel;
 use app\index\model\StockOrder as StockOrderModel;
 use app\index\model\StockOrderInfo as StockOrderInfoModel;
 use app\index\model\Project as ProjectModel;
 use app\index\model\StockAll as StockAllModel;
 use app\index\model\ProjectStock as ProjectStockModel;
 use app\lib\exception\BaseException;
+use think\Db;
 
 class Buy{
+
+    // 根据项目id获取商品的需求预算
+    public function getSelGoods($project_ids, $limit = 20, $order = 'desc'){
+        $project_ids_arr = explode(',', $project_ids);
+
+        $list = NeedModel::useGlobalScope(false)->alias('n')
+                    ->leftJoin('goods g','n.goods_id = g.id')
+                    ->leftJoin('unit u','g.unit_id = u.id')
+
+                    ->where(function ($query) use($project_ids_arr) {
+                        $query->where('n.project_id', 'in', $project_ids_arr);
+                    })
+                    ->field('n.id, n.company_id, n.project_id, n.goods_id, n.need, n.need_ok, n.type, n.check, n.note, g.type_id, n.create_time, g.number, g.name, g.unit_id, g.image, u.name as unit')
+                    ->order('n.create_time', $order)
+                    ->paginate($limit, false, ['path' => "javascript:ajaxPage([PAGE]);"]);
+
+        //        dump(Db::getLastSql());
+
+        return $list;
+    }
+
+    // 创建采购单
+    public function addOrder($params){
+        $data = [
+            'number'     => create_order_no('C'),
+            'project_id' => $params['ids'],
+            'status'     => 1,
+            'type'       => 1,
+            'form'       => 1,
+            'note'       => isset($params['note'])?$params['note']:'',
+        ];
+        $ret = BuyModel::create($data);
+        if (!$ret){
+            return returnInfo('', 201, '创建采购单失败！');
+        }
+
+        // 获取工程的预算商品
+        $need_list = NeedModel::where('project_id', 'in', $params['ids'])->all();
+        if (!$need_list){
+            return returnInfo('', 201, '工程预算为空，请先去设置预算！');
+        }
+
+        $goods_arr = [];
+        // 循环插入商品信息
+        foreach ($need_list as $k => $v){
+            $goods_arr[] = [
+                'buy_id'     => $ret['id'],
+                'project_id' => $v['project_id'],
+                'goods_id'   => $v['goods_id'],
+                'need_id'    => $v['id'],
+                'num'        => $v['need'],
+                'num_ok'     => 0,
+            ];
+        }
+
+        $ret_buy_info = model('BuyInfo')->saveAll($goods_arr);
+
+        if (!$ret_buy_info){
+            return returnInfo('', 202, '创建采购单失败！');
+        }
+
+        return returnInfo($ret, 200, '创建采购单成功！');
+    }
 
     public function create_buy_order($params){
 

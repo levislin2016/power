@@ -15,8 +15,12 @@ class Goods{
         if (!empty($params['keywords'])){
             $where[] = ['name|number', 'like','%' . $params['keywords'] . '%'];
         }
+        if (!empty($params['type_id'])){
+            $where[] = ['type_id', '=', $params['type_id']];
+        }
 
-        $js_path = "javascript:AjaxPage([PAGE]);";
+
+        $js_path = "javascript:goodsAjaxPage([PAGE]);";
         $list = GoodsModel::with(['unit'])->where($where)->order('create_time', $order)->paginate($limit, false, ['path' => $js_path]);
 
         if (!empty($params['debug'])) {

@@ -1,10 +1,14 @@
 <?php
 namespace app\index\controller;
 
+use app\index\model\BuyProject;
 use app\index\service\Need as NeedService;
+use app\index\service\BuyProject as BuyProjectService;
+use app\index\service\BuyInfo as BuyInfoService;
 use app\index\service\Buy as BuyService;
 use app\index\model\Project as ProjectModel;
 use app\index\model\Stock as StockModel;
+use app\index\model\BuyProject as BuyProjectModel;
 use app\index\model\StockAll as StockAllModel;
 use app\index\model\SupplyGoods as SupplyGoodsModel;
 use app\index\model\Supply as SupplyModel;
@@ -22,17 +26,66 @@ class Buy extends Base{
         'checkLogoin'
     ];
 
-    public function add(){
-        $project_list = ProjectModel::all();
-        $stock_list = StockModel::all();
-        $supply_list = SupplyModel::all();
-        $this->assign('project_list', $project_list);
-        $this->assign('stock_list', $stock_list);
-        $this->assign('supply_list', $supply_list);
+    // 显示选择工程采购页面
+    public function sel_project(){
+        return view('sel_project');
+    }
 
-        $buy_from = config('extra.buy_from');
-        $this->assign('buy_from', $buy_from);
-        return $this->fetch();
+    // 获取采购的工程列表
+    public function get_buy_project_ajax(){
+        $data['list'] = (new BuyProjectService)->getList(input('param.'));
+        return view('buy_project_ajax', ['data' => $data]);
+    }
+
+    // 显示需要采购的材料
+    public function sel_goods(){
+        $data['list'] = (new BuyService)->getSelGoods(input('param.ids'));
+        $data['buy_id'] = input('param.buy_id');
+
+        return view('sel_goods', ['data' => $data]);
+    }
+
+    // 创建采购单
+    public function add_order(){
+        $ret = (new BuyService)->addOrder(input('param.'));
+        if ($ret['code'] != 200){
+            return returnJson('', 201, $ret['msg']);
+        }
+        return returnJson($ret['data'], 200, $ret['msg']);
+    }
+
+    // 获取根据工程分类的采购单详情
+    public function sel_goods_list(){
+        $data['list'] = (new BuyinfoService)->getList(input('param.'), 'project');
+
+        return view('sel_goods_list', ['data' => $data]);
+    }
+
+    // 获取计算完成的采购单详情
+    public function sel_goods_total(){
+        $data['list'] = (new BuyinfoService)->getList(input('param.'), 'total');
+
+        return view('sel_goods_total', ['data' => $data]);
+    }
+
+    // 修改采购单详情表的数量
+    public function edit_info(){
+        $ret = BuyInfoModel::update([
+            'num' => input('param.num')
+        ], ['id' => input('param.id')]);
+        if (!$ret){
+            return returnJson('', 201, '修改失败！');
+        }
+        return returnJson('', 200, '数量修改为：'. input('param.num') .'！');
+    }
+
+    // 删除采购单中的明细
+    public function del_info(){
+        $ret = BuyInfoModel::destroy(['id' => input('param.id')]);
+        if (!$ret){
+            return returnJson('', 201, '删除失败！');
+        }
+        return returnJson('', 200, '删除成功！');
     }
 
     public function get_need(){

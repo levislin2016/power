@@ -20,24 +20,25 @@
 {include file="public/footer"}
 
 <script>
-	var url = "{:url('goods/ajax_page')}";
-
+	var ajaxPage;
 	layui.use(['form', 'jquery', 'element'], function() {
 		var form = layui.form,
 				$ = layui.jquery,
 				element = layui.element;
 
 		$(function(){
-			AjaxPage(url, 1);
+			ajaxPage(1);
 		});
 
 		// 判断输入框输入事件
 		$('.keywords').on('input propertychange', function(){
-			AjaxPage(url, 1)
+			ajaxPage(1)
 		});
 
 		// 点击分页触发的ajax
-		function AjaxPage(url, page){
+		ajaxPage = function (page){
+			var url = "{:url('goods/ajax_page')}";
+
 			layer.load(2);
 
 			var form_data = {

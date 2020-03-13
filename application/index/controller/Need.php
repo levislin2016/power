@@ -20,6 +20,7 @@ class Need extends Base
     public function index(){
         $data['project_id'] = input('param.project_id');
         $data['project'] = ProjectModel::get($data['project_id']);
+        $data['type_list'] = TypeModel::all();
 
         return view('index', ['data' => $data]);
     }

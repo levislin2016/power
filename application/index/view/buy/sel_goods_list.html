@@ -1,0 +1,55 @@
+<style>
+    .layui-form-switch{
+        margin-top: 0px;
+    }
+</style>
+<div class="layui-form" id="table-list">
+    {volist name="data.list" id="v0" key="k0"}
+    <table class="layui-table" lay-skin="line">
+        <colgroup>
+            <col width="50">
+            <col class="hidden-xs" width="80">
+            <col>
+            <col>
+            <col>
+            <col>
+        </colgroup>
+        <thead>
+        <tr>
+            <th colspan="8" style="text-align: center"><h4><b>工程：{$v0.project_name}</b></h4></th>
+        </tr>
+        <tr>
+            <th width="10%" class="hidden-xs">序号</th>
+            <th width="30%">商品名称</th>
+            <th width="10%">编号</th>
+            <th width="10%">数量</th>
+            <th width="10%">累计采购</th>
+            <th width="10%">总预算</th>
+            <th width="10%">单位</th>
+            <th width="10%">操作</th>
+
+        </tr>
+        </thead>
+        <tbody class="table_body">
+        {volist name="$v0.list" id="v" key="k"}
+        <tr>
+            <td class="hidden-xs">{$k}</td>
+            <td class="alert_goods" style="cursor: pointer" onselectstart="return false">{$v['name']}</td>
+            <td class="alert_number">{$v['number']}</td>
+            <td class="alert_need" data-id="{$v['id']}">{$v['num']}</td>
+            <td>{$v['need_ok']}</td>
+            <td>{$v['need']}</td>
+            <td class="alert_unit">{$v['unit']}</td>
+            <td>
+                <button class="layui-btn layui-btn-sm layui-btn-danger btn_tips btn_del" data-id="{$v['id']}"><i class="layui-icon">&#x1006;</i></button>
+            </td>
+        </tr>
+        {/volist}
+        </tbody>
+    </table>
+    <div class="page-wrap">
+    </div>
+    {/volist}
+</div>
+<script>
+</script>

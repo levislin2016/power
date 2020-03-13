@@ -23,7 +23,7 @@ class Goods extends Base
 
     # ajax 获取页面数据
     public function ajax_page(){
-        $data['list'] = (new GoodsService)->getList(input('get.'), 10000);
+        $data['list'] = (new GoodsService)->getList(input('get.'));
 
         return view('ajax_page', ['data' => $data]);
     }

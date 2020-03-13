@@ -24,10 +24,21 @@ class Project extends Base
 
     public function index(){
         $params = input('get.');
-        $list = (new ProjectService)->select_list($params);
+        $list = (new ProjectService)->getList($params);
         //dump($list->toArray());
     	$this->assign('list', $list);
         return $this->fetch();
+    }
+
+    public function get_list(){
+        return view('list');
+    }
+
+    // ajax获取的项目列表
+    public function list_ajax(){
+        $data['list'] = (new ProjectService)->getList(input('get.'));
+
+        return view('list_ajax', ['data' => $data]);
     }
 
     public function add(){ 

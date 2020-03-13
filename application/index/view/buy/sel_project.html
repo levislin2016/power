@@ -1,0 +1,179 @@
+{include file="public/header"}
+
+
+<div class="wrap-container clearfix">
+    <div class="column-content-detail">
+        <blockquote class="layui-elem-quote">
+            <div class="layui-row">
+                <div class="col-md-9" style="line-height: 38px">
+                    <b>添加采购单 一 选择采购工程</b>
+                </div>
+                <div class="col-md-3" style="text-align: right">
+                    <button type="button" class="layui-btn layui-bg-blue" onclick="window.history.back(-1)" style=""><i class="layui-icon layui-icon-return" style="font-size: 13px"></i>返回</button>
+                </div>
+            </div>
+        </blockquote>
+        <div class="layui-row">
+            <div class="col-md-6">
+                <input type="text" placeholder='请输入名称...' autocomplete="off" class="layui-input keywords" value="{$Think.get.keywords}" />
+            </div>
+        </div>
+        <div class="layui-row">
+            <div class="ajax_page col-md-6">
+                <!--  用来存放ajax获取HTML内容的存放容器  -->
+            </div>
+            <div class="col-md-6">
+                <!--  用来存放ajax获取HTML内容的存放容器  -->
+                <div class="layui-form" id="table-list">
+                    <table class="layui-table" lay-skin="line">
+                        <colgroup>
+                            <col width="50">
+                            <col class="hidden-xs" width="80">
+                            <col>
+                            <col>
+                            <col>
+                            <col>
+                            <col>
+                        </colgroup>
+                        <thead>
+                        <tr>
+                            <th colspan="6">已选列表</th>
+                        </tr>
+                        <tr>
+                            <th width="10%" class="hidden-xs">编号</th>
+                            <th width="10%">合同编号</th>
+                            <th>业主</th>
+                            <th>项目名</th>
+                            <th>状态</th>
+                            <th>删除</th>
+                        </tr>
+                        </thead>
+                        <tbody class="ajax_page_sel">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="layui-row">
+            <center>
+                <button type="button" class="layui-btn buy_add"><i class="layui-icon layui-icon-ok" style="font-size: 13px"></i>完成工程选择，挑选材料</button>
+            </center>
+        </div>
+    </div>
+</div>
+
+{include file="public/script"}
+{include file="public/footer"}
+<script>
+    var ajaxPage;
+
+    layui.use(['form', 'jquery', 'element'], function() {
+        var form = layui.form,
+            $ = layui.jquery,
+            element = layui.element;
+
+
+
+        $(function(){
+            ajaxPage(1);
+        });
+
+        // 判断输入框输入事件
+        $('.keywords').on('input propertychange', function(){
+            ajaxPage(1)
+        });
+
+        var sel_arr = [];
+
+
+        // 点击分页触发的ajax
+        ajaxPage = function(page){
+            var url = "{:url('project/list_ajax')}";
+
+            layer.load(2);
+
+            var form_data = {
+                'page'       : page,
+                'keywords'   : $('.keywords').val(),
+            };
+
+            console.log(form_data);
+            $.ajax({
+                url:url,
+                type:'GET',
+                async:false,
+                data:form_data,
+                success:function (ret) {
+                    layer.closeAll('loading');
+                    $('.ajax_page').html(ret);
+                    // 重新渲染 form
+                    form.render();
+                    addBuyProject();
+                }
+            });
+        };
+
+
+
+        // 绑定双击事件
+        function addBuyProject() {
+            $('.list_ajax_tr').on('dblclick', function () {
+                var project_id = $(this).data('id');
+                // 判断是否已经选择过该工程
+                if ($.inArray(project_id, sel_arr) != -1){
+                   layer.msg('该工程已经存在',function () {
+                   });
+                   return
+                }
+                sel_arr.push(project_id);
+                console.log('已选工程列表');
+                console.log(sel_arr);
+                // 添加Dom
+                var dom = $(this).clone();
+                var str = "\t\t\t\t\t<button class=\"layui-btn layui-btn-sm layui-btn-danger btn_tips btn_del\" data-id=\""+ project_id +"\"><i class=\"layui-icon\">&#xe640;</i>删除</button>\n";
+                $(dom).find('.last').html(str);
+                $('.ajax_page_sel').append(dom);
+                btnDel();
+                layer.msg('添加成功！')
+            });
+        }
+
+        // 绑定删除事件
+        function btnDel(){
+            $('.btn_del').unbind('click').bind('click', function () {
+                var project_id = $(this).data('id');
+                $(this).parent().parent().remove();
+
+                sel_arr.splice(jQuery.inArray(project_id,sel_arr),1);
+                console.log('删除 id ：' + project_id);
+                console.log(sel_arr);
+                layer.msg('删除成功！')
+            })
+        }
+
+        // 根据选择的工程项目生成材料列表
+        $('.buy_add').on('click',function () {
+            if (sel_arr.length == 0){
+                layer.msg('请先选择需要采购的工程！',function () {
+
+                });
+                return;
+            }
+            var url = "{:url('buy/add_order')}";
+            var ids = sel_arr.join(',');
+
+            var form_data = {
+                'ids' : ids,
+            };
+            console.log('ids:' + ids);
+            $.post(url, form_data, function (ret) {
+                layer.msg(ret.msg);
+                if (ret.code == 200){
+                    window.location.href = "{:url('buy/sel_goods')}" + '?buy_id=' + ret.data.id;
+                    return;
+                }
+            });
+        })
+    });
+</script>
+

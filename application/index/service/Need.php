@@ -10,8 +10,7 @@ use think\Db;
 class Need{
 
     // 获取材料列表
-    public function getList($params, $limit = 15, $order = 'desc'){
-        $js_path = "javascript:AjaxPage([PAGE]);";
+    public function getList($params, $limit = 20, $order = 'desc'){
 
         $list = NeedModel::useGlobalScope(false)->alias('n')
                             ->leftJoin('goods g','n.goods_id = g.id')
@@ -24,9 +23,9 @@ class Need{
                                 $query->where('g.name', 'like', '%' . $params['keywords'] . '%');
                                 $query->whereOr('g.number', 'like', '%' . $params['keywords'] . '%');
                             })
-                            ->field('n.id, n.company_id, n.project_id, n.goods_id, n.need, n.type, n.check, n.note, g.type_id, n.create_time, g.number, g.name, g.unit_id, g.image, u.name as unit')
+                            ->field('n.id, n.company_id, n.project_id, n.goods_id, n.need, n.need_ok, n.type, n.check, n.note, g.type_id, n.create_time, g.number, g.name, g.unit_id, g.image, u.name as unit')
                             ->order('n.create_time', $order)
-                            ->paginate($limit, false, ['path' => $js_path]);
+                            ->paginate($limit, false, ['path' => "javascript:ajaxPage([PAGE]);"]);
 
         if (!empty($params['debug'])) {
             dump(Db::getLastSql());

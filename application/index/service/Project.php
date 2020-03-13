@@ -11,22 +11,18 @@ use app\lib\exception\BaseException;
 
 class Project{
 
-    public function select_list($params){
+    public function getList($params){
         $list = ProjectModel::useGlobalScope(false)->alias('p')
             ->leftJoin('contract c','p.contract_id = c.id')
             ->leftJoin('owner o','c.owner_id = o.id')
             ->where(function ($query) use($params) {
-                if(!empty($params['search'])){ 
-                    $query->where('c.number|p.name', 'like', '%'.$params['search'].'%');
+                if(!empty($params['keywords'])){
+                    $query->where('c.number|p.name', 'like', '%'.$params['keywords'].'%');
                 }
-                $query->where('c.company_id', session('power_user.company_id'));
-                $query->where('p.company_id', session('power_user.company_id'));
             })
-            ->field('p.id, p.company_id, p.contract_id, c.number as contract_number, p.name, p.status, p.create_time, o.name as owner_name')
+            ->field('p.id, p.contract_id, c.number as contract_number, p.name, p.status, p.create_time, o.name as owner_name')
             ->order('p.create_time', 'desc')
-            ->paginate(10, false, [
-                'query'     => $params,
-            ]);
+            ->paginate(10, false, ['path' => "javascript:ajaxPage([PAGE]);"]);
 
         return $list;
     }

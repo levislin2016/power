@@ -3,7 +3,7 @@
 		margin-top: 0px;
 	}
 </style>
-<div class="layui-form" id="table-list">
+<div class="layui-form" id="table-list" style="display: none">
 	{volist name="data.list2" id="v0" key="k0"}
 		<table class="layui-table" lay-skin="line">
 			<colgroup>
@@ -16,13 +16,14 @@
 			</colgroup>
 			<thead>
 			<tr>
-				<th colspan="8"><h4><b>{$v0.type_name}</b></h4></th>
+				<th colspan="9" style="text-align: center"><h4><b>{$v0.type_name}</b></h4></th>
 			</tr>
 			<tr>
-				<th width="10%" class="hidden-xs">编号</th>
+				<th width="10%" class="hidden-xs">序号</th>
 				<th width="30%">商品名称</th>
 				<th width="10%">编号</th>
 				<th width="10%">需求数量</th>
+				<th width="10%">已采购数量</th>
 				<th width="5%">单位</th>
 				<th width="10%">创建时间</th>
 				<th width="10%">核对</th>
@@ -37,6 +38,7 @@
 				<td class="alert_goods" style="cursor: pointer" onselectstart="return false">{$v['goods']['name']}</td>
 				<td class="alert_number">{$v['goods']['number']}</td>
 				<td class="alert_need" data-id="{$v['id']}">{$v['need']}</td>
+				<td >{$v['need_ok']}</td>
 				<td class="alert_unit">{$v['unit']}</td>
 				<td>{$v['create_time']}</td>
 				<td>

@@ -1,0 +1,41 @@
+<div class="layui-form" id="table-list">
+    <table class="layui-table" lay-skin="line">
+        <colgroup>
+            <col width="50">
+            <col class="hidden-xs" width="80">
+            <col>
+            <col>
+            <col>
+            <col>
+            <col>
+        </colgroup>
+        <thead>
+        <tr>
+            <th colspan="6">所有工程列表</th>
+        </tr>
+        <tr>
+            <th width="10%" class="hidden-xs">编号</th>
+            <th width="10%">合同编号</th>
+            <th>业主</th>
+            <th>项目名</th>
+            <th>状态</th>
+            <th>创建时间</th>
+        </tr>
+        </thead>
+        <tbody>
+        {volist name="$data.list" id="v"}
+        <tr style="cursor: pointer" onselectstart="return false" class="list_ajax_tr" data-id="{$v.id}" >
+            <td class="hidden-xs">{$v['id']}</td>
+            <td>{$v['contract_number']}</td>
+            <td>{$v['owner_name']}</td>
+            <td>{$v['name']}</td>
+            <td><span class="layui-badge {eq name='v.status' value='1'}layui-bg-gray{/eq}{eq name='v.status' value='2'}layui-bg-blue{/eq}{eq name='v.status' value='3'}layui-bg-orange{/eq}{eq name='v.status' value='4'}layui-badge{/eq}">{$v['status_name']}</span></td>
+            <td class="last">{$v['create_time']}</td>
+        </tr>
+        {/volist}
+        </tbody>
+    </table>
+    <div class="page-wrap">
+        {$data.list->render()|raw}
+    </div>
+</div>

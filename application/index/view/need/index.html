@@ -1,10 +1,16 @@
 {include file="public/header"}
-<fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
-	<legend>项目：{$data.project.name}</legend>
-</fieldset>
-
 <div class="wrap-container clearfix">
 	<div class="column-content-detail">
+		<blockquote class="layui-elem-quote">
+			<div class="layui-row">
+				<div class="col-md-9" style="line-height: 38px">
+					<b>工程：{$data.project.name}</b>
+				</div>
+				<div class="col-md-3" style="text-align: right">
+					<button type="button" class="layui-btn layui-bg-blue" onclick="window.history.back(-1)" style=""><i class="layui-icon layui-icon-return" style="font-size: 13px"></i>返回</button>
+				</div>
+			</div>
+		</blockquote>
 
 		<div class="layui-row">
 			<div class="col-md-6">
@@ -14,7 +20,6 @@
 				<button type="button" class="layui-btn add_goods"><i class="layui-icon layui-icon-add-1" style="font-size: 13px"></i>添加</button>
 			</div>
 			<div class="col-md-3" style="text-align: right">
-				<button type="button" class="layui-btn layui-bg-gray" onclick="window.history.back(-1)"><i class="layui-icon layui-icon-return" style="font-size: 13px"></i>返回</button>
 			</div>
 		</div>
 		<div class="layui-row">
@@ -33,7 +38,19 @@
 	<div class="column-content-detail">
 
 		<div class="layui-row">
-			<div class="col-md-6 col-lg-offset-3">
+			<div class="col-md-2">
+				<div class="layui-inline layui-form">
+					<div class="layui-input-inline">
+						<select name="modules" lay-search="" lay-filter="type_list">
+							<option value="">全部分类</option>
+							{volist name="$data.type_list" id="v"}
+							<option value="{$v.id}">{$v.name}</option>
+							{/volist}
+						</select>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-6">
 				<input type="text" name="keywords" placeholder="请输入商品编号 / 名称..." autocomplete="off" class="layui-input goods_keywords" value="{$Think.get.keywords}" />
 			</div>
 		</div>
@@ -46,21 +63,27 @@
 </div>
 
 <script>
+	var ajaxPage;
+	var goodsAjaxPage;
+
+	var need_url  = "{:url('need/ajax_page')}";
+	var goods_url = "{:url('goods/ajax_page')}";
+
 	layui.use(['form', 'jquery', 'element'], function() {
 		var form = layui.form,
 				$ = layui.jquery,
 				element = layui.element;
 
-		var url = "{:url('need/ajax_page')}";
 		var obj;
 
 		$(function(){
-			ajaxPage(url, 1);
+			ajaxPage(need_url, 1);
+			form.render();
 		});
 
 		// 判断输入框输入事件
 		$('.keywords').on('input propertychange', function(){
-			ajaxPage(url, 1)
+			ajaxPage(need_url, 1)
 		});
 
 		form.on('switch(check)', function(data){
@@ -86,7 +109,7 @@
 		});
 
 		// 点击分页触发的ajax
-		function ajaxPage(url, page){
+		ajaxPage = function (url, page){
 			layer.load(2);
 
 			var form_data = {
@@ -104,6 +127,7 @@
 				success:function (ret) {
 					layer.closeAll('loading');
 					$('.ajax_page').html(ret);
+					$('.ajax_page div').fadeIn();
 					// 重新渲染 checkbox框
 					form.render('checkbox');
 					// 绑定删除事件
@@ -145,7 +169,7 @@
 				$.post("{:url('need/del')}",form_data,function (ret) {
 					layer.msg(ret.msg);
 					if (ret.code == 200){
-						ajaxPage(url, 1)
+						ajaxPage(need_url	, 1)
 					}
 				})
 			});
@@ -186,37 +210,45 @@
 
 
 		<!----------------------------- 商品列表 js ----------------------------------->
-		var goods_url = "{:url('goods/ajax_page')}";
+		var type_id = '';
 
 		$(function(){
-			goodsAjaxPage(goods_url, 1);
+			goodsAjaxPage(1);
 		});
 
 		// 判断输入框输入事件
 		$('.goods_keywords').on('input propertychange', function(){
-			goodsAjaxPage(goods_url, 1)
+			goodsAjaxPage(1)
+		});
+
+		form.on('select(type_list)', function(data){
+			console.log(data.value); //得到被选中的值
+			type_id = data.value;
+			goodsAjaxPage(1);
 		});
 
 		// 点击分页触发的ajax
-		function goodsAjaxPage(ajax_url, page){
+		goodsAjaxPage = function (page){
 			layer.load(2);
 
 			var form_data = {
 				'page'     : page,
 				'keywords' : $('.goods_keywords').val(),
+				'type_id'  : type_id,
 			};
 
 			console.log('商品分页');
 			console.log(form_data);
 
 			$.ajax({
-				url:ajax_url,
+				url:goods_url,
 				type:'GET',
 				async:false,
 				data:form_data,
 				success:function (ret) {
 					layer.closeAll('loading');
 					$('.goods_ajax_page').html(ret);
+					$('.goods_ajax_page div').fadeIn();
 
 					var project_id = "{$data.project_id}";
 
@@ -230,7 +262,7 @@
 						$.post("{:url('need/add')}",form_data,function (ret) {
 							layer.msg(ret.msg);
 							if (ret.code == 200){
-								ajaxPage(url, 1)
+								ajaxPage(need_url, 1)
 							}
 						});
 					})

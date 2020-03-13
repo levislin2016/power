@@ -54,9 +54,8 @@
 							</colgroup>
 							<thead>
 								<tr>
-									<th><input type="checkbox" name="" lay-skin="primary" lay-filter="allChoose"></th>
-									<th class="hidden-xs">编号</th>
-									<th>合同编号</th>
+									<th width="5%" class="hidden-xs">编号</th>
+									<th width="10%">合同编号</th>
 									<th>业主</th>
 									<th>项目名</th>
 									<th>状态</th>
@@ -67,8 +66,7 @@
 							<tbody>
 							{volist name="list" id="vo"}
 								<tr>
-									<td><input type="checkbox" name="" lay-skin="primary" data-id="{$vo['id']}"></td>
-									<td class="hidden-xs">{$vo['id']}</td>									
+									<td class="hidden-xs">{$vo['id']}</td>
 									<td>{$vo['contract_number']}</td>
 									<td>{$vo['owner_name']}</td>
 									<td>{$vo['name']}</td>
@@ -76,11 +74,11 @@
 									<td>{$vo['create_time']}</td>
 									<td>
 										<div class="layui-inline">
-									
+
 											<!-- <button class="layui-btn layui-btn-sm layui-btn-normal edit-btn btn_tips" data-title="修改工程" data-id="{$vo['id']}" data-url="{:url('project/add')}" data-h="388px"><i class="layui-icon">&#xe642;</i></button> -->
-											
+
 											{in  name="vo.status" value="1,2"}
-												<a class="layui-btn layui-btn-sm btn_tips" data-title="设定预算" href="{:url('need/index', array('project_id'=>$vo['id']))}" style="margin: 0px;"><i class="layui-icon">&#xe63c;</i></a>
+												<a class="layui-btn layui-btn-sm btn_tips" data-title="设定预算" href="{:url('need/index', array('project_id'=>$vo['id']))}" style="margin: 0px;"><i class="layui-icon">&#xe63c;</i>预算</a>
 												{egt name="vo.id|ifBuy" value="1"}
 													<!-- <a class="layui-btn layui-btn-sm layui-btn-normal btn_tips" data-title="采购合同" href="{:url('buyContract/index', array('id'=>$vo['id']))}" style="margin: 0px;"><i class="layui-icon">&#xe655;</i></a> -->
 													<button class="layui-btn layui-btn-sm layui-btn-normal edit-btn btn_tips" data-title="采购" data-id="{$vo['id']}" data-url="{:url('buy/add')}" data-w="900px" data-h="650px"  style="margin: 0px;"><i class="layui-icon">&#xe657;</i></button>
@@ -102,7 +100,7 @@
 											<!-- <button class="layui-btn layui-btn-sm layui-btn-normal btn_tips tab_btn" data-tab="61" data-title="领退记录" data-url="{:url('stock_order/order_get_back')}?pid={$vo['id']}"><i class="layui-icon">&#xe63c;</i></button> -->
 											<!-- <button class="layui-btn layui-btn-sm layui-btn-warm btn_tips" data-title="工程完成" data-url=""><i class="layui-icon">&#xe66c;</i></button>											 -->
 											<!-- <button class="layui-btn layui-btn-sm layui-btn-danger btn_tips" data-title="工程结算" data-url=""><i class="layui-icon">&#xe66c;</i></button> -->
-											
+
 											{eq name="vo.status" value="4"}
 												<button class="layui-btn layui-btn-sm layui-btn-warm edit-btn btn_tips" data-title="甲供退回" data-id="{$vo['id']}" data-url="{:url('project/balance_back')}"  data-w="1000px" style="margin: 0px;"><i class="layui-icon">&#xe66b;</i></button>
 											{/eq}
@@ -118,7 +116,7 @@
 														<a href="javascript:;" class="del-btn" data-title="删除" data-id="{$vo['id']}" data-url="{:url('project/del')}">删除工程</a>
 													</li>
 													{/eq}
-													
+
 												{switch vo.status}
 													{case 1}
 													<hr>
@@ -154,7 +152,7 @@
 										</div>
 									</td>
 								</tr>
-							{/volist}	
+							{/volist}
 							</tbody>
 						</table>
 						<div class="page-wrap">
