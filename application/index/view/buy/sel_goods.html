@@ -128,7 +128,7 @@
                     $.post(edit_url, form_data, function (ret) {
                         if (ret.code == 200){
                             layer.msg(ret.msg);
-                            ajaxPage(1)
+                            ajaxPage(1);
                             ajaxPageTotal(1)
                         }else{
                             layer.msg(ret.msg,function () {
