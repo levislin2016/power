@@ -5,6 +5,7 @@ use app\index\service\Goods as GoodsService;
 use app\index\model\Goods as GoodsModel;
 use app\index\model\Supply as SupplyModel;
 use app\index\model\Unit as UnitModel;
+use app\index\model\Cate as CateModel;
 use app\lib\exception\BaseException;
 use app\index\validate\GoodsValidate;
 
@@ -42,6 +43,9 @@ class Goods extends Base
         $unit_list = UnitModel::all();
         $this->assign('unit_list', $unit_list);
 
+        //材料分类列表
+        $cate_list = CateModel::all();
+        $this->assign('cate_list', $cate_list);
         return $this->fetch();
     }
 
@@ -54,6 +58,9 @@ class Goods extends Base
         $unit_list = UnitModel::all();
         $this->assign('unit_list', $unit_list);
 
+        //材料分类列表
+        $cate_list = CateModel::all();
+        $this->assign('cate_list', $cate_list);
         $id = input('get.id', '');
         if($id){
             $list = GoodsModel::get($id);

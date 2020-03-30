@@ -55,6 +55,19 @@
 										</select>
 									</div>
 								</div>
+
+								<div class="layui-form-item">
+									<label class="layui-form-label">单位：</label>
+									<div class="layui-input-block">
+										<select name="cate_id" required lay-verify="required" lay-verType="tips" lay-verify="required" lay-search="">
+											<option value="">请选择材料分类</option>
+											{volist name="cate_list" id="vo"}
+											<option value="{$vo['id']}" {if condition="$vo.id eq $list.cate_id"}selected{/if}>{$vo['name']}</option>
+											{/volist}
+										</select>
+									</div>
+								</div>
+
 							</div>
 						</div>
 					</div>

@@ -11,8 +11,12 @@ class Goods extends Base{
         return $this->hasOne('Company', 'id', 'company_id');
     }
 
-    public function supply(){
-        return $this->hasOne('Supply', 'id', 'supply_id');
+//    public function supply(){
+//        return $this->hasOne('Supply', 'id', 'supply_id');
+//    }
+
+    public function cate(){
+        return $this->hasOne('Cate', 'id', 'cate_id');
     }
 
     public function unit(){

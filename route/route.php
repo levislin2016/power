@@ -149,6 +149,16 @@ Route::post('unit_save', 'unit/save');
 //计量单位删除操作
 Route::get('unit_del', 'unit/del');
 
+//材料列表页
+Route::get('cate', 'cate/index');
+//材料添加/修改页
+Route::get('cate_add', 'cate/add');
+//材料添加/修改操作
+Route::post('cate_save', 'cate/save');
+//材料删除操作
+Route::get('cate_del', 'cate/del');
+
+
 //供应商列表页
 Route::get('supply', 'supply/index');
 //供应商添加/修改页
