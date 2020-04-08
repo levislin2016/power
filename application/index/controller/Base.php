@@ -9,7 +9,7 @@ class Base extends Controller
     protected function checkLogoin()
     {
     	if(!session('?power_user')){
-    		return $this->redirect('login/index');
+    		return $this->redirect(url('login/index'));
     	}
     }
 }

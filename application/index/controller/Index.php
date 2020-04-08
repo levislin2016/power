@@ -11,6 +11,7 @@ class Index extends Base
     ];
 
     public function index(){
+        echo 1;die;
         $left_list = RoleMenu::alias('r')
             ->field('id, name, graphical, child_id, url, description')
             ->LeftJoin('menu m', 'r.menu_id = m.id')

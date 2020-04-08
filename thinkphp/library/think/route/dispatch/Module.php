@@ -86,7 +86,6 @@ class Module extends Dispatch
     {
         // 监听module_init
         $this->app['hook']->listen('module_init');
-
         try {
             // 实例化控制器
             $instance = $this->app->controller($this->controller,
