@@ -16,58 +16,8 @@
 				<div class="column-content-detail" style="min-height: 500px;">
 					<form class="layui-form" action="" method="post">
 						<div class="layui-form-item">
-							<!-- <div class="layui-inline tool-btn">
-								<button type="button" class="layui-btn layui-btn-sm layui-btn-normal addBtn btn_tips" data-title="领取材料" data-url="{:url('stock_order/get_add')}" data-h="500px"><i class="layui-icon">&#xe654;</i></button>
-							</div> -->
-							
-
 							<div class="layui-inline">
 								<input type="text" name="search" placeholder="请输入搜索内容" autocomplete="off" class="layui-input" value="{$Request.param.search}" />
-							</div>
-							<div class="layui-inline">
-								<select name="pid" lay-filter="status" lay-search="">
-									<option value="">请选择一个项目</option>
-									{volist name="project_list" id="vo"}
-									<option {eq name="Request.param.pid" value="$vo['id']"}selected{/eq} value="{$vo['id']}">{$vo['name']}</option>
-									{/volist}
-								</select>
-							</div>
-							<div class="layui-inline">
-								<select name="sid" lay-filter="status" lay-search="">
-									<option value="">请选择一个供应商</option>
-									{volist name="supply_list" id="vo"}
-									<option {eq name="Request.param.sid" value="$vo['id']"}selected{/eq} value="{$vo['id']}">{$vo['name']}</option>
-									{/volist}
-								</select>
-							</div>
-							<div class="layui-inline">
-								<select name="status" lay-filter="status">
-                                    <option value="">请选择一个状态</option>
-                                    {volist name="buy_status" key="k" id="vo"}
-                                        <option {eq name="Request.param.status" value="$k"}selected{/eq} value="{$k}">{$vo}</option>
-                                    {/volist}
-								</select>
-							</div>
-							<div class="layui-inline">
-								<select name="from" lay-filter="status">
-                                    <option value="">请选择一个类型</option>
-                                    {volist name="buy_from" key="k" id="vo"}
-                                        <option {eq name="Request.param.from" value="$k"}selected{/eq} value="{$k}">{$vo}</option>
-                                    {/volist}
-								</select>
-                            </div>
-                            <div class="layui-inline">
-                                <input type="text" name="time" class="layui-input" id="time" placeholder="选择时间">
-							</div>
-							<div class="layui-inline">
-								<button class="layui-btn layui-btn-sm layui-btn-normal" type="submit" lay-submit="search">搜索</button>
-							</div>
-							<div class="layui-inline">
-								<a href="{:url('buy/sel_project')}">增加</a>
-							</div>
-
-							<div class="layui-inline tool-btn">
-								<button type="button" class="layui-btn layui-btn-sm layui-btn-normal btn_tips" onclick="window.location.reload();" data-title="刷新"><i class="layui-icon">&#xe666;</i></button>
 							</div>
 						</div>
 					</form>
@@ -87,61 +37,24 @@
 							</colgroup>
 							<thead>
 								<tr>
-									<th>订单号</th>
-									<th>项目</th>
-									<th>采购合同</th>
-									<th>供应商</th>
-									<th>类型</th>
-									<th>状态</th>
-									<th>操作人</th>
+									<th>采购单号</th>
 									<th>创建时间</th>
 									<th>操作</th>
 								</tr>
 							</thead>
 							<tbody>
-							{volist name="list" id="vo"}
+							{volist name="data.list" id="v"}
 								<tr>								
-									<td>{$vo['number']}</td>
-									<td>{$vo['project_name']}</td>
-									<td>{$vo['buy_contract']}</td>
-									<td>{$vo['supply_name']}</td>
-									<td>{$buy_from[$vo['from']]}</td>
+									<td>{$v['number']}</td>
+									<td>{$v['create_time']}</td>
 									<td>
-										{switch vo.status}
-											{case 1 }<span class="layui-badge layui-bg-blue">{$buy_status[$vo['status']]}</span>{/case}
-											{case 2 }<span class="layui-badge layui-bg-cyan">{$buy_status[$vo['status']]}</span>{/case}
-											{case 3 }<span class="layui-badge layui-bg-green">{$buy_status[$vo['status']]}</span>{/case}
-											{case 4 }<span class="layui-badge layui-bg-gray">{$buy_status[$vo['status']]}</span>{/case}
-											{case 5 }<span class="layui-badge layui-bg-orange">{$buy_status[$vo['status']]}</span>{/case}
-											{case 6 }<span class="layui-badge">{$buy_status[$vo['status']]}</span>{/case}
-										{/switch}
-									</td>
-									<td>{$vo['user_name']}</td>
-									<td>{$vo['create_time']}</td>
-									<td>
-										<div class="layui-inline">
-                                            
-											<button class="layui-btn layui-btn-sm layui-btn-normal edit-btn btn_tips" data-title="查看详情" data-id="{$vo['id']}" data-url="{:url('buy/show')}" data-h="388px"><i class="layui-icon">&#xe63c;</i></button>
-                                            {in name="vo['status']" value="1,2"}
-												<button class="layui-btn layui-btn-sm layui-btn-primary edit-btn btn_tips" data-title="采购入库" data-id="{$vo['id']}" data-url="{:url('buy/put')}" data-h="500px">入库</button>
-											{/in}
-											{in name="vo['status']" value="2,3"}
-												<button class="layui-btn layui-btn-sm layui-btn-normal tab_btn" data-tab="64" data-title="出入库流水" data-url="{:url('stock_order/order_water')}?number={$vo['number']}&tid=1">流水</button>
-											{/in}
-											{eq name="vo['status']" value="5"}
-											<button class="layui-btn layui-btn-sm ts-btn" data-title="确认审核通过？" data-url="{:url('buy/save_status')}?id={$vo['id']}&type=y">审核通过</button>
-											<button class="layui-btn layui-btn-sm layui-btn-danger ts-btn" data-title="确认审核失败？" data-url="{:url('buy/save_status')}?id={$vo['id']}&type=n">审核失败</button>
-											{/eq}
-											{in name="vo['status']" value="1,5"}
-												<button class="layui-btn layui-btn-sm layui-btn-warm ts-btn" data-title="确认取消采购？" data-url="{:url('buy/cancel')}?id={$vo['id']}">取消采购</button>
-											{/in} 
-										</div>
+
 									</td>
 								</tr>
 							{/volist}	
 							</tbody>
 						</table>
-						<div class="page-wrap">{$list->render()|raw}</div>
+						<div class="page-wrap">{$data.list->render()|raw}</div>
 					</div>
 				</div>
 		</div>

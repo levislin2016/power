@@ -1,6 +1,7 @@
 <?php
     return [
-        'imageH'    =>  '82',
-        'imageW'    =>  '260',
-        'fontSize'  =>  '32'
+        'imageH'    =>  '0',
+        'imageW'    =>  '0',
+        'fontSize'  =>  '25',
+        'useCurve'  =>  false
     ];

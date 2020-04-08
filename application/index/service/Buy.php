@@ -16,6 +16,11 @@ use think\Db;
 
 class Buy{
 
+    public function getList($limit = 10){
+        $list = BuyModel::where([])->paginate($limit);
+        return $list;
+    }
+
     // 根据项目id获取商品的需求预算
     public function getSelGoods($project_ids, $limit = 20, $order = 'desc'){
         $project_ids_arr = explode(',', $project_ids);

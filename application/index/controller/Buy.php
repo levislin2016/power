@@ -26,6 +26,13 @@ class Buy extends Base{
         'checkLogoin'
     ];
 
+    // 显示采购单列表
+    public function index(){
+        $data['list'] = model('buy', 'service')->getList(1);
+
+        return view('index', ['data' => $data]);
+    }
+
     // 显示选择工程采购页面
     public function sel_project(){
         return view('sel_project');
@@ -150,49 +157,49 @@ class Buy extends Base{
         return $res;
     }
 
-    public function index(){
-        $params = input('param.', '');
-        $buy_status = config('extra.buy_status');
-        $this->assign('buy_status', $buy_status);
-        $project_list = ProjectModel::all();
-        $this->assign('project_list', $project_list);
-        $supply_list = SupplyModel::all();
-        $this->assign('supply_list', $supply_list);
-        $buy_from = config('extra.buy_from');
-        $this->assign('buy_from', $buy_from);
-        $list = BuyModel::useGlobalScope(false)->alias('b')
-                    ->leftJoin('project p','b.project_id = p.id')
-                    ->leftJoin('user u','b.user_id = u.id')
-                    ->leftJoin('supply s','b.supply_id = s.id')
-                    ->where(function ($query) use($params) {
-                        $query->where('b.company_id', session('power_user.company_id'));
-                        if(!empty($params['search'])){ 
-                            $query->where('b.number|p.name|u.name|b.buy_contract', 'like', '%'.$params['search'].'%');
-                        }
-                        if(!empty($params['status'])){
-                            $query->where('b.status', $params['status']);
-                        }
-                        if(!empty($params['from'])){
-                            $query->where('b.from', $params['from']);
-                        }
-                        if(!empty($params['time'])){
-                            $query->where('b.create_time', 'between time', explode(' ~ ', $params['time']));
-                        }
-                        if(!empty($params['pid'])){
-                            $query->where('b.project_id', $params['pid']);
-                        }
-                        if(!empty($params['sid'])){
-                            $query->where('b.supply_id', $params['sid']);
-                        }
-                    })
-                    ->field('b.*, p.name as project_name, u.name as user_name, s.name as supply_name')
-                    ->order('b.create_time', 'desc')
-                    ->paginate(10, false, [
-                        'query'     => $params,
-                    ]);
-        $this->assign('list', $list);
-        return $this->fetch();
-    }
+//    public function index(){
+//        $params = input('param.', '');
+//        $buy_status = config('extra.buy_status');
+//        $this->assign('buy_status', $buy_status);
+//        $project_list = ProjectModel::all();
+//        $this->assign('project_list', $project_list);
+//        $supply_list = SupplyModel::all();
+//        $this->assign('supply_list', $supply_list);
+//        $buy_from = config('extra.buy_from');
+//        $this->assign('buy_from', $buy_from);
+//        $list = BuyModel::useGlobalScope(false)->alias('b')
+//                    ->leftJoin('project p','b.project_id = p.id')
+//                    ->leftJoin('user u','b.user_id = u.id')
+//                    ->leftJoin('supply s','b.supply_id = s.id')
+//                    ->where(function ($query) use($params) {
+//                        $query->where('b.company_id', session('power_user.company_id'));
+//                        if(!empty($params['search'])){
+//                            $query->where('b.number|p.name|u.name|b.buy_contract', 'like', '%'.$params['search'].'%');
+//                        }
+//                        if(!empty($params['status'])){
+//                            $query->where('b.status', $params['status']);
+//                        }
+//                        if(!empty($params['from'])){
+//                            $query->where('b.from', $params['from']);
+//                        }
+//                        if(!empty($params['time'])){
+//                            $query->where('b.create_time', 'between time', explode(' ~ ', $params['time']));
+//                        }
+//                        if(!empty($params['pid'])){
+//                            $query->where('b.project_id', $params['pid']);
+//                        }
+//                        if(!empty($params['sid'])){
+//                            $query->where('b.supply_id', $params['sid']);
+//                        }
+//                    })
+//                    ->field('b.*, p.name as project_name, u.name as user_name, s.name as supply_name')
+//                    ->order('b.create_time', 'desc')
+//                    ->paginate(10, false, [
+//                        'query'     => $params,
+//                    ]);
+//        $this->assign('list', $list);
+//        return $this->fetch();
+//    }
 
     public function show(){
         $buy = BuyModel::get(input('get.id', ''));
