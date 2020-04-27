@@ -28,7 +28,7 @@ class Buy extends Base{
 
     // 显示采购单列表
     public function index(){
-        $data['list'] = model('buy', 'service')->getList(1);
+        $data['list'] = model('buy', 'service')->getList(10);
 
         return view('index', ['data' => $data]);
     }

@@ -38,6 +38,7 @@
 							<thead>
 								<tr>
 									<th>采购单号</th>
+									<th>状态</th>
 									<th>创建时间</th>
 									<th>操作</th>
 								</tr>
@@ -46,6 +47,7 @@
 							{volist name="data.list" id="v"}
 								<tr>								
 									<td>{$v['number']}</td>
+									<td>{$v['status']}</td>
 									<td>{$v['create_time']}</td>
 									<td>
 
