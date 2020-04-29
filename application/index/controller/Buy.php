@@ -1,7 +1,6 @@
 <?php
 namespace app\index\controller;
 
-use app\index\model\BuyProject;
 use app\index\service\Need as NeedService;
 use app\index\service\BuyProject as BuyProjectService;
 use app\index\service\BuyInfo as BuyInfoService;
@@ -28,9 +27,26 @@ class Buy extends Base{
 
     // 显示采购单列表
     public function index(){
-        $data['list'] = model('buy', 'service')->getList(10);
-
+        $data['search'] = input('search');
+        $data['list'] = model('buy', 'service')->getList($data, 20);
         return view('index', ['data' => $data]);
+    }
+
+    // 创建采购单
+    public function add_buy(){
+        $ret = (new BuyService)->addBuy(input('post.'));
+        if ($ret['code'] != 200){
+            return returnJson('', 201, $ret['msg']);
+        }
+        return returnJson($ret['data'], 200, $ret['msg']);
+    }
+
+    // 显示采购单编辑
+    public function edit(){
+        $data['search'] = input('search');
+        $data['list'] = model('buyProject', 'service')->getList($data, 20);
+
+        return view('edit', ['data' => $data]);
     }
 
     // 显示选择工程采购页面
@@ -52,14 +68,7 @@ class Buy extends Base{
         return view('sel_goods', ['data' => $data]);
     }
 
-    // 创建采购单
-    public function add_order(){
-        $ret = (new BuyService)->addOrder(input('param.'));
-        if ($ret['code'] != 200){
-            return returnJson('', 201, $ret['msg']);
-        }
-        return returnJson($ret['data'], 200, $ret['msg']);
-    }
+
 
     // 获取根据工程分类的采购单详情
     public function sel_goods_list(){

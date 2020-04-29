@@ -16,8 +16,12 @@ use think\Db;
 
 class Buy{
 
-    public function getList($limit = 10){
-        $list = BuyModel::where([])->paginate($limit);
+    public function getList($params, $limit = 10){
+        $where = [];
+        if (isset($params['search']) && $params['search']){
+            $where[] = ['number', 'like', "%{$params['search']}%"];
+        }
+        $list = BuyModel::where($where)->order('create_time desc')->paginate($limit);
         return $list;
     }
 
@@ -42,46 +46,17 @@ class Buy{
     }
 
     // 创建采购单
-    public function addOrder($params){
+    public function addBuy($params){
         $data = [
-            'number'     => create_order_no('C'),
-            'project_id' => $params['ids'],
-            'status'     => 1,
-            'type'       => 1,
-            'form'       => 1,
-            'note'       => isset($params['note'])?$params['note']:'',
+            'number' => create_order_no('C'),
+            'from'   => $params['from'],
         ];
         $ret = BuyModel::create($data);
         if (!$ret){
             return returnInfo('', 201, '创建采购单失败！');
         }
 
-        // 获取工程的预算商品
-        $need_list = NeedModel::where('project_id', 'in', $params['ids'])->all();
-        if (!$need_list){
-            return returnInfo('', 201, '工程预算为空，请先去设置预算！');
-        }
-
-        $goods_arr = [];
-        // 循环插入商品信息
-        foreach ($need_list as $k => $v){
-            $goods_arr[] = [
-                'buy_id'     => $ret['id'],
-                'project_id' => $v['project_id'],
-                'goods_id'   => $v['goods_id'],
-                'need_id'    => $v['id'],
-                'num'        => $v['need'],
-                'num_ok'     => 0,
-            ];
-        }
-
-        $ret_buy_info = model('BuyInfo')->saveAll($goods_arr);
-
-        if (!$ret_buy_info){
-            return returnInfo('', 202, '创建采购单失败！');
-        }
-
-        return returnInfo($ret, 200, '创建采购单成功！');
+        return returnInfo($ret, 200, "创建采购单成功！编号:{$ret['number']}");
     }
 
     public function create_buy_order($params){

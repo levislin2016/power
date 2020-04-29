@@ -14,7 +14,7 @@
 
 
 						<div class="layui-col-lg3">
-							<button class="layui-btn add_buy">添加采购单</button>
+							<button class="layui-btn show_project">添加采购工程</button>
 						</div>
 					</div>
 				<div class="layui-form" id="table-list">
@@ -48,13 +48,6 @@
 						</tbody>
 					</table>
 					<div class="page-wrap">{$data.list->render()|raw}</div>
-					<div class="buy_type" style="display: none;margin-top: 10px;">
-						<center>
-							<input type="radio" class="buy_type_val" name="sex" value="1" title="自购" checked>
-							<input type="radio" class="buy_type_val" name="sex" value="2" title="甲供">
-						</center>
-					</div>
-
 				</div>
 			</div>
 	</div>
@@ -66,48 +59,29 @@
 				laydate = layui.laydate,
 				element = layui.element;
 
-			$(function(){
-				laydate.render({
-					elem: '#time'
-					,type: 'datetime'
-					,value: '{$Request.param.time}'
-					,isInitValue: true
-					,range: '~'
-				});
+
+
+
+		});
+		// 弹出商品列表框
+		function showProject(){
+			layer.open({
+				type: 1,
+				title: '选择采购工程',
+				anim:5,
+				shadeClose: true,
+				offset: ['10px'],
+				shade: 0.5,
+				scrollbar:false,
+				maxmin: true, //开启最大化最小化按钮
+				area: ['1200px', '700px'],
+				content: $('#goods_list'),
 			});
+		}
 
-
-			$('.add_buy').on('click',function () {
-				layer.open({
-					type : 1,
-					content:$('.buy_type'),
-					title:'请选择采购单类型：',
-					offset: '200px',
-					btn:['确认', '取消'],
-					btnAlign: 'c',
-					anim: 5,
-					yes:function(index,layero){
-						var type_val = $('.buy_type_val:checked').val();
-						var form_data = {
-							'from' : type_val,
-						};
-						$.post("{:url('buy/add_buy')}", form_data,function (ret) {
-							if (ret.code == 200){
-								location.reload();
-							}else{
-								layer.msg(ret.msg,function(){
-
-								});
-							}
-							layer.close(index);
-						})
-					},btn2:function(index,layero){
-						layer.close(index);
-					}
-				});
-
-
-			})
-		})
+		// 点击弹出商品框
+		$('.show_project').on('click', function () {
+			showProject();
+		});
 	</script>
 {include file="public/footer" /}
