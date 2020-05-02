@@ -17,37 +17,13 @@ class Index extends Base
             ->where('r.role_id', session('power_user')['type'])
             ->where('m.parent_id',0)
             ->select();
+        $left_list = $left_list->toArray();
         foreach ($left_list as &$v){
-
             if($v['url']) {
-                $vars = [];
-                $a_url = explode('?', $v['url']);
-                if(isset($a_url['1'])){
-
-                    $string = explode('&', $a_url['1']);
-                    foreach ($string as $val){
-                        if(strpos($val,'=') !== false){
-                            $vars_arr = explode('=', $val);
-                            $vars[$vars_arr['0']] = $vars_arr['1'];
-                        }else{
-                            $vars[$val] = '';
-                        }
-                        $vars_arr = explode('=', $val);
-                        if(isset($vars_arr['1'])){
-                            $vars[$vars_arr[0]] = $vars_arr['1'];
-
-                        }else{
-                            $vars[$vars_arr[0]] = '';
-                        }
-                    }
-
-                }
-                $v['url'] = url($a_url[0], $vars);
+                $v['url'] = url($v['url']);
             }
-
             $child_list=[];
             $childs = explode(',', $v['child_id']);
-
             $child_list = Menu::field('id, name, graphical, url, description')->where('id', 'in', $childs)->select();
             foreach ($child_list as &$va){
                 if($va['url']) {
