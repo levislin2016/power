@@ -41,7 +41,6 @@ class Allocation{
             })
             ->order('p.create_time', 'desc')
             ->count();
-
         $list = ProjectModel::useGlobalScope(false)->alias('p')
             ->leftJoin('contract c','p.contract_id = c.id')
             ->leftJoin('owner o','c.owner_id = o.id')
@@ -1112,8 +1111,7 @@ class Allocation{
             ];
             $res = ShoppingCartModel::insert($data);
         }elseif ($params['type_id'] == 3){
-            $params['passive_woker_id'] = $params['passive_woker_id'];
-            $params['supply_goods_id'] = $params['supply_goods_id'];
+
             $need = \Db::table('pw_need')->alias('n')
                 ->leftJoin('pw_supply_goods sg','n.goods_id = sg.g_id')
                 ->field('n.id')
@@ -1123,6 +1121,7 @@ class Allocation{
                     'type'  => '1'
                 ])
                 ->find();
+
             if(!$need){
                 throw new BaseException(
                     [
@@ -1130,12 +1129,11 @@ class Allocation{
                         'errorCode' => 301
                     ]);
             }
-            $project_info = \Db::table('pw_project_stock')->field('id, in')
+            $project_info = \Db::table('pw_project_stock')->field('id,stock_id,freeze,in,num')
                 ->where ([
                     'project_id'       => $params['passive_project_id'],
                     'supply_goods_id' => $params['supply_goods_id']
                 ])
-                ->where('delete_time', 0)
                 ->find();
             if ($params['num'] == 0 || empty($params['num'])) {
                 if ($project_info['can'] - $project_info['back'] < $params['num']) {
@@ -1146,6 +1144,7 @@ class Allocation{
                         ]);
                 }
             }
+
             if ($project_info['in'] < $params['num']) {
                 throw new BaseException(
                     [
@@ -1153,14 +1152,7 @@ class Allocation{
                         'errorCode' => 301
                     ]);
             }
-            $project_stock = \Db::table('pw_project_stock')
-                ->field('id,stock_id,freeze,in,num')
-                ->where([
-                    'project_id' => $params['passive_project_id'],
-                    'supply_goods_id' => $params['supply_goods_id'],
-                ])
-                ->find();
-            $params['stock_id'] = $project_stock['stock_id'];
+            $params['stock_id'] = $project_info['stock_id'];
             $data = [
                 'passive_project_id' => $params['passive_project_id'],
                 'passive_woker_id' => '',
