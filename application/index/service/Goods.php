@@ -35,6 +35,8 @@ class Goods{
             $query->field('id,name');
         },'unit'=>function($query){
             $query->field('id,name');
+        },'cate'=>function($query){
+            $query->field('id,name');
         }])->where(function ($query) use($params) {
             if(!empty($params['search'])){ 
                 $query->where('number|name', 'like', '%'.$params['search'].'%');
@@ -42,7 +44,7 @@ class Goods{
             if(!empty($params['id'])){
                 $query->where('id', $params['id']);
             }
-        })->field('id, company_id, number, name, unit_id, image, create_time')
+        })->field('id, company_id, number, name, cate_id, unit_id, image, create_time')
         ->order('create_time', 'desc')
         ->paginate(10, false, [
             'query'     => $params,
