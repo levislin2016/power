@@ -36,7 +36,6 @@ class Allocation extends Base
         $project_all_list = \Db::table('pw_project')->alias('p')
             ->leftJoin('contract c','c.id = p.contract_id')
             ->field('p.id,p.name')
-            ->where('p.delete_time', 0)
             ->select();
         if(!empty($params['supply_goods_id'])){
             $goods_name = \Db::table('pw_goods')->field('id','name')->where('id',$params['supply_goods_id'])->find();
