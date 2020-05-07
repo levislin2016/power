@@ -15,7 +15,8 @@ class Cate extends Base
     public function index(){
         $params = input('get.');
         $list = (new CateService)->selectList($params);
-    	$this->assign('list', $list);
+    	$this->assign('list', $list['list']);
+    	$this->assign('page', $list['page']);
         return $this->fetch();
     }
 
@@ -34,6 +35,22 @@ class Cate extends Base
         }
         return $this->fetch();
     }
+    public function sonadd(){
+        $id = input('get.id', '');
+        if($id){
+            $list = CateModel::get($id);
+            if(!$list){
+                throw new BaseException(
+                    [
+                        'msg' => '非法错误，请重试！',
+                        'errorCode' => 30001
+                    ]);
+            }
+            $this->assign('list', $list);
+        }
+        return $this->fetch();
+    }
+
 
     public function save(){ 
         $id = input('param.id', '');
@@ -41,7 +58,7 @@ class Cate extends Base
         $validate->goCheck();
         $data = $validate->getDataByRule(input('post.'));
         $cateService = new CateService();
-        $find = CateModel::where('name', $data['name'])->find();
+        $find = CateModel::where('name', '=',$data['name'])->value('id');
         if($find){
             throw new BaseException(
                 [
@@ -56,6 +73,31 @@ class Cate extends Base
         }
         return $res;
     }
+
+
+    public function cateAdd(){
+        $id = input('param.id', '');
+        $validate = new CateValidate();
+        $validate->goCheck();
+        $data = $validate->getDataByRule(input('post.'));
+        $data['pid'] = $id;
+        $cateService = new CateService();
+
+        $find = CateModel::where('name', '=',$data['name'])->value('id');
+        if($find){
+            throw new BaseException(
+                [
+                    'msg' => '该分类已存在！',
+                    'errorCode' => 30016
+                ]);
+        }
+        $res = $cateService->son_add($data);
+        return $res;
+
+    }
+
+
+
 
     public function del($ids){
     	$res = cateModel::destroy(rtrim($ids, ','));

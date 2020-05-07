@@ -41,20 +41,25 @@
 									<th><input type="checkbox" name="" lay-skin="primary" lay-filter="allChoose"></th>
 									<th class="hidden-xs">编号</th>
 									<th>分类</th>
+									<th>父类名称</th>
+									<th>分类级别</th>
 									<th>创建时间</th>
 									<th>操作</th>
 								</tr>
 							</thead>
 							<tbody>
-							{volist name="list" id="vo"}
+							{volist name="list.data" id="vo"}
 								<tr>
 									<td><input type="checkbox" name="" lay-skin="primary" data-id="{$vo['id']}"></td>
-									<td class="hidden-xs">{$vo['id']}</td>									
+									<td class="hidden-xs">{$vo['id']}</td>
 									<td>{$vo['name']}</td>
+									<td>{$vo['p_cate']}</td>
+									<td>{$vo['p_name']}</td>
 									<td>{$vo['create_time']}</td>
 									<td>
 										<div class="layui-inline">
-											<button class="layui-btn layui-btn-sm layui-btn-normal edit-btn btn_tips" data-title="修改合同" data-id="{$vo['id']}" data-url="{:url('cate/add')}" data-h="388px"><i class="layui-icon">&#xe642;</i></button>
+											<button class="layui-btn layui-btn-sm layui-btn-normal edit-btn btn_tips" data-title="创建子分类" data-id="{$vo['id']}" data-url="{:url('cate/sonadd')}" data-h="388px"><i class="layui-icon">&#xe654;</i></button>
+											<button class="layui-btn layui-btn-sm layui-btn-normal edit-btn btn_tips" data-title="修改分类" data-id="{$vo['id']}" data-url="{:url('cate/add')}" data-h="388px"><i class="layui-icon">&#xe642;</i></button>
 											<button class="layui-btn layui-btn-sm layui-btn-danger del-btn btn_tips" data-title="删除" data-id="{$vo['id']}" data-url="{:url('cate/del')}"><i class="layui-icon">&#xe640;</i></button>
 										</div>
 									</td>
@@ -63,7 +68,7 @@
 							</tbody>
 						</table>
 						<div class="page-wrap">
-							{$list->render()|raw}
+							{$page|raw}
 						</div>
 					</div>
 				</div>
