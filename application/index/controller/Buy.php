@@ -45,14 +45,21 @@ class Buy extends Base{
     public function edit(){
         $data['id'] = input('id');
         $data['list'] = model('buyProject', 'service')->getList($data, 20);
-        $data['buy'] = BuyModel::get($data['id']);
 
         return view('edit', ['data' => $data]);
     }
 
     // 获取采购单列表
+    // 获取采购单关联工程列表
     public function ajax_get_list(){
-        $list = model('buy', 'service')->getList(input('get.'), input('get.limit'))->toArray();
+        if (input('list_type') == 'buy'){
+            $list = model('buy', 'service')->getList(input('get.'), input('get.limit'))->toArray();
+        }
+
+        if (input('list_type') == 'buyProject'){
+            $list = model('buyProject', 'service')->getList(input('get.'), input('get.limit'))->toArray();
+        }
+
         return returnJson($list, 200, '获取成功');
     }
 

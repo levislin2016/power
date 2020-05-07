@@ -11,6 +11,11 @@ class Project extends Base{
         return $statusName[$data['status']];
     }
 
+    public function getStatusAttr($value,$data){
+        $statusName = config('extra.project_status');
+        return $statusName[$data['status']];
+    }
+
     public function contract(){
         return $this->hasOne('contract', 'id', 'contract_id');
     }

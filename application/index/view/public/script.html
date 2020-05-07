@@ -3,3 +3,10 @@
 <script src="__STATIC__/admin/js/common.js" type="text/javascript" charset="utf-8"></script>
 <script src="__STATIC__/admin/js/wk.js?v=4" type="text/javascript" charset="utf-8"></script>
 <script src="__STATIC__/admin/js/excel.js?v=2" type="text/javascript" charset="utf-8"></script>
+<script>
+    $(document).keyup(function(event){
+        if(event.keyCode ==13){
+            $(".btn_search").trigger("click");
+        }
+    });
+</script>

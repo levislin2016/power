@@ -12,8 +12,11 @@ use think\facade\App;
 class BuyProject{
     // 获取采购对应的工程列表
     public function getList($params, $limit = 10, $order = 'desc'){
-
-        $list = BuyProjectModel::where([])->paginate(10);
+        $where = [];
+        if (isset($params['buy_id']) && $params['buy_id']){
+            $where[] = ['buy_id', '=', $params['buy_id']];
+        }
+        $list = BuyProjectModel::with('project')->where($where)->paginate($limit);
 
         return $list;
     }

@@ -1,105 +1,133 @@
 {include file="public/header" /}
-	<div class="layui-layer-content clearfix">
-			<div class="column-content-detail">
-					<div class="layui-row">
-						<form method="get" action="{:url('buy/index')}">
+<div class="wrap-container clearfix">
+	<div class="column-content-detail">
 
-						<div class="layui-col-lg2">
-							<input type="text" name="search" placeholder="请输入搜索内容" autocomplete="off" class="layui-input" value="" />
-						</div>
-						<div class="layui-col-lg2">
-							<button class="layui-btn layui-bg-blue">搜索</button>
-							<button class="layui-btn layui-bg-cyan" onclick="javascript:history.go(-1)">返回</button>
-						</div>
-						</form>
-
-
-						<div class="layui-col-lg8" style="text-align: right">
-							<button class="layui-btn show_project layui-bg-blue"><i class="layui-icon layui-icon-add-1"></i>添加工程</button>
-						</div>
-					</div>
-				<div class="layui-form" id="table-list">
-					<table class="layui-table" lay-skin="line">
-						<thead>
-							<tr>
-								<th>序号</th>
-								<th>工程名称</th>
-								<th>状态</th>
-								<th>创建时间</th>
-								<th>操作</th>
-							</tr>
-						</thead>
-						<tbody>
-						{volist name="data.list" id="v" key="k"}
-							<tr>
-								<td>{$k}</td>
-								<td>{$v.project.name}</td>
-								<td>{$v.project.status_name}</td>
-								<td>{$v.project.create_time}</td>
-								<td>
-									<a href="{:url('buy/edit')}" class="layui-btn layui-btn-sm">编辑</a>
-									<a class="layui-btn layui-btn-sm">删除</a>
-								</td>
-							</tr>
-						{/volist}
-						</tbody>
-					</table>
-					<div class="page-wrap">{$data.list->render()|raw}</div>
-				</div>
+		<div class="layui-row">
+			<div class="layui-col-lg2">
+				<input type="text" name="search" placeholder="请输入工程项目名称..." autocomplete="off" class="layui-input search"/>
 			</div>
+			<div class="layui-col-lg2">
+				<a class="layui-btn layui-bg-blue btn_search"><i class="layui-icon layui-icon-search"></i>搜索</a>
+			</div>
+
+			<div class="layui-col-lg8" style="text-align: right">
+				<button class="layui-btn add_buy layui-bg-blue"><i class="layui-icon layui-icon-add-1"></i>添加工程</button>
+				<button class="layui-btn btn_excel layui-bg-blue"><i class="layui-icon layui-icon-list"></i>导出</button>
+			</div>
+		</div>
+
+		<div class="layui-form" id="table-list">
+
+			<table id="table" lay-filter="table"></table>
+
+		</div>
+
 	</div>
-	{include file="public/script" /}
-	<script>
-		layui.use(['form', 'jquery', 'element', 'laydate'], function() {
-			var form = layui.form,
+</div>
+{include file="public/script" /}
+
+
+<script type="text/html" id="toolbar">
+	<div class="layui-btn-container">
+		<a class="layui-btn layui-btn-sm layui-bg-blue" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>编辑</a>
+		<button class="layui-btn layui-btn-sm layui-bg-gray" lay-event="cancel"><i class="layui-icon layui-icon-delete"></i>删除</button>
+	</div>
+</script>
+
+<script>
+	layui.use(['form', 'jquery', 'element', 'laydate', 'table'], function() {
+		var form = layui.form,
 				$ = layui.jquery,
 				laydate = layui.laydate,
-				element = layui.element;
+				table = layui.table;
 
+
+		//第一个实例
+		table.render({
+			elem: '#table'
+			,url: "{:url('buy/ajax_get_list')}"//数据接口
+			,height: 'full-70'
+			,page: true //开启分页
+			,toolbar:false
+			,limit:30
+			,loading:true
+			,where:{
+				list_type:'buyProject',
+				buy_id:"{$data.id}",
+			}
+			,text:{
+				none:'暂无相关数据，请先添加工程'
+			}
+			,cols: [[ //表头
+				{type:'numbers', title: '序号', align:'center', fixed:'left', sort:true,width:90}
+				,{field: 'project', title: '工程名称', sort: true, align:'center', templet:"<div>{{d.project.name}}</div>"}
+				,{field: 'project', title: '状态', sort: true, align:'center', templet:"<div>{{d.project.status}}</div>", width:90}
+				,{field: 'create_time', title: '创建时间',sort: true,  align:'center', templet:"<div>{{d.project.create_time}}</div>", width:180}
+				,{field: 'number', title: '操作', templet:'#toolbar', fixed:'right', align:'center', width:180}
+			]],parseData: function(res){ //res 即为原始返回的数据
+				return {
+					"code": res.code, //解析接口状态
+					"msg": res.msg, //解析提示文本
+					"count": res.data.total, //解析数据长度
+					"data": res.data.data //解析数据列表
+				};
+			},response: {
+				statusCode: 200 //规定成功的状态码，默认：0
+			}
 		});
-		// 弹出项目列表框
-		function showProject(){
-			layer.open({
-				type: 2,
-				title: '选择采购工程',
-				anim:5,
-				shadeClose: true,
-				offset: ['10px'],
-				shade: 0.5,
-				scrollbar:false,
-				maxmin: true, //开启最大化最小化按钮
-				area: ['1200px', '700px'],
-				content: "{:url('project/ajax_page')}",
-				success: function(layero, index){
 
-				},
-				cancel:function(layero, index){
-					location.reload();
+		table.on('tool(table)', function(obj) {
+			if (obj.event == 'edit'){
+				layer.open({
+					type : 2,
+					content:"{:url('buy/edit')}" + '?id=' + obj.data.id,
+					title:['采购单编号：' + obj.data.number  + '   状态：' + obj.data.status + '   创建时间：' + obj.data.create_time, 'font-weight:bold'],
+					btnAlign: 'c',
+					area: ['100%', '100%'],
+					anim: 5,
+					isOutAnim:true,
+				});
+			}
+
+			if (obj.event == 'cancel'){
+				wk.confirm(obj.data.id, "{:url('buy/ajax_cancel')}", "确定作废这张采购单吗？",table, {
+					search: $('.search').val()
+				});
+			}
+		});
+
+		$('.btn_search').click(function(){
+			//执行重载
+			table.reload('table', {
+				where: {
+					buy_id:"{$data.id}",
+					list_type:'buyProject',
+					search: $('.search').val()
 				}
 			});
-		}
+		});
 
-		// 获取工程项目id 并且添加
-		function getProject(project_id){
+		$('.btn_excel').click(function(){
 			var form_data = {
-				'project_id' : project_id,
-				'buy_id'     : '{$data.id}',
+				buy_id:"{$data.id}",
+				list_type:'buyProject',
+				search: $('.search').val(),
 			};
-			$.post("{:url('buy/add_project')}", form_data, function(ret){
-				if (ret.code == 200){
-					layer.msg(ret.msg);
-				}else{
-					layer.msg(ret.msg, function(){
-
+			$.get("{:url('buy/ajax_get_list')}",form_data, function (res) {
+				if (res.code == 200){
+					res.data.data.unshift({
+						id: 'ID',
+						number: '采购单编号',
+						status: '状态',
+						create_time:'创建时间',
+						type:'类型',
 					});
+					LAY_EXCEL.exportExcel(res.data.data, '采购单.xlsx', 'xlsx')
 				}
 			})
-
-		}
-
-		// 点击弹出商品框
-		$('.show_project').on('click', function () {
-			showProject();
 		});
-	</script>
+
+
+	})
+</script>
 {include file="public/footer" /}
