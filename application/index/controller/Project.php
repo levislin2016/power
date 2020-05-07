@@ -35,11 +35,12 @@ class Project extends Base
     }
 
     // ajax获取的项目列表
-    public function list_ajax(){
-        $data['list'] = (new ProjectService)->getList(input('get.'));
-
-        return view('list_ajax', ['data' => $data]);
+    public function ajax_page(){
+        $data['list'] = (new ProjectService)->getList(input('get.'), 2);
+        $data['project_status'] = config('extra.project_status');
+        return view('ajax_page', ['data' => $data]);
     }
+
 
     public function add(){ 
         $contract_list = ContractModel::all();

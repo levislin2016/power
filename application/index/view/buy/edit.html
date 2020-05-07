@@ -1,47 +1,44 @@
 {include file="public/header" /}
-	<div class="wrap-container clearfix">
+	<div class="layui-layer-content clearfix">
 			<div class="column-content-detail">
 					<div class="layui-row">
 						<form method="get" action="{:url('buy/index')}">
 
 						<div class="layui-col-lg2">
-							<input type="text" name="search" placeholder="请输入搜索内容" autocomplete="off" class="layui-input" value="{$data.search}" />
+							<input type="text" name="search" placeholder="请输入搜索内容" autocomplete="off" class="layui-input" value="" />
 						</div>
 						<div class="layui-col-lg2">
-							<button class="layui-btn">搜索</button>
+							<button class="layui-btn layui-bg-blue">搜索</button>
+							<button class="layui-btn layui-bg-cyan" onclick="javascript:history.go(-1)">返回</button>
 						</div>
 						</form>
 
 
-						<div class="layui-col-lg3">
-							<button class="layui-btn show_project">添加采购工程</button>
+						<div class="layui-col-lg8" style="text-align: right">
+							<button class="layui-btn show_project layui-bg-blue"><i class="layui-icon layui-icon-add-1"></i>添加工程</button>
 						</div>
 					</div>
 				<div class="layui-form" id="table-list">
 					<table class="layui-table" lay-skin="line">
 						<thead>
 							<tr>
-								<th>采购单号</th>
+								<th>序号</th>
+								<th>工程名称</th>
 								<th>状态</th>
-								<th>类型</th>
-								<th>工程列表</th>
-								<th>采购明细</th>
 								<th>创建时间</th>
 								<th>操作</th>
 							</tr>
 						</thead>
 						<tbody>
-						{volist name="data.list" id="v"}
+						{volist name="data.list" id="v" key="k"}
 							<tr>
-								<td>{$v['number']}</td>
-								<td>{$v['status']|raw}</td>
-								<td>{$v['from']}</td>
-								<td>{$v['from']}</td>
-								<td>{$v['from']}</td>
-								<td>{$v['create_time']}</td>
+								<td>{$k}</td>
+								<td>{$v.project.name}</td>
+								<td>{$v.project.status_name}</td>
+								<td>{$v.project.create_time}</td>
 								<td>
 									<a href="{:url('buy/edit')}" class="layui-btn layui-btn-sm">编辑</a>
-									<a class="layui-btn layui-btn-sm">作废</a>
+									<a class="layui-btn layui-btn-sm">删除</a>
 								</td>
 							</tr>
 						{/volist}
@@ -59,14 +56,11 @@
 				laydate = layui.laydate,
 				element = layui.element;
 
-
-
-
 		});
-		// 弹出商品列表框
+		// 弹出项目列表框
 		function showProject(){
 			layer.open({
-				type: 1,
+				type: 2,
 				title: '选择采购工程',
 				anim:5,
 				shadeClose: true,
@@ -75,8 +69,32 @@
 				scrollbar:false,
 				maxmin: true, //开启最大化最小化按钮
 				area: ['1200px', '700px'],
-				content: $('#goods_list'),
+				content: "{:url('project/ajax_page')}",
+				success: function(layero, index){
+
+				},
+				cancel:function(layero, index){
+					location.reload();
+				}
 			});
+		}
+
+		// 获取工程项目id 并且添加
+		function getProject(project_id){
+			var form_data = {
+				'project_id' : project_id,
+				'buy_id'     : '{$data.id}',
+			};
+			$.post("{:url('buy/add_project')}", form_data, function(ret){
+				if (ret.code == 200){
+					layer.msg(ret.msg);
+				}else{
+					layer.msg(ret.msg, function(){
+
+					});
+				}
+			})
+
 		}
 
 		// 点击弹出商品框

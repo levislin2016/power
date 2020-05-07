@@ -12,14 +12,8 @@ class Buy extends Base{
 
     public function getStatusAttr($value)
     {
-        $status = [
-            0 => '<span class="layui-badge layui-bg-cyan">未确认</span>',
-            1 => '<span class="layui-badge">采购中</span>',
-            2 => '<span class="layui-badge layui-bg-orange">采购中</span>',
-            3 => '<span class="layui-badge layui-bg-green">已完成</span>',
-            4 => '<span class="layui-badge layui-bg-gray">已作废</span>',
-        ];
-        return $status[$value];
+        $statusName = config('extra.buy_status');
+        return $statusName[$value];
     }
 
     public function getFromAttr($value)

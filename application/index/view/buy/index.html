@@ -2,52 +2,22 @@
 	<div class="wrap-container clearfix">
 			<div class="column-content-detail">
 					<div class="layui-row">
-						<form method="get" action="{:url('buy/index')}">
-
 						<div class="layui-col-lg2">
-							<input type="text" name="search" placeholder="请输入搜索内容" autocomplete="off" class="layui-input" value="{$data.search}" />
+							<input type="text" name="search" placeholder="请输入采购单编号" autocomplete="off" class="layui-input search"/>
 						</div>
 						<div class="layui-col-lg2">
-							<button class="layui-btn">搜索</button>
+							<a class="layui-btn layui-bg-blue btn_search">搜索</a>
 						</div>
-						</form>
 
-
-						<div class="layui-col-lg3">
-							<button class="layui-btn add_buy">添加采购单</button>
+						<div class="layui-col-lg8" style="text-align: right">
+							<button class="layui-btn add_buy layui-bg-blue"><i class="layui-icon layui-icon-add-1"></i>添加采购单</button>
+							<button class="layui-btn btn_excel layui-bg-blue"><i class="layui-icon layui-icon-list"></i>导出</button>
 						</div>
 					</div>
 				<div class="layui-form" id="table-list">
-					<table class="layui-table" lay-skin="line">
-						<thead>
-							<tr>
-								<th>采购单号</th>
-								<th>状态</th>
-								<th>类型</th>
-								<th>工程列表</th>
-								<th>采购明细</th>
-								<th>创建时间</th>
-								<th>操作</th>
-							</tr>
-						</thead>
-						<tbody>
-						{volist name="data.list" id="v"}
-							<tr>
-								<td>{$v['number']}</td>
-								<td>{$v['status']|raw}</td>
-								<td>{$v['from']}</td>
-								<td>{$v['from']}</td>
-								<td>{$v['from']}</td>
-								<td>{$v['create_time']}</td>
-								<td>
-									<a href="{:url('buy/edit')}" class="layui-btn layui-btn-sm">编辑</a>
-									<a class="layui-btn layui-btn-sm">作废</a>
-								</td>
-							</tr>
-						{/volist}
-						</tbody>
-					</table>
-					<div class="page-wrap">{$data.list->render()|raw}</div>
+
+					<table id="table" lay-filter="table"></table>
+
 					<div class="buy_type" style="display: none;margin-top: 10px;">
 						<center>
 							<input type="radio" class="buy_type_val" name="sex" value="1" title="自购" checked>
@@ -59,12 +29,91 @@
 			</div>
 	</div>
 	{include file="public/script" /}
+
+	<script type="text/html" id="template_status">
+		{{# if(d.status == '待确认'){ }}
+			<span class="layui-badge layui-bg-cyan">待确认</span>
+		{{# } }}
+		{{# if(d.status== '采购中'){ }}
+			<span class="layui-badge layui-bg-orange">采购中</span>
+		{{# } }}
+		{{# if(d.status== '已完成'){ }}
+			<span class="layui-badge layui-bg-green">已完成</span>
+		{{# } }}
+		{{# if(d.status== '已作废'){ }}
+			<span class="layui-badge layui-bg-gray">已作废</span>
+		{{# } }}
+	</script>
+
+	<script type="text/html" id="toolbar">
+		<div class="layui-btn-container">
+			<a class="layui-btn layui-btn-sm layui-bg-blue" lay-event="edit">编辑</a>
+			{{# if(d.status != '已作废'){ }}
+			<button class="layui-btn layui-btn-sm layui-bg-gray" lay-event="cancel" >作废</button>
+			{{# } }}
+
+		</div>
+	</script>
+
 	<script>
-		layui.use(['form', 'jquery', 'element', 'laydate'], function() {
+		layui.use(['form', 'jquery', 'element', 'laydate', 'table'], function() {
 			var form = layui.form,
 				$ = layui.jquery,
 				laydate = layui.laydate,
-				element = layui.element;
+				table = layui.table;
+
+
+			//第一个实例
+			table.render({
+				elem: '#table'
+				,url: "{:url('buy/ajax_get_list')}"//数据接口
+				,height: 'full-70'
+				,page: true //开启分页
+				,toolbar:false
+				,limit:30
+				,loading:true
+				,where:{
+				}
+				,cols: [[ //表头
+					{field: 'id', title: 'ID', width:100, sort: true, fixed: 'left', align:'center'}
+					,{field: 'number', title: '采购单编号', align:'center'}
+					,{field: 'from', title: '类型', sort:true, align:'center'}
+					,{field: 'from', title: '工程列表', align:'center'}
+					,{field: 'number', title: '采购清单', align:'center'}
+					,{field: 'status', title: '状态', sort:true, templet:'#template_status', align:'center'}
+					,{field: 'create_time', title: '创建时间', sort:true, align:'center'}
+					,{field: 'number', title: '操作', templet:'#toolbar', fixed:'right'}
+				]],parseData: function(res){ //res 即为原始返回的数据
+					return {
+						"code": res.code, //解析接口状态
+						"msg": res.msg, //解析提示文本
+						"count": res.data.total, //解析数据长度
+						"data": res.data.data //解析数据列表
+					};
+				},response: {
+					statusCode: 200 //规定成功的状态码，默认：0
+				}
+			});
+
+			table.on('tool(table)', function(obj) {
+				if (obj.event == 'edit'){
+					layer.open({
+						type : 2,
+						content:"{:url('buy/edit')}" + '?id=' + obj.data.id,
+						title:['采购单编号：' + obj.data.number  + '   状态：' + obj.data.status + '   创建时间：' + obj.data.create_time, 'font-weight:bold'],
+						btnAlign: 'c',
+						area: ['100%', '100%'],
+						anim: 5,
+						isOutAnim:true,
+					});
+				}
+
+				if (obj.event == 'cancel'){
+					wk.confirm(obj.data.id, "{:url('buy/ajax_cancel')}", "确定作废这张采购单吗？",table, {
+						search: $('.search').val()
+					});
+				}
+			});
 
 			$(function(){
 				laydate.render({
@@ -74,6 +123,33 @@
 					,isInitValue: true
 					,range: '~'
 				});
+			});
+
+			$('.btn_search').click(function(){
+				//执行重载
+				table.reload('table', {
+					where: {
+						search: $('.search').val()
+					}
+				});
+			});
+
+			$('.btn_excel').click(function(){
+				var form_data = {
+					search: $('.search').val()
+				};
+				$.get("{:url('buy/ajax_get_list')}",form_data, function (res) {
+					if (res.code == 200){
+						res.data.data.unshift({
+							id: 'ID',
+							number: '采购单编号',
+							status: '状态',
+							create_time:'创建时间',
+							type:'类型',
+						});
+						LAY_EXCEL.exportExcel(res.data.data, '采购单.xlsx', 'xlsx')
+					}
+				})
 			});
 
 
@@ -93,7 +169,12 @@
 						};
 						$.post("{:url('buy/add_buy')}", form_data,function (ret) {
 							if (ret.code == 200){
-								location.reload();
+								//执行重载
+								table.reload('table', {
+									page: {
+										curr: 1 //重新从第 1 页开始
+									}
+								});
 							}else{
 								layer.msg(ret.msg,function(){
 
@@ -105,8 +186,6 @@
 						layer.close(index);
 					}
 				});
-
-
 			})
 		})
 	</script>

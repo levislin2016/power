@@ -21,6 +21,7 @@ class Buy{
         if (isset($params['search']) && $params['search']){
             $where[] = ['number', 'like', "%{$params['search']}%"];
         }
+
         $list = BuyModel::where($where)->order('create_time desc')->paginate($limit);
         return $list;
     }

@@ -15,6 +15,7 @@ use app\index\model\StockOrder as StockOrderModel;
 use app\index\model\BuyInfo as BuyInfoModel;
 use app\index\model\Buy as BuyModel;
 use app\index\model\Goods as GoodsModel;
+use app\index\validate\BuyProjectValidate;
 use app\lib\exception\BaseException;
 use app\index\validate\CreateBuyValidate;
 use app\index\validate\CreatePutValidate;
@@ -27,14 +28,13 @@ class Buy extends Base{
 
     // 显示采购单列表
     public function index(){
-        $data['search'] = input('search');
-        $data['list'] = model('buy', 'service')->getList($data, 20);
+        $data['list'] = model('buy', 'service')->getList([], 20);
         return view('index', ['data' => $data]);
     }
 
     // 创建采购单
     public function add_buy(){
-        $ret = (new BuyService)->addBuy(input('post.'));
+        $ret = model('buy', 'service')->addBuy(input('post.'));
         if ($ret['code'] != 200){
             return returnJson('', 201, $ret['msg']);
         }
@@ -43,11 +43,58 @@ class Buy extends Base{
 
     // 显示采购单编辑
     public function edit(){
-        $data['search'] = input('search');
+        $data['id'] = input('id');
         $data['list'] = model('buyProject', 'service')->getList($data, 20);
+        $data['buy'] = BuyModel::get($data['id']);
 
         return view('edit', ['data' => $data]);
     }
+
+    // 获取采购单列表
+    public function ajax_get_list(){
+        $list = model('buy', 'service')->getList(input('get.'), input('get.limit'))->toArray();
+        return returnJson($list, 200, '获取成功');
+    }
+
+    // 作废采购单
+    public function ajax_cancel(){
+        $ret = BuyModel::update([
+            'status' => 9
+        ], ['id' => input('id')]);
+        if (!$ret){
+            return returnJson('', 201, '修改失败');
+        }
+        return returnJson('', 200, '修改成功');
+    }
+
+    // 添加需要采购的工程项目
+    public function add_project(){
+        $validate = validate('BuyProjectValidate');
+        if(!$validate->check(input('post.'))){
+            return returnJson('', 201, $validate->getError());
+        }
+        $ret = BuyProjectModel::create([
+            'buy_id'     => input('buy_id'),
+            'project_id' => input('project_id'),
+        ]);
+        if (!$ret){
+            return returnJson('', 202, '添加失败！');
+        }
+        return returnJson('', 200, '添加成功！');
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     // 显示选择工程采购页面
     public function sel_project(){

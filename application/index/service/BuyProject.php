@@ -10,18 +10,10 @@ use think\facade\App;
 
 
 class BuyProject{
-    // 获取材料列表
+    // 获取采购对应的工程列表
     public function getList($params, $limit = 10, $order = 'desc'){
-        $list = BuyProjectModel::useGlobalScope(false)->alias('bj')
-            ->leftJoin('project p','bj.project_id = p.id')
-            ->where(function ($query) use($params) {
-                if(!empty($params['keywords'])){
-                    $query->where('p.name', 'like', '%'.$params['keywords'].'%');
-                }
-            })
-            ->field('bj.id, p.name')
-            ->order('bj.create_time', 'desc')
-            ->paginate(10, false, ['path' => "javascript:AjaxPage([PAGE]);"]);
+
+        $list = BuyProjectModel::where([])->paginate(10);
 
         return $list;
     }
