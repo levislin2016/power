@@ -29,6 +29,8 @@ class Buy extends Base{
     // 显示采购单列表
     public function index(){
         $data['list'] = model('buy', 'service')->getList([], 20);
+        $data['from'] = config('extra.buy_from');
+        $data['status'] = config('extra.buy_status');
         return view('index', ['data' => $data]);
     }
 
@@ -50,16 +52,14 @@ class Buy extends Base{
     }
 
     // 获取采购单列表
-    // 获取采购单关联工程列表
     public function ajax_get_list(){
-        if (input('list_type') == 'buy'){
-            $list = model('buy', 'service')->getList(input('get.'), input('get.limit'))->toArray();
-        }
+        $list = model('buy', 'service')->getList(input('get.'), input('get.limit'))->toArray();
+        return returnJson($list, 200, '获取成功');
+    }
 
-        if (input('list_type') == 'buyProject'){
-            $list = model('buyProject', 'service')->getList(input('get.'), input('get.limit'))->toArray();
-        }
-
+    // 获取采购单关联工程列表
+    public function ajax_get_project_list(){
+        $list = model('buyProject', 'service')->getList(input('get.'), input('get.limit'))->toArray();
         return returnJson($list, 200, '获取成功');
     }
 

@@ -2,31 +2,29 @@
 namespace app\index\service;
 
 use app\index\model\Project as ProjectModel;
-use app\index\model\ShoppingCart as ShoppingCartModel;
 use app\index\model\StockOrder as StockOrderModel;
 use app\index\model\StockOrderInfo as StockOrderInfoModel;
-use app\index\model\ProjectWoker as ProjectWokerModel;
 use app\index\model\StockOrderInfo;
 use app\lib\exception\BaseException;
 
 class Project{
 
     public function getList($params, $limit = 15){
-        $list = ProjectModel::useGlobalScope(false)->alias('p')
-            ->leftJoin('contract c','p.contract_id = c.id')
-            ->leftJoin('owner o','c.owner_id = o.id')
-            ->where(function ($query) use($params) {
-                if(!empty($params['keywords'])){
-                    $query->where('c.number|p.name', 'like', '%'.$params['keywords'].'%');
-                }
-                if(!empty($params['status'])){
-                    $query->where('p.status', $params['status']);
-                }
-            })
-            ->field('p.id, p.contract_id, c.number as contract_number, p.name, p.status, p.create_time, o.name as owner_name')
-            ->order('p.create_time', 'desc')
-            ->paginate($limit);
+        $where = [];
+        if (isset($params['search']) && $params['search']){
+            $where[] = ['name', 'like', "%{$params['search']}%"];
+        }
 
+        if (isset($params['create_time']) && $params['create_time']){
+            $time = explode('至', $params['create_time']);
+            $where[] = ['create_time', 'between time', [trim($time[0]), trim($time[1])]];
+        }
+
+        if (isset($params['status']) && $params['status']){
+            $where[] = ['status', '=', $params['status']];
+        }
+
+        $list = ProjectModel::with('contract')->where($where)->order('create_time desc')->paginate($limit);
         return $list;
     }
 

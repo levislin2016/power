@@ -23,22 +23,14 @@ class Project extends Base
     ];
 
     public function index(){
-        $params = input('get.');
-        $list = (new ProjectService)->getList($params);
-        //dump($list->toArray());
-    	$this->assign('list', $list);
-        return $this->fetch();
+        $data['status'] = config('extra.project_status');
+        return view('index', ['data' => $data]);
     }
 
-    public function get_list(){
-        return view('list');
-    }
-
-    // ajax获取的项目列表
-    public function ajax_page(){
-        $data['list'] = (new ProjectService)->getList(input('get.'), 2);
-        $data['project_status'] = config('extra.project_status');
-        return view('ajax_page', ['data' => $data]);
+    // 获取工程列表
+    public function ajax_get_list(){
+        $list = model('project', 'service')->getList(input('get.'), input('limit'));
+        return returnJson($list, 200, '获取成功!');
     }
 
 

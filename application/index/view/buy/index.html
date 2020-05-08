@@ -1,23 +1,73 @@
 {include file="public/header" /}
 	<div class="wrap-container clearfix">
 			<div class="column-content-detail">
-					<div class="layui-row">
-						<div class="layui-col-lg2">
-							<input type="text" name="time" value="" class="layui-input" id="test6" readonly="readonly" placeholder="开始时间 - 结束时间">
-						</div>
+				<!--- 头部搜索框 --->
+				<div class="layui-card">
+					<div class="layui-form">
 
-						<div class="layui-col-lg2">
-							<input type="text" name="search" placeholder="请输入采购单编号..." autocomplete="off" class="layui-input search"/>
+						<div class="layui-form-item">
+							<div class="layui-inline layui-form-pane">
+								<div class="layui-inline">
+									<button class="layui-btn search_btn1 layui-bg-blue"><i class="layui-icon layui-icon-add-1"></i>添加采购单</button>
+									<button class="layui-btn search_btn2 layui-bg-blue"><i class="layui-icon layui-icon-list"></i>导出</button>
+								</div>
+							</div>
 						</div>
-						<div class="layui-col-lg2">
-							<a class="layui-btn layui-bg-blue btn_search"><i class="layui-icon layui-icon-search"></i>搜索</a>
-						</div>
+						<form class="layui-form" lay-filter="search-form">
+								<div class="layui-form-item">
+									<div class="layui-inline layui-form-pane">
+										<label class="layui-form-label">时间范围</label>
+										<div class="layui-input-inline">
+											<input type="text" name="create_time" style="width: 513px" value="" class="layui-input" id="time" readonly="readonly" placeholder="开始时间 - 结束时间">
+										</div>
+									</div>
+								</div>
 
-						<div class="layui-col-lg5" style="text-align: right">
-							<button class="layui-btn add_buy layui-bg-blue"><i class="layui-icon layui-icon-add-1"></i>添加采购单</button>
-							<button class="layui-btn btn_excel layui-bg-blue"><i class="layui-icon layui-icon-list"></i>导出</button>
-						</div>
+								<div class="layui-form-item">
+									<div class="layui-inline layui-form-pane">
+										<label class="layui-form-label">采购单编号</label>
+										<div class="layui-input-inline">
+											<input type="text" name="search" placeholder="请输入采购单编号..." autocomplete="off" class="layui-input search"/>
+										</div>
+									</div>
+
+
+									<div class="layui-inline layui-form-pane">
+										<label class="layui-form-label">类型</label>
+										<div class="layui-input-inline">
+											<select name="from" lay-search="">
+												{volist name="data.from" id="v"}
+													<option value="{$key}">{$v}</option>
+												{/volist}
+											</select>
+										</div>
+									</div>
+
+									<div class="layui-inline layui-form-pane">
+										<label class="layui-form-label">状态</label>
+										<div class="layui-input-inline">
+											<select name="status" lay-search="">
+												{volist name="data.status" id="v"}
+												<option value="{$key}">{$v}</option>
+												{/volist}
+											</select>
+										</div>
+									</div>
+
+									<div class="layui-inline">
+										<div class="layui-input-inline">
+											<button class="layui-btn layui-bg-blue btn_search"><i class="layui-icon layui-icon-search"></i>搜索</button>
+											<button type="reset" class="layui-btn layui-btn-normal" id="empty"  lay-submit="" lay-filter="LAY-search">重置</button>
+										</div>
+									</div>
+								</div>
+						</form>
 					</div>
+
+				</div>
+				<!--- 头部搜索框 --->
+
+
 				<div class="layui-form" id="table-list">
 
 					<table id="table" lay-filter="table"></table>
@@ -36,23 +86,26 @@
 
 	<script type="text/html" id="template_status">
 		{{# if(d.status == '待确认'){ }}
-			<span class="layui-badge layui-bg-cyan">待确认</span>
+			<span class="layui-badge layui-bg-cyan">{{d.status}}</span>
 		{{# } }}
-		{{# if(d.status== '采购中'){ }}
-			<span class="layui-badge layui-bg-orange">采购中</span>
+		{{# if(d.status == '采购中'){ }}
+			<span class="layui-badge layui-bg-orange">{{d.status}}</span>
 		{{# } }}
-		{{# if(d.status== '已完成'){ }}
-			<span class="layui-badge layui-bg-green">已完成</span>
+		{{# if(d.status == '已完成'){ }}
+			<span class="layui-badge layui-bg-green">{{d.status}}</span>
 		{{# } }}
-		{{# if(d.status== '已作废'){ }}
-			<span class="layui-badge layui-bg-gray">已作废</span>
+		{{# if(d.status == '已作废'){ }}
+			<span class="layui-badge layui-bg-gray">{{d.status}}</span>
 		{{# } }}
 	</script>
 
 	<script type="text/html" id="toolbar">
 		<div class="layui-btn-container">
-			<a class="layui-btn layui-btn-sm layui-bg-blue" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>编辑</a>
-			<button class="layui-btn layui-btn-sm layui-bg-gray" lay-event="cancel"><i class="layui-icon layui-icon-close-fill"></i>删除</button>
+			{{# if(d.status != '已作废'){ }}
+				<a class="layui-btn layui-btn-sm layui-bg-blue" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>编辑</a>
+				<button class="layui-btn layui-btn-sm layui-bg-gray" lay-event="cancel"><i class="layui-icon layui-icon-close-fill"></i>作废</button>
+			{{# } }}
+
 		</div>
 	</script>
 
@@ -65,8 +118,19 @@
 
 			//日期范围
 			laydate.render({
-				elem: '#test6'
-				,range: '至',
+				elem: '#time'
+				,range: '至'
+				,type:'datetime'
+
+			});
+
+			form.on('submit(search-form)',function (data) {
+				var where =  data.field;
+				//执行重载
+				table.reload('table', {
+					where: where
+				});
+				return false;
 			});
 
 
@@ -76,14 +140,13 @@
 				,url: "{:url('buy/ajax_get_list')}"//数据接口
 				,height: 'full-70'
 				,page: true //开启分页
-				,toolbar:false
-				,limit:30
+				,toolbar:true
+				,limit:20
 				,loading:true
 				,where:{
-					list_type:'buy',
 				}
 				,text:{
-					none:'暂无相关数据，请先添加采购单'
+					none:'暂无相关数据'
 				}
 				,cols: [[ //表头
 					{field: 'id', title: 'ID', width:100, sort: true, fixed: 'left', align:'center'}
@@ -120,27 +183,29 @@
 				}
 
 				if (obj.event == 'cancel'){
-					wk.confirm(obj.data.id, "{:url('buy/ajax_cancel')}", "确定作废这张采购单吗？",table, {
-						list_type:'buy',
-						search: $('.search').val(),
+					layer.confirm('确定作废这张采购单吗？', {icon: 3, title:'提示'}, function(index){
+						var form_data = {
+							id : obj.data.id,
+						};
+						$.post("{:url('buy/ajax_cancel')}",form_data, function(ret){
+							if(ret.code == 200){
+								layer.msg(ret.msg)
+							}else{
+								layer.msg(ret.msg, function () {
+
+								})
+							}
+							table.reload('table', {
+								where: form.val("search-form"),
+							});
+						});
+						layer.close(index);
 					});
 				}
 			});
 
-			$('.btn_search').click(function(){
-				//执行重载
-				table.reload('table', {
-					where: {
-						list_type:'buy',
-						search: $('.search').val()
-					}
-				});
-			});
-
-			$('.btn_excel').click(function(){
-				var form_data = {
-					search: $('.search').val()
-				};
+			$('.search_btn2').click(function(){
+				var form_data = form.val("search-form");
 				$.get("{:url('buy/ajax_get_list')}",form_data, function (res) {
 					if (res.code == 200){
 						res.data.data.unshift({
@@ -156,7 +221,7 @@
 			});
 
 
-			$('.add_buy').on('click',function () {
+			$('.search_btn1').on('click',function () {
 				layer.open({
 					type : 1,
 					content:$('.buy_type'),

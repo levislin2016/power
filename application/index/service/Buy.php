@@ -22,6 +22,19 @@ class Buy{
             $where[] = ['number', 'like', "%{$params['search']}%"];
         }
 
+        if (isset($params['create_time']) && $params['create_time']){
+            $time = explode('至', $params['create_time']);
+            $where[] = ['create_time', 'between time', [trim($time[0]), trim($time[1])]];
+        }
+
+        if (isset($params['status']) && $params['status']){
+            $where[] = ['status', '=', $params['status']];
+        }
+
+        if (isset($params['from']) && $params['from']){
+            $where[] = ['from', '=', $params['from']];
+        }
+
         $list = BuyModel::where($where)->order('create_time desc')->paginate($limit);
         return $list;
     }

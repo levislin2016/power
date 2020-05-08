@@ -4,7 +4,7 @@ namespace app\index\model;
 class Buy extends Base{
 
     protected $insert = [
-        'status' => 0,
+        'status' => 1,
     ];
     protected function base($query){
 //        $query->where('company_id', session('power_user.company_id'));
