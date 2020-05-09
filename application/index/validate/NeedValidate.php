@@ -7,32 +7,21 @@ use app\index\model\Need as NeedModel;
 class NeedValidate extends BaseValidate
 {
     protected $rule = [
-        'goods_id' => 'require|isPositiveInteger|isGoodsId',
-        'project_id' => 'require|isPositiveInteger',
-        'need' => 'isPositiveInteger',
-        'type' => 'isPositiveInteger',
-        'note' => 'ok',
+        'goods_id'   => 'require|unique:Need,goods_id^project_id^type',
+        'project_id' => 'require|unique:Need,goods_id^project_id^type',
+        'type'       => 'require|unique:Need,goods_id^project_id^type',
+        'need'       => 'number',
     ];
 
     protected $message = [
-        'goods_id.require' => '材料编号不能为空',
-//        'need.require'     => '需求数量不能为空',
+        'goods_id.require'  => '材料编号不能为空',
+        'goods_id.unique'   => ' 材料已经存在，请勿重复添加！',
+        'project_id.unique' => ' 材料已经存在，请勿重复添加！',
+        'type.unique'       => ' 材料已经存在，请勿重复添加！',
+        'need.number'       => ' 请填写数字（不含小数点）！',
     ];
 
-    //材料是否已存在
-    protected function isGoodsId($value, $rule='', $data='', $field=''){ 
-        $id = input('param.id', '');
-        if(!$id){ 
-            $need = NeedModel::where('project_id', $data['project_id'])->where('goods_id', $value)->find();
-            if($need){ 
-                return '该材料已存在';
-            }
-        }else{ 
-            $need = NeedModel::where('project_id', $data['project_id'])->where('goods_id', $value)->where('id', '<>', $id)->find();
-            if($need){ 
-                return '该材料已存在';
-            }
-        }
-        return true;
-    }
+    protected $scene = [
+        'edit' => ['need']
+    ];
 }

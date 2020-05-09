@@ -87,17 +87,25 @@
     {{# } }}
 </script>
 
+<script type="text/html" id="template_open">
+    <input type="checkbox" name="xxx" lay-skin="switch" lay-text="开工|关闭">
+</script>
+
+
+
 <script type="text/html" id="toolbar">
     <div class="layui-btn-container">
         {{# if(d.status != '已作废'){ }}
+        <a class="layui-btn layui-btn-sm layui-bg-green" lay-event="need"><i class="layui-icon layui-icon-list"></i>预算</a>
         <a class="layui-btn layui-btn-sm layui-bg-blue" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>编辑</a>
-        <button class="layui-btn layui-btn-sm layui-bg-gray" lay-event="cancel"><i class="layui-icon layui-icon-close-fill"></i>作废</button>
+        <button class="layui-btn layui-btn-sm layui-bg-gray" lay-event="delete"><i class="layui-icon layui-icon-delete"></i>删除</button>
         {{# } }}
 
     </div>
 </script>
 
 <script>
+    var table_reload;
     layui.use(['form', 'jquery', 'element', 'laydate', 'table'], function() {
         var form = layui.form,
             $ = layui.jquery,
@@ -113,20 +121,24 @@
         });
 
         form.on('submit(search-form)',function (data) {
-            var where =  data.field;
+            table_reload();
+            return false;
+        });
+
+        table_reload = function(){
+            var where =  form.val("search-form");
             //执行重载
             table.reload('table', {
                 where: where
             });
-            return false;
-        });
+        };
 
         var url = "{:url('project/ajax_get_list')}";
         //第一个实例
         table.render({
             elem: '#table'
             ,url: url//数据接口
-            ,height: 'full-70'
+            ,height: 'full-100'
             ,page: true //开启分页
             ,toolbar:true
             ,limit:20
@@ -142,8 +154,9 @@
                 ,{field: 'contract', title: '业主名称', sort: true, align:'center', templet:"<div>{{d.contract.name}}</div>"}
                 ,{field: 'contract', title: '合同编号', sort: true, align:'center', templet:"<div>{{d.contract.number}}</div>"}
                 ,{field: 'status', title: '状态', sort:true, templet:'#template_status', align:'center', width:90}
+                ,{field: 'status', title: '开工时间', sort:true, templet:'#template_open', align:'center', width:120}
                 ,{field: 'create_time', title: '创建时间', sort:true, align:'center', width:180}
-                ,{field: 'number', title: '操作', templet:'#toolbar', fixed:'right', align:'center', width:180}
+                ,{field: 'number', title: '操作', templet:'#toolbar', fixed:'right', align:'center', width:300}
             ]],parseData: function(res){ //res 即为原始返回的数据
                 return {
                     "code": res.code, //解析接口状态
@@ -157,38 +170,63 @@
         });
 
         table.on('tool(table)', function(obj) {
-            if (obj.event == 'edit'){
-                layer.open({
-                    type : 2,
-                    content:"{:url('buy/edit')}" + '?id=' + obj.data.id,
-                    title:['采购单编号：' + obj.data.number  + '   状态：' + obj.data.status + '   创建时间：' + obj.data.create_time, 'font-weight:bold'],
-                    btnAlign: 'c',
-                    area: ['100%', '100%'],
-                    anim: 5,
-                    isOutAnim:true,
-                });
-            }
+            switch(obj.event){
 
-            if (obj.event == 'cancel'){
-                layer.confirm('确定作废这张采购单吗？', {icon: 3, title:'提示'}, function(index){
-                    var form_data = {
-                        id : obj.data.id,
-                    };
-                    $.post("{:url('buy/ajax_cancel')}",form_data, function(ret){
-                        if(ret.code == 200){
-                            layer.msg(ret.msg)
-                        }else{
-                            layer.msg(ret.msg, function () {
-
-                            })
-                        }
-                        table.reload('table', {
-                            where: form.val("search-form"),
-                        });
+                case 'need':
+                    layer.open({
+                        type : 2,
+                        content:"{:url('need/index')}" + '?id=' + obj.data.id,
+                        title:'设定工程预算',
+                        btnAlign: 'c',
+                        area: ['100%', '100%'],
+                        anim: 5,
+                        isOutAnim:true,
                     });
-                    layer.close(index);
-                });
+                break;
+
+                case 'edit':
+                    layer.open({
+                        type : 2,
+                        content:"{:url('project/add')}" + '?id=' + obj.data.id,
+                        title:'修改工程',
+                        btnAlign: 'c',
+                        area: ['100%', '100%'],
+                        anim: 5,
+                        isOutAnim:true,
+                    });
+                break;
+
+                case 'delete':
+                    layer.confirm('确定删除这条记录吗？', {icon: 3, title:'提示'}, function(index){
+                        var form_data = {
+                            id : obj.data.id,
+                        };
+                        $.post("{:url('project/ajax_del')}",form_data, function(ret){
+                            if(ret.code == 200){
+                                layer.msg(ret.msg)
+                            }else{
+                                layer.msg(ret.msg, function () {
+
+                                })
+                            }
+                            table_reload();
+                        });
+                        layer.close(index);
+                    });
+                break;
             }
+        });
+
+        $('.search_btn1').on('click',function () {
+            layer.open({
+                type : 2,
+                content:"{:url('project/add')}",
+                title:'添加工程',
+                btnAlign: 'c',
+                area: ['100%', '100%'],
+                anim: 5,
+                isOutAnim:true,
+            });
         });
 
         $('.search_btn2').click(function(){
@@ -208,40 +246,7 @@
         });
 
 
-        $('.search_btn1').on('click',function () {
-            layer.open({
-                type : 1,
-                content:$('.buy_type'),
-                title:'请选择采购单类型：',
-                offset: '200px',
-                btn:['确认', '取消'],
-                btnAlign: 'c',
-                anim: 5,
-                yes:function(index,layero){
-                    var type_val = $('.buy_type_val:checked').val();
-                    var form_data = {
-                        'from' : type_val,
-                    };
-                    $.post("{:url('buy/add_buy')}", form_data,function (ret) {
-                        if (ret.code == 200){
-                            //执行重载
-                            table.reload('table', {
-                                page: {
-                                    curr: 1 //重新从第 1 页开始
-                                }
-                            });
-                        }else{
-                            layer.msg(ret.msg,function(){
 
-                            });
-                        }
-                        layer.close(index);
-                    })
-                },btn2:function(index,layero){
-                    layer.close(index);
-                }
-            });
-        })
     })
 </script>
 {include file="public/footer" /}

@@ -1,274 +1,234 @@
-{include file="public/header"}
+{include file="public/header" /}
 <div class="wrap-container clearfix">
 	<div class="column-content-detail">
-		<blockquote class="layui-elem-quote">
-			<div class="layui-row">
-				<div class="col-md-9" style="line-height: 38px">
-					<b>工程：{$data.project.name}</b>
-				</div>
-				<div class="col-md-3" style="text-align: right">
-					<button type="button" class="layui-btn layui-bg-blue" onclick="window.history.back(-1)" style=""><i class="layui-icon layui-icon-return" style="font-size: 13px"></i>返回</button>
-				</div>
-			</div>
-		</blockquote>
+		<!--- 头部搜索框 --->
+		<div class="layui-card">
+			<div class="layui-form">
 
-		<div class="layui-row">
-			<div class="col-md-6">
-				<input type="text" name="keywords" placeholder='请输入商品编号 / 名称...' autocomplete="off" class="layui-input keywords" value="{$Think.get.keywords}" />
-			</div>
-			<div class="col-md-3">
-				<button type="button" class="layui-btn add_goods"><i class="layui-icon layui-icon-add-1" style="font-size: 13px"></i>添加</button>
-			</div>
-			<div class="col-md-3" style="text-align: right">
-			</div>
-		</div>
-		<div class="layui-row">
-			<div class="ajax_page col-md-12">
-				<!--  用来存放ajax获取HTML内容的存放容器  -->
-			</div>
-		</div>
-	</div>
-</div>
-
-{include file="public/script"}
-{include file="public/footer"}
-
-<!-- 商品列表 -->
-<div class="wrap-container clearfix" id="goods_list" style="display: none">
-	<div class="column-content-detail">
-
-		<div class="layui-row">
-			<div class="col-md-2">
-				<div class="layui-inline layui-form">
-					<div class="layui-input-inline">
-						<select name="modules" lay-search="" lay-filter="type_list">
-							<option value="">全部分类</option>
-							{volist name="$data.type_list" id="v"}
-							<option value="{$v.id}">{$v.name}</option>
-							{/volist}
-						</select>
+				<div class="layui-form-item">
+					<div class="layui-inline layui-form-pane">
+						<div class="layui-inline">
+							<button class="layui-btn search_btn1 layui-bg-blue"><i class="layui-icon layui-icon-add-1"></i>添加材料</button>
+						</div>
 					</div>
 				</div>
+				<form class="layui-form" lay-filter="search-form">
+					<div class="layui-form-item">
+						<div class="layui-inline layui-form-pane">
+							<label class="layui-form-label">时间范围</label>
+							<div class="layui-input-inline">
+								<input type="text" name="create_time" style="width: 513px" value="" class="layui-input" id="time" readonly="readonly" placeholder="开始时间 - 结束时间">
+							</div>
+						</div>
+					</div>
+
+					<div class="layui-form-item">
+						<div class="layui-inline layui-form-pane">
+							<label class="layui-form-label">名称|编号</label>
+							<div class="layui-input-inline">
+								<input type="text" name="search" placeholder="请输入名称或编号..." autocomplete="off" class="layui-input search"/>
+							</div>
+						</div>
+
+						<div class="layui-inline layui-form-pane">
+							<label class="layui-form-label">状态</label>
+							<div class="layui-input-inline">
+								<select name="type" lay-search="">
+									{volist name="data.type" id="v"}
+									<option value="{$key}">{$v}</option>
+									{/volist}
+								</select>
+							</div>
+						</div>
+
+						<input type="hidden" name="project_id" value="{$Request.get.id}"/>
+
+						<div class="layui-inline">
+							<div class="layui-input-inline">
+								<button class="layui-btn layui-bg-blue btn_search"><i class="layui-icon layui-icon-search"></i>搜索</button>
+								<button type="reset" class="layui-btn layui-btn-normal" id="empty"  lay-submit="" lay-filter="LAY-search">重置</button>
+							</div>
+						</div>
+					</div>
+				</form>
 			</div>
-			<div class="col-md-6">
-				<input type="text" name="keywords" placeholder="请输入商品编号 / 名称..." autocomplete="off" class="layui-input goods_keywords" value="{$Think.get.keywords}" />
-			</div>
+
 		</div>
-		<div class="layui-row">
-			<div class="goods_ajax_page col-md-12">
-				<!--  用来存放ajax获取HTML内容的存放容器  -->
+		<!--- 头部搜索框 --->
+
+
+		<div class="layui-form" id="table-list">
+
+			<table id="table" lay-filter="table"></table>
+
+			<div class="buy_type" style="display: none;margin-top: 10px;">
+				<center>
+					<input type="radio" class="buy_type_val" name="sex" value="1" title="自购" checked>
+					<input type="radio" class="buy_type_val" name="sex" value="2" title="甲供">
+				</center>
 			</div>
+
 		</div>
 	</div>
 </div>
+{include file="public/script" /}
+
+<script type="text/html" id="template_status">
+	{{# if(d.status == '待开工'){ }}
+	<span class="layui-badge layui-bg-orange">{{d.status}}</span>
+	{{# } }}
+	{{# if(d.status == '已开工'){ }}
+	<span class="layui-badge layui-bg-green">{{d.status}}</span>
+	{{# } }}
+	{{# if(d.status == '待结算'){ }}
+	<span class="layui-badge layui-bg-cyan">{{d.status}}</span>
+	{{# } }}
+	{{# if(d.status == '已结算'){ }}
+	<span class="layui-badge layui-bg-gray">{{d.status}}</span>
+	{{# } }}
+</script>
+
+<script type="text/html" id="template_check">
+	{{# if(d.check == 1){ }}
+	<input type="checkbox" name="xxx" lay-skin="switch" lay-text="核对|关闭" checked>
+	{{# } }}
+	{{# if(d.check == 0){ }}
+	<input type="checkbox" name="xxx" lay-skin="switch" lay-text="核对|关闭">
+	{{# } }}
+</script>
+
+<script type="text/html" id="template_need">
+	<input type="text" name="xxx" >
+</script>
+
+<script type="text/html" id="template_type">
+	{{# if(d.type == '甲供'){ }}
+	<span class="layui-badge layui-bg-black">{{d.type}}</span>
+	{{# } }}
+	{{# if(d.type == '自购'){ }}
+	<span class="layui-badge layui-bg-blue">{{d.type}}</span>
+	{{# } }}
+</script>
+
+<script type="text/html" id="toolbar">
+	<div class="layui-btn-container">
+		{{# if(d.status != '已作废'){ }}
+		<button class="layui-btn layui-btn-sm layui-bg-gray" lay-event="delete"><i class="layui-icon layui-icon-delete"></i>删除</button>
+		{{# } }}
+
+	</div>
+</script>
 
 <script>
-	var ajaxPage;
-	var goodsAjaxPage;
-
-	var need_url  = "{:url('need/ajax_page')}";
-	var goods_url = "{:url('goods/ajax_page')}";
-
-	layui.use(['form', 'jquery', 'element'], function() {
+	var table_reload;
+	layui.use(['form', 'jquery', 'element', 'laydate', 'table'], function() {
 		var form = layui.form,
 				$ = layui.jquery,
-				element = layui.element;
+				laydate = layui.laydate,
+				table = layui.table;
 
-		var obj;
+		//日期范围
+		laydate.render({
+			elem: '#time'
+			,range: '至'
+			,type:'datetime'
 
-		$(function(){
-			ajaxPage(need_url, 1);
-			form.render();
 		});
 
-		// 判断输入框输入事件
-		$('.keywords').on('input propertychange', function(){
-			ajaxPage(need_url, 1)
+		form.on('submit(search-form)',function (data) {
+			table_reload();
+			return false;
 		});
 
-		form.on('switch(check)', function(data){
-			// console.log(data.elem); //得到checkbox原始DOM对象
 
-			console.log(data.elem.checked); //开关是否开启，true或者false
+		table_reload = function(){
+			var where = form.val("search-form");
+			//执行重载
+			table.reload('table', {
+				where: where
+			});
+		};
 
-			console.log(data.value); //开关value值，也可以通过data.elem.value得到
-			var edit_url = "{:url('need/edit')}";
-			var check_val;
-			if (data.elem.checked){
-				check_val = 1;
-			}else{
-				check_val = 0;
+		var url = "{:url('need/ajax_get_list')}";
+		//第一个实例
+		table.render({
+			elem: '#table'
+			,url: url//数据接口
+			,page: false //开启分页
+			,toolbar:true
+			,limit:100000
+			// ,height:'full-100'
+			,loading:true
+			,where:form.val("search-form")
+			,text:{
+				none:'暂无相关数据'
 			}
-
-			var form_data = {
-				'id'    : data.value,
-				'check' : check_val,
-			};
-			$.post(edit_url, form_data, function () {
-			})
-		});
-
-		// 点击分页触发的ajax
-		ajaxPage = function (url, page){
-			layer.load(2);
-
-			var form_data = {
-				'page'       : page,
-				'keywords'   : $('.keywords').val(),
-				'project_id' : "{$data.project_id}",
-			};
-
-			console.log(form_data);
-			$.ajax({
-				url:url,
-				type:'GET',
-				async:false,
-				data:form_data,
-				success:function (ret) {
-					layer.closeAll('loading');
-					$('.ajax_page').html(ret);
-					$('.ajax_page div').fadeIn();
-					// 重新渲染 checkbox框
-					form.render('checkbox');
-					// 绑定删除事件
-					bindDel();
-					// 绑定修改数量事件
-					bindEditNum()
-				}
-			});
-		}
-
-		// 弹出商品列表框
-		function editGoods(){
-			layer.open({
-				type: 1,
-				title: '选择商品',
-				anim:5,
-				shadeClose: true,
-				offset: ['10px'],
-				shade: 0.5,
-				scrollbar:false,
-				maxmin: true, //开启最大化最小化按钮
-				area: ['1200px', '700px'],
-				content: $('#goods_list'),
-			});
-		}
-
-		// 点击弹出商品框
-		$('.add_goods').click(function () {
-			editGoods();
-		});
-
-		// 绑定删除事件
-		function bindDel(){
-			// 删除一行
-			$('.btn_del').on('click', function () {
-				var form_data = {
-					'id' : $(this).data('id'),
+			,cols: [[ //表头
+				{type:'numbers', title: '序号', align:'center', fixed:'left', sort:true,width:90}
+				,{field: 'type_name', title: '分类', align:'center',sort:true}
+				,{field: 'goods_name', title: '名称', align:'center',sort:true}
+				,{field: 'goods_number', title: '编号', align:'center',sort:true}
+				,{field: 'need', title: '数量', align:'center',sort:true, width:120, edit:'text'}
+				,{field: 'need_ok', title: '累计采购', align:'center',sort:true, width:120}
+				,{field: 'unit_name', title: '单位', align:'center', width:100}
+				,{field: 'type', title: '类型', align:'center',sort:true, templet:"#template_type", width:80}
+				,{field: 'check', title: '核对', align:'center',sort:true, templet:"#template_check", width:100}
+				,{field: 'create_time', title: '创建时间', sort:true, align:'center', width:180}
+				,{field: 'number', title: '操作', templet:'#toolbar', fixed:'right', align:'center', width:100}
+			]],parseData: function(res){ //res 即为原始返回的数据
+				return {
+					"code": res.code, //解析接口状态
+					"msg": res.msg, //解析提示文本
+					"count": res.data.total, //解析数据长度
+					"data": res.data.data //解析数据列表
 				};
-				$.post("{:url('need/del')}",form_data,function (ret) {
-					layer.msg(ret.msg);
-					if (ret.code == 200){
-						ajaxPage(need_url	, 1)
-					}
-				})
-			});
-		}
-
-		// 绑定双击修改事件
-		function bindEditNum(){
-			$('.alert_need').dblclick(function () {
-				var obj = $(this);
-				var old_num = $(this).html();
-				var dom_input = "<input type=\"number\" lay-verify=\"required\" placeholder=\"请输入数量\" value="+ old_num +" class=\"layui-input input_need\">";
-				if ($(this).data('box') != 1){
-					$(this).html(dom_input);
-					$(this).data('box', 1);
-					$('.input_need').focus().select();
-				}
-				$('.input_need').blur(function () {
-					var edit_url = "{:url('need/edit')}";
-					var need = $(this).val();
-					if (!need){
-						need = 0;
-					}
-
-					var form_data = {
-						'id'   : obj.data('id'),
-						'need' : need,
-					};
-					$.post(edit_url, form_data, function (ret) {
-						layer.msg(ret.msg);
-						if (ret.code == 200){
-							obj.html(need);
-							obj.data('box', 0);
-						}
-					});
-				})
-			})
-		}
-
-
-		<!----------------------------- 商品列表 js ----------------------------------->
-		var type_id = '';
-
-		$(function(){
-			goodsAjaxPage(1);
+			},response: {
+				statusCode: 200 //规定成功的状态码，默认：0
+			}
 		});
 
-		// 判断输入框输入事件
-		$('.goods_keywords').on('input propertychange', function(){
-			goodsAjaxPage(1)
-		});
-
-		form.on('select(type_list)', function(data){
-			console.log(data.value); //得到被选中的值
-			type_id = data.value;
-			goodsAjaxPage(1);
-		});
-
-		// 点击分页触发的ajax
-		goodsAjaxPage = function (page){
-			layer.load(2);
-
+		//监听单元格编辑
+		table.on('edit(table)', function(obj){
+			var value = obj.value //得到修改后的值
+					,data = obj.data //得到所在行所有键值
+					,field = obj.field; //得到字段
 			var form_data = {
-				'page'     : page,
-				'keywords' : $('.goods_keywords').val(),
-				'type_id'  : type_id,
+				id   : data.id,
+				need : value,
 			};
 
-			console.log('商品分页');
-			console.log(form_data);
+			$.post("{:url('need/ajax_edit')}", form_data, function(ret){
+				if (ret.code == 200){
+					// layer.msg('['+ data.goods_name +'] <br>数量更改为：'+ value);
+				}else{
+					layer.msg(ret.msg,function () {
 
-			$.ajax({
-				url:goods_url,
-				type:'GET',
-				async:false,
-				data:form_data,
-				success:function (ret) {
-					layer.closeAll('loading');
-					$('.goods_ajax_page').html(ret);
-					$('.goods_ajax_page div').fadeIn();
-
-					var project_id = "{$data.project_id}";
-
-					// 绑定双击事件 用来调出商品框
-					$('.tr_goods').dblclick(function () {
-						var form_data = {
-							'project_id' : "{$data.project_id}",
-							'goods_id'   : $(this).find('.td_id').html(),
-						};
-
-						$.post("{:url('need/add')}",form_data,function (ret) {
-							layer.msg(ret.msg);
-							if (ret.code == 200){
-								ajaxPage(need_url, 1)
-							}
-						});
 					})
 				}
 			});
-		}
-	});
-</script>
+		});
 
+		table.on('tool(table)', function(obj) {
+			switch(obj.event){
+
+			}
+		});
+
+		$('.search_btn1').on('click',function () {
+			layer.open({
+				type : 2,
+				content:"{:url('need/goods')}" + "?id={$Request.get.id}",
+				title:'选择材料',
+				btnAlign: 'c',
+				area: ['95%', '95%'],
+				shadeClose: true,
+				anim: 5,
+				isOutAnim:true,
+				end:function(){
+					table_reload();
+				}
+			});
+		});
+	})
+</script>
+{include file="public/footer" /}

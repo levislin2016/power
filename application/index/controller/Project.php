@@ -33,54 +33,29 @@ class Project extends Base
         return returnJson($list, 200, '获取成功!');
     }
 
-
+    // 显示添加页面
     public function add(){ 
-        $contract_list = ContractModel::all();
-        $this->assign('contract_list', $contract_list);
-
-        $id = input('get.id', '');
-        if($id){
-            $list = ProjectModel::get($id);
-            if(!$list){ 
-                throw new BaseException(
-                [
-                    'msg' => '非法错误，请重试！',
-                    'errorCode' => 40001
-                ]);
-            }
-            $this->assign('list', $list);
+        $data['contract'] = ContractModel::all();
+        if (input('?get.id')){
+            $data['info'] = ProjectModel::get(input('id'));
         }
-        return $this->fetch();
+        return view('add', ['data' => $data]);
     }
 
-    public function save(){ 
-        $id = input('param.id', '');
-        $validate = new ProjectValidate();
-        $validate->goCheck();
-        $data = $validate->getDataByRule(input('post.'));
-        $projectService = new ProjectService();
-        if($id){ 
-            $res = $projectService->save_project($id, $data);
-        }else{ 
-            $res = $projectService->add_project($data);
-        }
-        return $res;
+    // 添加 | 编辑 工程
+    public function ajax_add(){
+        $ret = model('project', 'service')->add(input('param.'));
+
+        return returnJson($ret['data'], $ret['code'], $ret['msg']);
     }
 
-    public function del($ids){ 
-    	$res = ProjectModel::destroy(rtrim($ids, ','));
-    		
-    	if(!$res){ 
-    		throw new BaseException(
-	            [
-	                'msg' => '删除工程错误！',
-	                'errorCode' => 40006
-	            ]);
-    	}
 
-    	return [
-                'msg' => '操作成功',
-            ];
+
+    // 删除工程
+    public function ajax_del(){
+        $ret = model('project', 'service')->del(input('id'));
+
+        return returnJson($ret['data'], $ret['code'], $ret['msg']);
     }
 
     //开工

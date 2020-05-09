@@ -28,20 +28,38 @@ class Project{
         return $list;
     }
 
-    public function add_project($data){ 
-        $data['company_id'] = session('power_user.company_id');
-        $data['status'] = 1;
-        $project = ProjectModel::create($data);
-        if(!$project){ 
-            throw new BaseException(
-            [
-                'msg' => '添加工程错误！',
-                'errorCode' => 40004
-            ]);
+    # 添加工程
+    public function add($data){
+        # 判断验证肠镜
+        $scene = 'add';
+        if (isset($data['id']) && $data['id']){
+            $scene = 'edit';
+            $model = model('Project')::get($data['id']);
+        }else{
+            $model = model('Project');
         }
-        return [
-            'msg' => '添加工程成功',
-        ];
+        # 验证规则
+        $validate = validate('ProjectValidate');
+        if(!$validate->scene($scene)->check($data)){
+            return returnJson('', 201, $validate->getError());
+        }
+
+        $ret = $model->save($data);
+        if(!$ret){
+            return returnInfo('', 202, '操作错误！');
+        }
+
+        return returnInfo($ret, 200, '操作成功！');
+    }
+
+    # 删除工程
+    public function del($id){
+        $ret = ProjectModel::destroy($id);
+        if (!$ret){
+            return returnInfo('', 201, '删除错误！');
+        }
+
+        return returnInfo($ret, 200, '删除成功！');
     }
 
     public function save_project($id, $data){

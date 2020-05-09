@@ -6,11 +6,15 @@ class ProjectValidate extends BaseValidate
 {
     protected $rule = [
         'contract_id' => 'require|isPositiveInteger',
-        'name' => 'require',
+        'name'        => 'require',
     ];
 
     protected $message = [
-        'number.require' => '合同编号不能为空',
-        'name.require' => '工程名称不能为空',
+        'contract_id.require' => '请选择合同编号！',
+        'name.require'        => '工程名称不能为空！',
+    ];
+
+    protected $scene = [
+        'add'  =>  ['contract_id','name'],
     ];
 }

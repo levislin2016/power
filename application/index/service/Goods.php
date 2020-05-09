@@ -12,20 +12,22 @@ class Goods{
     // 获取材料列表
     public function getList($params, $limit = 10, $order = 'desc'){
         $where = [];
-        if (!empty($params['keywords'])){
-            $where[] = ['name|number', 'like','%' . $params['keywords'] . '%'];
+        if (isset($params['search']) && $params['search']){
+            $where[] = ['name|number', 'like', "%{$params['search']}%"];
         }
-        if (!empty($params['type_id'])){
+
+        if (isset($params['type_id']) && $params['type_id']){
             $where[] = ['type_id', '=', $params['type_id']];
         }
 
 
-        $js_path = "javascript:goodsAjaxPage([PAGE]);";
-        $list = GoodsModel::with(['unit'])->where($where)->order('create_time', $order)->paginate($limit, false, ['path' => $js_path]);
 
-        if (!empty($params['debug'])) {
-            dump(Db::getLastSql());
+        if (isset($params['create_time']) && $params['create_time']){
+            $time = explode('至', $params['create_time']);
+            $where[] = ['create_time', 'between time', [trim($time[0]), trim($time[1])]];
         }
+
+        $list = GoodsModel::with(['unit', 'type'])->where($where)->order('create_time desc')->paginate($limit);
         return $list;
     }
 

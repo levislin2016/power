@@ -2,6 +2,10 @@
 namespace app\index\model;
 
 class Project extends Base{
+    protected $insert = [
+        'status' => 1
+    ];
+
 //    protected function base($query){
 //        $query->where('company_id', session('power_user.company_id'));
 //    }
