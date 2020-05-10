@@ -9,6 +9,7 @@
 					<div class="layui-inline layui-form-pane">
 						<div class="layui-inline">
 							<button class="layui-btn search_btn1 layui-bg-blue"><i class="layui-icon layui-icon-add-1"></i>添加材料</button>
+							<button class="layui-btn search_btn2 layui-bg-green"><i class="layui-icon layui-icon-triangle-r"></i>开始工程</button>
 						</div>
 					</div>
 				</div>
@@ -33,7 +34,7 @@
 						<div class="layui-inline layui-form-pane">
 							<label class="layui-form-label">状态</label>
 							<div class="layui-input-inline">
-								<select name="type" lay-search="">
+								<select name="type" lay-search="" lay-filter="select1">
 									{volist name="data.type" id="v"}
 									<option value="{$key}">{$v}</option>
 									{/volist}
@@ -89,12 +90,7 @@
 </script>
 
 <script type="text/html" id="template_check">
-	{{# if(d.check == 1){ }}
-	<input type="checkbox" name="xxx" lay-skin="switch" lay-text="核对|关闭" checked>
-	{{# } }}
-	{{# if(d.check == 0){ }}
-	<input type="checkbox" name="xxx" lay-skin="switch" lay-text="核对|关闭">
-	{{# } }}
+	<input type="checkbox" name="xxx" lay-skin="switch" value="{{ d.id }}" lay-filter="check" lay-text="核对|关闭" {{ d.check == '2' ? 'checked' : '' }}>
 </script>
 
 <script type="text/html" id="template_need">
@@ -135,12 +131,45 @@
 
 		});
 
+		// 监听表单提交事件
 		form.on('submit(search-form)',function (data) {
 			table_reload();
 			return false;
 		});
 
+		// 监听下拉框选择
+		form.on('select(select1)', function(data){
+			table_reload();
+			return false;
+		});
 
+		//监听开关操作
+		form.on('switch(check)', function(obj){
+			var msg = '已核对';
+			var check = 2;
+			if (!obj.elem.checked){
+				msg = '已关闭';
+				check = 1;
+			}
+			var form_data = {
+				id    : this.value,
+				check : check,
+			};
+			$.post("{:url('need/ajax_check')}", form_data, function(ret){
+				if (ret.code == 200){
+					layer.tips(msg, obj.othis);
+				}else{
+					layer.msg(ret.msg,function () {
+
+					})
+				}
+			});
+
+			layer.tips(msg, obj.othis);
+		});
+
+
+		// 表格刷新方法 带form数据
 		table_reload = function(){
 			var where = form.val("search-form");
 			//执行重载
@@ -193,13 +222,14 @@
 					,data = obj.data //得到所在行所有键值
 					,field = obj.field; //得到字段
 			var form_data = {
-				id   : data.id,
-				need : value,
+				id         : data.id,
+				need 	   : value,
+				project_id : "{$Request.get.id}",
 			};
 
 			$.post("{:url('need/ajax_edit')}", form_data, function(ret){
 				if (ret.code == 200){
-					// layer.msg('['+ data.goods_name +'] <br>数量更改为：'+ value);
+					layer.msg('['+ data.goods_name +'] <br>数量更改为：'+ value,{offset:'t'});
 				}else{
 					layer.msg(ret.msg,function () {
 
@@ -208,12 +238,32 @@
 			});
 		});
 
+		// 监听工具条
 		table.on('tool(table)', function(obj) {
 			switch(obj.event){
+				case 'delete':
+					layer.confirm('确定删除这条记录吗？', {icon: 3, title:'提示'}, function(index){
+						var form_data = {
+							id         : obj.data.id,
+							project_id : "{$Request.get.id}",
+						};
+						$.post("{:url('need/ajax_del')}",form_data, function(ret){
+							if(ret.code == 200){
+								layer.msg(ret.msg);
+								table_reload();
+							}else{
+								layer.msg(ret.msg, function () {
 
+								})
+							}
+						});
+						layer.close(index);
+					});
+				break;
 			}
 		});
 
+		// 添加材料
 		$('.search_btn1').on('click',function () {
 			layer.open({
 				type : 2,
@@ -226,6 +276,22 @@
 				isOutAnim:true,
 				end:function(){
 					table_reload();
+				}
+			});
+		});
+
+		// 开始工程
+		$('.search_btn2').on('click',function () {
+			var form_data = {
+				'id' : "{$Request.get.id}",
+			};
+			$.post("{:url('project/ajax_start')}",form_data, function(ret){
+				if(ret.code == 200){
+					layer.msg(ret.msg)
+				}else{
+					layer.msg(ret.msg, function () {
+
+					})
 				}
 			});
 		});

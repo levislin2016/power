@@ -49,11 +49,16 @@ class Project extends Base
         return returnJson($ret['data'], $ret['code'], $ret['msg']);
     }
 
-
-
     // 删除工程
     public function ajax_del(){
-        $ret = model('project', 'service')->del(input('id'));
+        $ret = model('project', 'service')->del(input('post.'));
+
+        return returnJson($ret['data'], $ret['code'], $ret['msg']);
+    }
+
+    // 开始工程
+    public function ajax_start(){
+        $ret = model('project', 'service')->start(input('post.'));
 
         return returnJson($ret['data'], $ret['code'], $ret['msg']);
     }

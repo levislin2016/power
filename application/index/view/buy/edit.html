@@ -25,11 +25,14 @@
 
 					<div class="layui-form-item">
 						<div class="layui-inline layui-form-pane">
-							<label class="layui-form-label">采购单编号</label>
+							<label class="layui-form-label">工程名称</label>
 							<div class="layui-input-inline">
-								<input type="text" name="search" placeholder="请输入采购单编号..." autocomplete="off" class="layui-input search"/>
+								<input type="text" name="search" placeholder="请输入工程名称..." autocomplete="off" class="layui-input search"/>
 							</div>
 						</div>
+
+						<input type="hidden" name="buy_id" value="{$Request.get.id}"/>
+
 
 						<div class="layui-inline">
 							<div class="layui-input-inline">
@@ -83,13 +86,12 @@
 		table.render({
 			elem: '#table'
 			,url: "{:url('buy/ajax_get_project_list')}"//数据接口
-			,height: 'full-70'
-			,page: true //开启分页
+			// ,height: 'full-70'
+			,page: false //开启分页
 			,toolbar:true
-			,limit:20
+			,limit:100000
 			,loading:true
-			,where:{
-			}
+			,where:form.val("search-form")
 			,text:{
 				none:'暂无相关数据'
 			}
@@ -97,6 +99,7 @@
 				{type:'numbers', title: '序号', align:'center', fixed:'left', sort:true,width:90}
 				,{field: 'project', title: '工程名称', sort: true, align:'center', templet:"<div>{{d.project.name}}</div>"}
 				,{field: 'project', title: '状态', sort: true, align:'center', templet:"<div>{{d.project.status}}</div>", width:90}
+				,{field: 'open_time', title: '开工时间',sort: true,  align:'center', templet:"<div>{{d.project.create_time}}</div>", width:180}
 				,{field: 'create_time', title: '创建时间',sort: true,  align:'center', templet:"<div>{{d.project.create_time}}</div>", width:180}
 				,{field: 'number', title: '操作', templet:'#toolbar', fixed:'right', align:'center', width:180}
 			]],parseData: function(res){ //res 即为原始返回的数据
@@ -133,11 +136,7 @@
 
 
 		$('.search_btn2').click(function(){
-			var form_data = {
-				buy_id:"{$data.id}",
-				list_type:'buyProject',
-				search: $('.search').val(),
-			};
+			var form_data = form.val("search-form");
 			$.get("{:url('buy/ajax_get_list')}",form_data, function (res) {
 				if (res.code == 200){
 					res.data.data.unshift({
@@ -155,34 +154,15 @@
 		$('.search_btn1').on('click',function () {
 			layer.open({
 				type : 2,
-				content:"{:url('buy/edit')}",
-				title:'请选择采购单类型：',
-				offset: '200px',
-				btn:['确认', '取消'],
+				content:"{:url('buy/project')}" + "?id={$Request.get.id}",
+				title:'选择采购工程',
 				btnAlign: 'c',
+				area: ['95%', '95%'],
+				shadeClose: true,
 				anim: 5,
-				yes:function(index,layero){
-					var type_val = $('.buy_type_val:checked').val();
-					var form_data = {
-						'from' : type_val,
-					};
-					$.post("{:url('buy/add_buy')}", form_data,function (ret) {
-						if (ret.code == 200){
-							//执行重载
-							table.reload('table', {
-								page: {
-									curr: 1 //重新从第 1 页开始
-								}
-							});
-						}else{
-							layer.msg(ret.msg,function(){
-
-							});
-						}
-						layer.close(index);
-					})
-				},btn2:function(index,layero){
-					layer.close(index);
+				isOutAnim:true,
+				end:function(){
+					table_reload();
 				}
 			});
 		})

@@ -35,7 +35,7 @@
 									<div class="layui-inline layui-form-pane">
 										<label class="layui-form-label">类型</label>
 										<div class="layui-input-inline">
-											<select name="from" lay-search="">
+											<select name="from" lay-search="" lay-filter="select1">
 												{volist name="data.from" id="v"}
 													<option value="{$key}">{$v}</option>
 												{/volist}
@@ -46,7 +46,7 @@
 									<div class="layui-inline layui-form-pane">
 										<label class="layui-form-label">状态</label>
 										<div class="layui-input-inline">
-											<select name="status" lay-search="">
+											<select name="status" lay-search="" lay-filter="select1">
 												{volist name="data.status" id="v"}
 												<option value="{$key}">{$v}</option>
 												{/volist}
@@ -99,6 +99,15 @@
 		{{# } }}
 	</script>
 
+	<script type="text/html" id="template_type">
+		{{# if(d.type == '甲供'){ }}
+		<span class="layui-badge layui-bg-black">{{d.type}}</span>
+		{{# } }}
+		{{# if(d.type == '自购'){ }}
+		<span class="layui-badge layui-bg-blue">{{d.type}}</span>
+		{{# } }}
+	</script>
+
 	<script type="text/html" id="toolbar">
 		<div class="layui-btn-container">
 			{{# if(d.status != '已作废'){ }}
@@ -124,12 +133,22 @@
 
 			});
 
-			form.on('submit(search-form)',function (data) {
-				var where =  data.field;
+			table_reload = function(){
+				var where =  form.val("search-form");
 				//执行重载
 				table.reload('table', {
 					where: where
 				});
+			};
+
+			form.on('submit(search-form)',function (data) {
+				table_reload();
+				return false;
+			});
+
+			// 监听下拉框选择
+			form.on('select(select1)', function(data){
+				table_reload();
 				return false;
 			});
 

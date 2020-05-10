@@ -90,6 +90,12 @@ class Buy extends Base{
         return returnJson('', 200, '添加成功！');
     }
 
+    // 添加采购工程 弹框页面
+    public function project(){
+        $data['status'] = config('extra.project_status');
+        return view('project', ['data' => $data]);
+    }
+
 
 
 

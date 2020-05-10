@@ -53,13 +53,38 @@ class Project{
     }
 
     # 删除工程
-    public function del($id){
-        $ret = ProjectModel::destroy($id);
+    public function del($params){
+        # 验证规则
+        $validate = validate('ProjectValidate');
+        if(!$validate->scene('del')->check($params)){
+            return returnJson('', 201, $validate->getError());
+        }
+
+        $ret = ProjectModel::destroy($params['id']);
         if (!$ret){
             return returnInfo('', 201, '删除错误！');
         }
 
         return returnInfo($ret, 200, '删除成功！');
+    }
+
+    # 开始工程
+    public function start($params){
+        # 验证规则
+        $validate = validate('ProjectValidate');
+        if(!$validate->scene('start')->check($params)){
+            return returnJson('', 201, $validate->getError());
+        }
+
+        $ret = ProjectModel::update([
+            'status'    => 2,
+            'open_time' => time(),
+        ],['id' => $params['id']]);
+        if (!$ret){
+            return returnInfo('', 201, '开始工程失败！');
+        }
+
+        return returnInfo($ret, 200, '开始工程成功！');
     }
 
     public function save_project($id, $data){

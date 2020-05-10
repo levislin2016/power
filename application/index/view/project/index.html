@@ -34,7 +34,7 @@
                         <div class="layui-inline layui-form-pane">
                             <label class="layui-form-label">状态</label>
                             <div class="layui-input-inline">
-                                <select name="status" lay-search="">
+                                <select name="status" lay-search="" lay-filter="select1">
                                     {volist name="data.status" id="v"}
                                     <option value="{$key}">{$v}</option>
                                     {/volist}
@@ -87,11 +87,6 @@
     {{# } }}
 </script>
 
-<script type="text/html" id="template_open">
-    <input type="checkbox" name="xxx" lay-skin="switch" lay-text="开工|关闭">
-</script>
-
-
 
 <script type="text/html" id="toolbar">
     <div class="layui-btn-container">
@@ -125,6 +120,11 @@
             return false;
         });
 
+        form.on('select(select1)', function(data){
+            table_reload();
+            return false;
+        });
+
         table_reload = function(){
             var where =  form.val("search-form");
             //执行重载
@@ -151,10 +151,10 @@
             ,cols: [[ //表头
                 {field: 'id', title: 'ID', width:100, sort: true, fixed: 'left', align:'center'}
                 ,{field: 'name', title: '工程名称', align:'center'}
-                ,{field: 'contract', title: '业主名称', sort: true, align:'center', templet:"<div>{{d.contract.name}}</div>"}
-                ,{field: 'contract', title: '合同编号', sort: true, align:'center', templet:"<div>{{d.contract.number}}</div>"}
+                ,{field: 'contract_name', title: '业主名称', sort: true, align:'center'}
+                ,{field: 'contract_number', title: '合同编号', sort: true, align:'center'}
                 ,{field: 'status', title: '状态', sort:true, templet:'#template_status', align:'center', width:90}
-                ,{field: 'status', title: '开工时间', sort:true, templet:'#template_open', align:'center', width:120}
+                ,{field: 'open_time', title: '开工时间', sort:true, align:'center', width:180}
                 ,{field: 'create_time', title: '创建时间', sort:true, align:'center', width:180}
                 ,{field: 'number', title: '操作', templet:'#toolbar', fixed:'right', align:'center', width:300}
             ]],parseData: function(res){ //res 即为原始返回的数据
@@ -181,6 +181,9 @@
                         area: ['100%', '100%'],
                         anim: 5,
                         isOutAnim:true,
+                        end:function(){
+                            table_reload();
+                        }
                     });
                 break;
 
@@ -190,9 +193,12 @@
                         content:"{:url('project/add')}" + '?id=' + obj.data.id,
                         title:'修改工程',
                         btnAlign: 'c',
-                        area: ['100%', '100%'],
+                        area: ['50%', '50%'],
                         anim: 5,
                         isOutAnim:true,
+                        end:function(){
+                            table_reload();
+                        }
                     });
                 break;
 
@@ -203,13 +209,13 @@
                         };
                         $.post("{:url('project/ajax_del')}",form_data, function(ret){
                             if(ret.code == 200){
-                                layer.msg(ret.msg)
+                                layer.msg(ret.msg);
+                                table_reload();
                             }else{
                                 layer.msg(ret.msg, function () {
 
                                 })
                             }
-                            table_reload();
                         });
                         layer.close(index);
                     });
@@ -223,7 +229,7 @@
                 content:"{:url('project/add')}",
                 title:'添加工程',
                 btnAlign: 'c',
-                area: ['100%', '100%'],
+                area: ['50%', '50%'],
                 anim: 5,
                 isOutAnim:true,
             });

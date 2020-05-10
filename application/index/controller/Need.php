@@ -41,9 +41,21 @@ class Need extends Base
         return returnJson($list['data'], $list['code'], $list['msg']);
     }
 
+    // 删除预算的材料
+    public function ajax_del(){
+        $list = model('need', 'service')->del(input('post.'));
+        return returnJson($list['data'], $list['code'], $list['msg']);
+    }
+
     // 编辑预算的材料
     public function ajax_edit(){
         $list = model('need', 'service')->edit(input('post.'));
+        return returnJson($list['data'], $list['code'], $list['msg']);
+    }
+
+    // 核对预算的材料
+    public function ajax_check(){
+        $list = model('need', 'service')->check(input('post.'));
         return returnJson($list['data'], $list['code'], $list['msg']);
     }
 
@@ -73,29 +85,4 @@ class Need extends Base
 
         return returnJson('', 200, '数量修改为：' . input('param.need'));
     }
-
-    public function save(){ 
-        $id = input('param.id', '');
-        $validate = new NeedValidate();
-        $validate->goCheck();
-        $data = $validate->getDataByRule(input('post.'));
-        $needService = new NeedService();
-        if($id){ 
-            $res = $needService->save_need($id, $data);
-        }else{ 
-            $res = $needService->add_need($data);
-        }
-        return $res;
-    }
-
-    public function del(){
-    	$res = NeedModel::destroy(input('post.id'));
-    	if (!$res){
-    	    return returnJson('', 201, '删除错误！');
-        }
-
-    	return returnJson('', 200, '删除成功！');
-    }
-
-
 }

@@ -27,7 +27,7 @@ class Need{
 
         if (isset($params['create_time']) && $params['create_time']){
             $time = explode('至', $params['create_time']);
-            $where[] = ['create_time', 'between time', [trim($time[0]), trim($time[1])]];
+            $where[] = ['Need.create_time', 'between time', [trim($time[0]), trim($time[1])]];
         }
 
         $list = NeedModel::hasWhere('goods', $hasWhere)->with(['goods' => ['unit', 'type']])->where($where)->order('create_time desc')->paginate($limit);
@@ -46,10 +46,10 @@ class Need{
                 'goods_id'   => $v['id'],
             ];
 
-            // 验证 登录 场景
+            // 验证场景
             $validate = validate('NeedValidate');
             if (!$validate->scene('add')->check($data)){
-                return returnInfo('', 201, $v['name'] . $validate->getError());
+                return returnInfo('', 201, "材料：{$v['name']} 添加失败 <br>原因：" . $validate->getError());
             }
 
             $ret_add = NeedModel::create($data);
@@ -60,14 +60,11 @@ class Need{
         return returnInfo($ret_add, 200, "添加成功！");
     }
 
-   // 修改预算材料
+    // 修改预算材料
     public function edit($params){
-        $data = [
-            'need' => $params['need'],
-        ];
         // 验证 登录 场景
         $validate = validate('NeedValidate');
-        if (!$validate->scene('edit')->check($data)){
+        if (!$validate->scene('edit')->check($params)){
             return returnInfo('', 201, $validate->getError());
         }
 
@@ -79,6 +76,34 @@ class Need{
         }
 
         return returnInfo('', 200, "数量成功修改为{$params['need']}！");
+    }
+
+    # 删除预算材料
+    public function del($params){
+        # 验证规则
+        $validate = validate('NeedValidate');
+        if(!$validate->scene('del')->check($params)){
+            return returnJson('', 201, $validate->getError());
+        }
+
+        $ret = NeedModel::destroy($params['id']);
+        if (!$ret){
+            return returnInfo('', 201, '删除错误！');
+        }
+
+        return returnInfo($ret, 200, '删除成功！');
+    }
+
+    // 核对预算材料
+    public function check($params){
+        $ret = NeedModel::update([
+            'check' => $params['check'],
+        ], ['id' => $params['id']]);
+        if (!$ret){
+            return returnInfo('', 201, '修改错误！');
+        }
+
+        return returnInfo('', 200, "修改成功！");
     }
 
 } 

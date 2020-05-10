@@ -6,8 +6,13 @@ class Need extends Base{
     protected $insert = [
         'need'    => 0,
         'need_ok' => 0,
-        'check'   => 0,
+        'check'   => 1,
     ];
+
+    public static function init()
+    {
+
+    }
 
     public function getTypeAttr($value){
         $arr = config('extra.buy_from');
