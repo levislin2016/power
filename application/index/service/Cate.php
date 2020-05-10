@@ -58,8 +58,8 @@ class Cate{
 
     public function son_add($data){
         $cat_list = CateModel::all()->toArray();
-        $pids = self::getParents($cat_list, $data['id']);
-        $data['lv'] = count($pids);
+        $pids = self::getParents($cat_list, $data['pid']);
+        $data['lv'] = count($pids)+1;
         $cate = CateModel::create($data);
         if(!$cate){
             throw new BaseException(
