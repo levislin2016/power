@@ -20,6 +20,10 @@ class Project{
             $where[] = ['create_time', 'between time', [trim($time[0]), trim($time[1])]];
         }
 
+        if (isset($params['contract_id']) && $params['contract_id']){
+            $where[] = ['contract_id', '=', $params['contract_id']];
+        }
+
         if (isset($params['status']) && $params['status']){
             $where[] = ['status', '=', $params['status']];
         }

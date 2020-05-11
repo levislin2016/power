@@ -1,0 +1,227 @@
+{include file="public/header" /}
+<div class="wrap-container clearfix">
+    <div class="column-content-detail">
+        <!--- 头部搜索框 --->
+        <div class="layui-card">
+            <div class="layui-form">
+
+                <div class="layui-form-item">
+                    <div class="layui-inline layui-form-pane">
+                        <div class="layui-inline">
+                            <button class="layui-btn search_btn1 layui-bg-blue"><i class="layui-icon layui-icon-add-1"></i>选择采购材料</button>
+                        </div>
+                    </div>
+                </div>
+                <form class="layui-form" lay-filter="search-form">
+                    <div class="layui-form-item">
+                        <div class="layui-inline layui-form-pane">
+                            <label class="layui-form-label">时间范围</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="create_time" style="width: 513px" value="" class="layui-input" id="time" readonly="readonly" placeholder="开始时间 - 结束时间">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <div class="layui-inline layui-form-pane">
+                            <label class="layui-form-label">名称|编号</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="search" placeholder="请输入名称或编号..." autocomplete="off" class="layui-input search"/>
+                            </div>
+                        </div>
+
+                        <input type="hidden" name="project_id" value="{$Request.get.project_id}"/>
+                        <input type="hidden" name="buy_id" value="{$Request.get.buy_id}"/>
+
+                        <div class="layui-inline">
+                            <div class="layui-input-inline">
+                                <button class="layui-btn layui-bg-blue btn_search"><i class="layui-icon layui-icon-search"></i>搜索</button>
+                                <button type="reset" class="layui-btn layui-btn-normal" id="empty"  lay-submit="" lay-filter="LAY-search">重置</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+        <!--- 头部搜索框 --->
+
+
+        <div class="layui-form" id="table-list">
+
+            <table id="table" lay-filter="table"></table>
+
+            <div class="buy_type" style="display: none;margin-top: 10px;">
+                <center>
+                    <input type="radio" class="buy_type_val" name="sex" value="1" title="自购" checked>
+                    <input type="radio" class="buy_type_val" name="sex" value="2" title="甲供">
+                </center>
+            </div>
+
+        </div>
+    </div>
+</div>
+{include file="public/script" /}
+
+
+<script type="text/html" id="template_type">
+    {{# if(d.need_type == '甲供'){ }}
+    <span class="layui-badge layui-bg-black">{{d.need_type}}</span>
+    {{# } }}
+    {{# if(d.need_type == '自购'){ }}
+    <span class="layui-badge layui-bg-blue">{{d.need_type}}</span>
+    {{# } }}
+</script>
+
+
+<script type="text/html" id="toolbar">
+    <div class="layui-btn-container">
+        <button class="layui-btn layui-btn-sm layui-bg-gray" lay-event="delete"><i class="layui-icon layui-icon-delete"></i>删除</button>
+    </div>
+</script>
+
+<script>
+    var table_reload;
+    layui.use(['form', 'jquery', 'element', 'laydate', 'table'], function() {
+        var form = layui.form,
+            $ = layui.jquery,
+            laydate = layui.laydate,
+            table = layui.table;
+
+        //日期范围
+        laydate.render({
+            elem: '#time'
+            ,range: '至'
+            ,type:'datetime'
+
+        });
+
+        // 监听表单提交事件
+        form.on('submit(search-form)',function (data) {
+            table_reload();
+            return false;
+        });
+
+        // 监听下拉框选择
+        form.on('select(select1)', function(data){
+            table_reload();
+            return false;
+        });
+
+        //监听开关操作
+        form.on('switch(check)', function(obj){
+
+        });
+
+
+        // 表格刷新方法 带form数据
+        table_reload = function(){
+            var where = form.val("search-form");
+            //执行重载
+            table.reload('table', {
+                where: where
+            });
+        };
+
+        var url = "{:url('buy/ajax_get_buyinfo_list')}";
+        //第一个实例
+        table.render({
+            elem: '#table'
+            ,url: url//数据接口
+            ,page: false //开启分页
+            ,toolbar:true
+            ,limit:100000
+            // ,height:'full-100'
+            ,loading:true
+            ,where:form.val("search-form")
+            ,text:{
+                none:'暂无相关数据'
+            }
+            ,cols: [[ //表头
+                {type:'numbers', title: '序号', align:'center', fixed:'left', sort:true,width:90}
+                ,{field: 'type_name', title: '分类', align:'center',sort:true}
+                ,{field: 'goods_name', title: '名称', align:'center',sort:true}
+                ,{field: 'goods_number', title: '编号', align:'center',sort:true}
+                ,{field: 'num', title: '采购数量', align:'center',sort:true, width:120, edit:'text'}
+                ,{field: 'num_ok', title: '累计采购（本次）', align:'center',sort:true, width:180}
+                ,{field: 'need_need', title: '预算数量', align:'center',sort:true, width:120}
+                ,{field: 'need_need_ok', title: '累计采购（总计）', align:'center',sort:true, width:180}
+                ,{field: 'unit_name', title: '单位', align:'center', width:100}
+                ,{field: 'need_type', title: '类型', align:'center',sort:true, templet:"#template_type", width:80}
+                ,{field: 'create_time', title: '创建时间', sort:true, align:'center', width:180}
+                ,{field: 'number', title: '操作', templet:'#toolbar', fixed:'right', align:'center', width:100}
+            ]],parseData: function(res){ //res 即为原始返回的数据
+                return {
+                    "code": res.code, //解析接口状态
+                    "msg": res.msg, //解析提示文本
+                    "count": res.data.total, //解析数据长度
+                    "data": res.data.data //解析数据列表
+                };
+            },response: {
+                statusCode: 200 //规定成功的状态码，默认：0
+            }
+        });
+
+        //监听单元格编辑
+        table.on('edit(table)', function(obj){
+            var value = obj.value //得到修改后的值
+                ,data = obj.data //得到所在行所有键值
+                ,field = obj.field; //得到字段
+            var form_data = obj.data;
+            var oldvalue = $(this).prev().text();
+            $.post("{:url('buy/ajax_edit_buyinfo')}", form_data, function(ret){
+                if (ret.code == 200){
+                    layer.msg('['+ data.goods_name +'] <br>数量更改为：'+ value,{offset:'t'});
+                }else{
+                    var objTemp = {};
+                    objTemp[field] = oldvalue;
+                    obj.update(objTemp);
+                    layer.msg(ret.msg,function () {
+
+                    });
+                    return false;
+                }
+            });
+        });
+
+        // 监听工具条
+        table.on('tool(table)', function(obj) {
+            switch(obj.event){
+                case 'delete':
+                    layer.confirm('确定删除这条记录吗？', {icon: 3, title:'提示'}, function(index){
+                        var form_data = obj.data;
+                        $.post("{:url('buy/ajax_del_buyinfo')}",form_data, function(ret){
+                            if(ret.code == 200){
+                                layer.msg(ret.msg);
+                                table_reload();
+                            }else{
+                                layer.msg(ret.msg, function () {
+
+                                })
+                            }
+                        });
+                        layer.close(index);
+                    });
+                break;
+            }
+        });
+
+        // 选择采购材料
+        $('.search_btn1').on('click',function () {
+            layer.open({
+                type : 2,
+                content:"{:url('buy/need')}" + "?id={$Request.get.id}&buy_id={$Request.get.buy_id}&project_id={$Request.get.project_id}",
+                title:'选择材料',
+                btnAlign: 'c',
+                area: ['95%', '95%'],
+                shadeClose: true,
+                anim: 5,
+                isOutAnim:true,
+                end:function(){
+                    table_reload();
+                }
+            });
+        });
+    })
+</script>
+{include file="public/footer" /}

@@ -23,6 +23,7 @@ class Project extends Base
     ];
 
     public function index(){
+        $data['contract'] = ContractModel::all();
         $data['status'] = config('extra.project_status');
         return view('index', ['data' => $data]);
     }

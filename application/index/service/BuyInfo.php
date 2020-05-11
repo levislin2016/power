@@ -1,71 +1,121 @@
 <?php
 namespace app\index\service;
 
-use app\index\model\SupplyGoods as SupplyGoodsModel;
-use app\index\model\Goods as GoodsModel;
 use app\index\model\Buy as BuyModel;
 use app\index\model\BuyInfo as BuyInfoModel;
 use app\index\model\Need as NeedModel;
-use app\index\model\StockOrder as StockOrderModel;
-use app\index\model\StockOrderInfo as StockOrderInfoModel;
-use app\index\model\Project as ProjectModel;
-use app\index\model\StockAll as StockAllModel;
-use app\index\model\ProjectStock as ProjectStockModel;
-use app\lib\exception\BaseException;
 use think\Db;
+
 
 class BuyInfo{
 
-    // 根据项目id获取采购单的商品列表
-    public function getList($params, $type = false, $limit = 20, $order = 'desc'){
-        $list = BuyInfoModel::useGlobalScope(false)->alias('bi')
-                    ->leftJoin('goods g','bi.goods_id = g.id')
-                    ->leftJoin('unit u','g.unit_id = u.id')
-                    ->leftJoin('need n','bi.need_id = n.id')
-                    ->where(function ($query) use($params) {
-                        $query->where('bi.buy_id', '=', $params['buy_id']);
-                    })
-                    ->field('bi.id, bi.goods_id, bi.project_id, bi.num, n.need, n.need_ok, g.number, g.name, g.unit_id, u.name as unit')
-                    ->order('bi.create_time', $order)
-                    ->paginate($limit, false, ['path' => "javascript:ajaxPage([PAGE]);"]);
-
-        // 根据项目的采购单详情列表
-        if ($type == 'project'){
-            $list = $this->getListProject($list);
+    // 获取列表
+    public function getList($params, $limit = 15){
+        $where = [];
+        $hasWhere = [];
+        if (isset($params['search']) && $params['search']){
+            $hasWhere[] = ['Goods.name|number', 'like', "%{$params['search']}%"];
         }
 
-        // 根据项目的采购单详情列表
-        if ($type == 'total'){
-            $list = $this->getListTotal($list);
+        if (isset($params['project_id']) && $params['project_id']){
+            $where[] = ['project_id', '=', $params['project_id']];
         }
 
-//        dump(Db::getLastSql());
+        if (isset($params['buy_id']) && $params['buy_id']){
+            $where[] = ['buy_id', '=', $params['buy_id']];
+        }
+
+        if (isset($params['create_time']) && $params['create_time']){
+            $time = explode('至', $params['create_time']);
+            $where[] = ['Need.create_time', 'between time', [trim($time[0]), trim($time[1])]];
+        }
+
+        $list = BuyInfoModel::hasWhere('goods', $hasWhere)->with(['goods' => ['unit', 'type'], 'need'])->where($where)->order('create_time desc')->paginate($limit);
         return $list;
     }
 
-    // 根据工程的采购单详情列表
-    public function getListProject($list){
-        $arr = [];
-        foreach ($list as $k => $v){
-            $project = ProjectModel::get($v['project_id']);
-            $arr[$v['project_id']]['project_name'] = $project['name'];
-            $arr[$v['project_id']]['list'][] = $v;
+    // 新增采购材料
+    public function add($params){
+        if (!isset($params['json_arr']) || !$params['json_arr']){
+            return returnInfo('', 201, '请勾选要添加的材料！！');
         }
-        return $arr;
+        $validate = validate('BuyInfoValidate');
+        Db::startTrans();
+        foreach ($params['json_arr'] as $k => $v){
+            $data = [
+                'buy_id'     => $params['buy_id'],
+                'project_id' => $v['project_id'],
+                'goods_id'   => $v['goods_id'],
+                'num'        => $v['need'] - $v['need_ok'],
+                'need_id'    => $v['id'],
+            ];
+
+            // 验证场景
+            if (!$validate->scene('add')->check($data)){
+                Db::rollback();
+                return returnInfo('', 201, "材料：{$v['goods_name']} 添加失败 <br>原因：" . $validate->getError());
+            }
+
+            $ret_add = BuyInfoModel::create($data);
+            if (!$ret_add){
+                Db::rollback();
+                return returnInfo('', 201, '添加采购材料错误！');
+            }
+        }
+        Db::commit();
+        return returnInfo('', 200, "添加成功！");
     }
 
-    // 根据需求数量，计算各个材料的总数量
-    public function getListTotal($list){
-        $arr = [];
-        foreach ($list as $k => $v){
-            if (!isset($arr[$v['goods_id']]['num'])){
-                $arr[$v['goods_id']]['num'] = $v['num'];
-            }else{
-                $arr[$v['goods_id']]['num'] += $v['num'];
-            }
-            $arr[$v['goods_id']]['list'] = $v;
+    // 修改采购材料数量
+    public function edit($params){
+        // 验证 登录 场景
+        $validate = validate('BuyInfoValidate');
+        if (!$validate->scene('edit')->check($params)){
+            return returnInfo('', 201, '修改错误 原因：' . $validate->getError());
         }
-        return $arr;
+
+        $ret = BuyInfoModel::update([
+            'num' => $params['num'],
+        ], ['id' => $params['id']]);
+        if (!$ret){
+            return returnInfo('', 201, '修改数量错误！');
+        }
+
+        return returnInfo('', 200, "数量成功修改为{$params['num']}！");
+    }
+
+    # 删除采购材料
+    public function del($params){
+        # 验证规则
+        $validate = validate('BuyInfoValidate');
+        if(!$validate->scene('del')->check($params)){
+            return returnJson('', 201, $validate->getError());
+        }
+
+        $ret = BuyInfoModel::destroy($params['id']);
+        if (!$ret){
+            return returnInfo('', 201, '删除错误！');
+        }
+
+        return returnInfo($ret, 200, '删除成功！');
+    }
+
+    # 确认生成采购单
+    public function sure($params){
+        # 验证规则
+        $validate = validate('BuyInfoValidate');
+        if(!$validate->scene('sure')->check($params)){
+            return returnJson('', 201, $validate->getError());
+        }
+
+        $ret = BuyModel::update([
+            'status' => 2,
+        ],['id' => $params['buy_id']]);
+        if (!$ret){
+            return returnInfo('', 201, '生成错误！');
+        }
+
+        return returnInfo($ret, 200, '生成成功！');
     }
 
 

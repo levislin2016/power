@@ -26,7 +26,7 @@ class NeedValidate extends BaseValidate
     protected $scene = [
         'add'  => ['goods_id', 'project_id', 'type'],
         'edit' => ['need'],
-        'del'  => ['id']
+        'del'  => ['id'],
     ];
 
     // 添加材料 验证工程项目是否为 待开工 状态

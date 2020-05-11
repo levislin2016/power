@@ -9,7 +9,7 @@
 					<div class="layui-inline layui-form-pane">
 						<div class="layui-inline">
 							<button class="layui-btn search_btn1 layui-bg-blue"><i class="layui-icon layui-icon-add-1"></i>添加采购工程</button>
-							<button class="layui-btn search_btn2 layui-bg-blue"><i class="layui-icon layui-icon-list"></i>导出</button>
+							<button class="layui-btn search_btn2 layui-bg-cyan"><i class="layui-icon layui-icon-ok"></i>确认生成采购单</button>
 						</div>
 					</div>
 				</div>
@@ -28,6 +28,18 @@
 							<label class="layui-form-label">工程名称</label>
 							<div class="layui-input-inline">
 								<input type="text" name="search" placeholder="请输入工程名称..." autocomplete="off" class="layui-input search"/>
+							</div>
+						</div>
+
+						<div class="layui-inline layui-form-pane">
+							<label class="layui-form-label">业主</label>
+							<div class="layui-input-inline">
+								<select name="contract_id" lay-search="" lay-filter="select1">
+									<option value="">全部</option>
+									{volist name="data.contract" id="v"}
+									<option value="{$v.id}">{$v.name}</option>
+									{/volist}
+								</select>
 							</div>
 						</div>
 
@@ -57,11 +69,26 @@
 </div>
 {include file="public/script" /}
 
+<script type="text/html" id="template_status">
+	{{# if(d.project_status == '待开工'){ }}
+	<span class="layui-badge layui-bg-orange">{{d.project_status}}</span>
+	{{# } }}
+	{{# if(d.project_status == '已开工'){ }}
+	<span class="layui-badge layui-bg-green">{{d.project_status}}</span>
+	{{# } }}
+	{{# if(d.project_status == '待结算'){ }}
+	<span class="layui-badge layui-bg-cyan">{{d.project_status}}</span>
+	{{# } }}
+	{{# if(d.project_status == '已结算'){ }}
+	<span class="layui-badge layui-bg-gray">{{d.project_status}}</span>
+	{{# } }}
+</script>
+
 
 <script type="text/html" id="toolbar">
 	<div class="layui-btn-container">
-		<a class="layui-btn layui-btn-sm layui-bg-blue" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>编辑</a>
-		<button class="layui-btn layui-btn-sm layui-bg-gray" lay-event="cancel"><i class="layui-icon layui-icon-delete"></i>删除</button>
+		<a class="layui-btn layui-btn-sm layui-bg-blue" lay-event="edit"><i class="layui-icon layui-icon-cart"></i>采购材料</a>
+		<button class="layui-btn layui-btn-sm layui-bg-gray" lay-event="delete"><i class="layui-icon layui-icon-delete"></i>删除</button>
 	</div>
 </script>
 
@@ -72,15 +99,33 @@
 				laydate = layui.laydate,
 				table = layui.table;
 
+		//日期范围
+		laydate.render({
+			elem: '#time'
+			,range: '至'
+			,type:'datetime'
+
+		});
+
 		// 确认搜索
 		form.on('submit(search-form)',function (data) {
-			var where =  data.field;
+			table_reload();
+			return false;
+		});
+
+		form.on('select(select1)', function(data){
+			table_reload();
+			return false;
+		});
+
+		// 表格刷新方法 带form数据
+		table_reload = function(){
+			var where = form.val("search-form");
 			//执行重载
 			table.reload('table', {
 				where: where
 			});
-			return false;
-		});
+		};
 
 		//第一个实例
 		table.render({
@@ -97,11 +142,13 @@
 			}
 			,cols: [[ //表头
 				{type:'numbers', title: '序号', align:'center', fixed:'left', sort:true,width:90}
-				,{field: 'project', title: '工程名称', sort: true, align:'center', templet:"<div>{{d.project.name}}</div>"}
-				,{field: 'project', title: '状态', sort: true, align:'center', templet:"<div>{{d.project.status}}</div>", width:90}
-				,{field: 'open_time', title: '开工时间',sort: true,  align:'center', templet:"<div>{{d.project.create_time}}</div>", width:180}
-				,{field: 'create_time', title: '创建时间',sort: true,  align:'center', templet:"<div>{{d.project.create_time}}</div>", width:180}
-				,{field: 'number', title: '操作', templet:'#toolbar', fixed:'right', align:'center', width:180}
+				,{field: 'project_name', title: '工程名称', sort: true, align:'center'}
+				,{field: 'contract_name', title: '业主名称', sort: true, align:'center'}
+				,{field: 'contract_number', title: '合同编号', sort: true, align:'center'}
+				,{field: 'project_status', title: '状态', sort: true, align:'center', width:90, templet:'#template_status'}
+				,{field: 'project_open_time', title: '开工时间',sort: true,  align:'center', width:180}
+				,{field: 'create_time', title: '创建时间',sort: true,  align:'center', width:180}
+				,{field: 'number', title: '操作', templet:'#toolbar', fixed:'right', align:'center', width:200}
 			]],parseData: function(res){ //res 即为原始返回的数据
 				return {
 					"code": res.code, //解析接口状态
@@ -118,8 +165,8 @@
 			if (obj.event == 'edit'){
 				layer.open({
 					type : 2,
-					content:"{:url('buy/edit')}" + '?id=' + obj.data.id,
-					title:['采购单编号：' + obj.data.number  + '   状态：' + obj.data.status + '   创建时间：' + obj.data.create_time, 'font-weight:bold'],
+					content:"{:url('buy/buy_info')}" + '?id=' + obj.data.id + '&buy_id=' + obj.data.buy_id + '&project_id=' + obj.data.project_id,
+					title:['采购工程：' + obj.data.project_name  + '   业主：' + obj.data.contract_name, 'font-weight:bold'],
 					btnAlign: 'c',
 					area: ['100%', '100%'],
 					anim: 5,
@@ -127,29 +174,24 @@
 				});
 			}
 
-			if (obj.event == 'cancel'){
-				wk.confirm(obj.data.id, "{:url('buy/ajax_cancel')}", "确定作废这张采购单吗？",table, {
-					search: $('.search').val()
+			if (obj.event == 'delete'){
+				layer.confirm('确定删除这条记录吗？', {icon: 3, title:'提示'}, function(index){
+					var form_data = obj.data;
+					$.post("{:url('buy/ajax_del_project')}",form_data, function(ret){
+						if(ret.code == 200){
+							layer.msg(ret.msg);
+							table_reload();
+						}else{
+							layer.msg(ret.msg, function () {
+
+							})
+						}
+					});
+					layer.close(index);
 				});
 			}
 		});
 
-
-		$('.search_btn2').click(function(){
-			var form_data = form.val("search-form");
-			$.get("{:url('buy/ajax_get_list')}",form_data, function (res) {
-				if (res.code == 200){
-					res.data.data.unshift({
-						id: 'ID',
-						number: '采购单编号',
-						status: '状态',
-						create_time:'创建时间',
-						type:'类型',
-					});
-					LAY_EXCEL.exportExcel(res.data.data, '采购单.xlsx', 'xlsx')
-				}
-			})
-		});
 
 		$('.search_btn1').on('click',function () {
 			layer.open({
@@ -165,6 +207,23 @@
 					table_reload();
 				}
 			});
+		})
+
+		// 确认生成采购单
+		$('.search_btn2').on('click',function () {
+
+			var form_data = {
+				buy_id: "{$Request.get.id}",
+			};
+			$.post("{:url('buy/ajax_sure')}", form_data, function (ret) {
+				if (ret.code == 200) {
+					layer.msg(ret.msg);
+				} else {
+					layer.msg(ret.msg, function () {
+
+					})
+				}
+			})
 		})
 
 

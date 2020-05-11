@@ -198,25 +198,24 @@
 						area: ['100%', '100%'],
 						anim: 5,
 						isOutAnim:true,
+						end:function(){
+							table_reload();
+						}
 					});
 				}
 
 				if (obj.event == 'cancel'){
 					layer.confirm('确定作废这张采购单吗？', {icon: 3, title:'提示'}, function(index){
-						var form_data = {
-							id : obj.data.id,
-						};
+						var form_data = obj.data;
 						$.post("{:url('buy/ajax_cancel')}",form_data, function(ret){
 							if(ret.code == 200){
-								layer.msg(ret.msg)
+								layer.msg(ret.msg);
+								table_reload();
 							}else{
 								layer.msg(ret.msg, function () {
 
 								})
 							}
-							table.reload('table', {
-								where: form.val("search-form"),
-							});
 						});
 						layer.close(index);
 					});

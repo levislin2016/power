@@ -32,6 +32,18 @@
                         </div>
 
                         <div class="layui-inline layui-form-pane">
+                            <label class="layui-form-label">业主</label>
+                            <div class="layui-input-inline">
+                                <select name="contract_id" lay-search="" lay-filter="select1">
+                                    <option value="">全部</option>
+                                    {volist name="data.contract" id="v"}
+                                    <option value="{$v.id}">{$v.name}</option>
+                                    {/volist}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="layui-inline layui-form-pane">
                             <label class="layui-form-label">状态</label>
                             <div class="layui-input-inline">
                                 <select name="status" lay-search="" lay-filter="select1">
@@ -232,6 +244,9 @@
                 area: ['50%', '50%'],
                 anim: 5,
                 isOutAnim:true,
+                end:function(){
+                    table_reload();
+                }
             });
         });
 
