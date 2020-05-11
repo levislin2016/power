@@ -26,23 +26,23 @@
 							<div class="layui-inline tool-btn">
 							</div>
 							<div class="layui-inline">
-								<input type="text" name="search" id="search" lay-verify="required" placeholder="请输入材料" autocomplete="off" class="layui-input" value={if condition="$_GET['supply_goods_id'] neq null"}"{$goods_name['name']}" disabled="disabled"{else/}"{$Think.get.search}"{/if} />
+								<input type="text" name="search" id="search" lay-verify="required" placeholder="请输入材料" autocomplete="off" class="layui-input" value={if condition="$Request.param.supply_goods_id neq null"}"{$goods_name['name']}" disabled="disabled"{else/}"{$Think.get.search}"{/if} />
 							</div>
 							<div class="layui-inline" style="position:relative; z-index:66;" >
-								<select name="project_id" required  lay-filter="filter" lay-search=""  style="width:195px;z-index: 2" id="project_id" {if condition="$_GET['project_id'] neq ''"}disabled="disabled"{else/}{/if}>
+								<select name="project_id" required  lay-filter="filter" lay-search=""  style="width:195px;z-index: 2" id="project_id" {if condition="$Request.param.project_id neq ''"}disabled="disabled"{else/}{/if}>
 									<option value="" >请选择调拨工程</option>
 									{volist name="project_all_list" id="vo"}
-									<option value="{$vo['id']}" {if condition="$_GET['project_id'] eq $vo['id']"}selected{else/}{/if}>{$vo['name']}</option>
+									<option value="{$vo['id']}" {if condition="$Request.param.project_id eq $vo['id']"}selected{else/}{/if}>{$vo['name']}</option>
 									{/volist}
 								</select>
 							</div>
 
 							<div class="layui-inline">
-								<input type="text" name="supply_goods_id" id="supply_goods_id" style="display: none"  lay-verType="tips" autocomplete="off" class="layui-input" value="{$_GET['supply_goods_id']}">
+								<input type="text" name="supply_goods_id" id="supply_goods_id" style="display: none"  lay-verType="tips" autocomplete="off" class="layui-input" value="{$Request.param.supply_goods_id}">
 
 							</div>
 							<div class="layui-inline">
-								<input type="text" name="is_type"  id="is_type" style="display: none" lay-verType="tips" autocomplete="off" class="layui-input" value="{$_GET['is_type']}">
+								<input type="text" name="is_type"  id="is_type" style="display: none" lay-verType="tips" autocomplete="off" class="layui-input" value="{$Request.param.is_type}">
 							</div>
 							<div class="layui-inline">
 								<button type="button" class="layui-btn  layui-btn-normal addBtn2 btn_tips" data-title="查询调拨记录"  data-url="" style="display: none" data-w="1200px" data-h="748px"><i class="layui-icon">&#xe705;</i>查询调拨记录</button>
@@ -59,7 +59,7 @@
 					<div class="layui-tab layui-tab-card table_list" >
 						<ul class="layui-tab-title">
 
-							{if condition="$_GET.is_type eq 2"}
+							{if condition="$Request.param.is_type eq 2"}
 								<li class="layui-this">甲供结余调拨</li>
 							{else/}
 								{if condition="$Think.cookie.is_type eq 2"}
@@ -72,7 +72,7 @@
 							{/if}
 						</ul>
 						<div name="hidden_frame" class="layui-tab-content"  id="tablelist" style="height: 600px;">
-							{if condition="$_GET.is_type eq 2"}
+							{if condition="$Request.param.is_type eq 2"}
 								<!--甲供结余调拨-->
 								<div class="layui-tab-item layui-show">
 									<div class="layui-form" id="table-list">
@@ -137,16 +137,13 @@
 		<script src="http://libs.baidu.com/jquery/2.1.4/jquery.min.js"></script>
 		<script type="text/html" id="barDemo">
 			<button type="button" class="layui-btn layui-btn-sm layui-btn-normal addBtn1 btn_tips" data-title="调拨材料"  lay-event="shopp" data-h="568px"><i class="layui-icon">&#xe698;</i></button>
-			<!--{:url('allocation/allocation_goods')}?project_id='+d.id+'&contract_id='+d.contract_id+'&type_id=1&stock_id=&supply_goods_id=&woker_id='+d.woker_id+'&is_type=2&owner_id='+d.owner_id+'&is_project_id='+"{$_GET['project_id']}"+-->
 		</script>
 		<script type="text/html" id="barDemo1">
 			<button type="button" class="layui-btn layui-btn-sm layui-btn-normal addBtn1 btn_tips" data-title="调拨材料" lay-event="shopp1" data-h="568px" ><i class="layui-icon">&#xe698;</i></button>
-			<!--{:url('allocation/allocation_goods')}?project_id='+d.id+'&contract_id='+d.contract_id+'&type_id=1&stock_id=&supply_goods_id=&woker_id='+d.woker_id+'&is_type=1&is_project_id='+"{$_GET['project_id']}"+-->
 
 		</script>
         <script type="text/html" id="barDemo2">
             <button type="button" class="layui-btn layui-btn-sm layui-btn-normal addBtn1 btn_tips" data-title="调拨材料" lay-event="shopp2" data-h="568px" ><i class="layui-icon">&#xe698;</i></button>
-            <!--{:url('allocation/allocation_goods')}?project_id='+d.id+'&contract_id='+d.contract_id+'&type_id=1&stock_id=&supply_goods_id=&woker_id='+d.woker_id+'&is_type=1&is_project_id='+"{$_GET['project_id']}"+-->
 
         </script>
 	   <script type="text/html" id="status_name">
