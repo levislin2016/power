@@ -20,7 +20,7 @@
 							</div>
 							<div class="layui-inline">
 								<input type="text" name="search" id="search" placeholder="请输入工程/商品名" autocomplete="off" class="layui-input" value="{$Think.get.search}" />
-								<input type="text" name="is_project_id" id="is_project_id" placeholder="请输入工程/商品名" autocomplete="off" style="display: none" class="layui-input" value="{$_GET['is_project_id']}" />
+								<input type="text" name="is_project_id" id="is_project_id" placeholder="请输入工程/商品名" autocomplete="off" style="display: none" class="layui-input" value="{$Request.param.is_project_id}" />
 							</div>
 							<div class="layui-inline">
 								<select name="type" id="type" lay-filter="status">
@@ -97,7 +97,7 @@
                 $(".dc").click(function(){
                     var type = $('#type option:selected').val();
                     var search = $("#search").val()
-                    var url = "{:url('stock_order/stock_order_index_excel')}?search="+search+"&type="+type+'&is_project_id='+"{$_GET['is_project_id']}";
+                    var url = "{:url('stock_order/stock_order_index_excel')}?search="+search+"&type="+type+'&is_project_id='+"{$Request.param.is_project_id}";
                     window.open(url);
                 });
 			})
