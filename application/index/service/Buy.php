@@ -70,5 +70,24 @@ class Buy{
         return returnInfo($ret, 200, "创建采购单成功！编号:{$ret['number']}");
     }
 
+    # 确认生成采购单
+    public function sure($params){
+        # 验证规则
+        $validate = validate('BuyInfoValidate');
+        if(!$validate->scene('sure')->check($params)){
+            return returnJson('', 201, $validate->getError());
+        }
+
+        $ret = BuyModel::update([
+            'id'     => $params['buy_id'],
+            'status' => 2,
+        ]);
+        if (!$ret){
+            return returnInfo('', 201, '生成错误！');
+        }
+
+        return returnInfo($ret, 200, '确认生成采购单成功, 采购单修改为 [采购中]！');
+    }
+
 
 }

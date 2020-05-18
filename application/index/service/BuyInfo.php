@@ -30,7 +30,7 @@ class BuyInfo{
             $where[] = ['Need.create_time', 'between time', [trim($time[0]), trim($time[1])]];
         }
 
-        $list = BuyInfoModel::hasWhere('goods', $hasWhere)->with(['goods' => ['unit', 'type'], 'need'])->where($where)->order('create_time desc')->paginate($limit);
+        $list = BuyInfoModel::hasWhere('goods', $hasWhere)->with(['goods' => ['unit', 'type'], 'need', 'supply'])->where($where)->order('create_time desc')->paginate($limit);
         return $list;
     }
 
@@ -73,15 +73,25 @@ class BuyInfo{
         if (!$validate->scene('edit')->check($params)){
             return returnInfo('', 201, '修改错误 原因：' . $validate->getError());
         }
-
-        $ret = BuyInfoModel::update([
-            'num' => $params['num'],
-        ], ['id' => $params['id']]);
-        if (!$ret){
-            return returnInfo('', 201, '修改数量错误！');
+        $data = [
+            'id'    => $params['id'],
+        ];
+        if (isset($params['num'])){
+            $data['num'] = $params['num'];
+        }
+        if (isset($params['num'])){
+            $data['price'] = $params['price'];
+        }
+        if (isset($params['supply_id'])){
+            $data['supply_id'] = $params['supply_id'];
         }
 
-        return returnInfo('', 200, "数量成功修改为{$params['num']}！");
+        $ret = BuyInfoModel::update($data);
+        if (!$ret){
+            return returnInfo('', 201, '修改错误！');
+        }
+
+        return returnInfo($ret, 200, "修改成功！");
     }
 
     # 删除采购材料
@@ -100,23 +110,7 @@ class BuyInfo{
         return returnInfo($ret, 200, '删除成功！');
     }
 
-    # 确认生成采购单
-    public function sure($params){
-        # 验证规则
-        $validate = validate('BuyInfoValidate');
-        if(!$validate->scene('sure')->check($params)){
-            return returnJson('', 201, $validate->getError());
-        }
 
-        $ret = BuyModel::update([
-            'status' => 2,
-        ],['id' => $params['buy_id']]);
-        if (!$ret){
-            return returnInfo('', 201, '生成错误！');
-        }
-
-        return returnInfo($ret, 200, '生成成功！');
-    }
 
 
 

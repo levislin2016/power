@@ -11,7 +11,7 @@
 	</head>
 	<body>
 	<form class="layui-form column-content-detail" method="post" action="{:url('supply_goods/save',array('id'=>$Request.param.id))}">
-		<input style="display: none" name="s_id" value="{$_GET['s_id']}">
+		<input style="display: none" name="supply_id" value="{$_GET['supply_id']}">
 					<div class="layui-tab">
 						<div class="layui-tab-content">
 							<div class="layui-tab-item layui-show">
@@ -86,7 +86,7 @@
                             for(var i=0;i< 3;i++){
                                 var ifr = parent.document.getElementsByTagName("iframe")[i];
                                 var iframeUrl = ifr.src;
-                                if(iframeUrl.indexOf("{:url('supply_goods/index')}?id={$_GET['s_id']}")!=-1){
+                                if(iframeUrl.indexOf("{:url('supply_goods/index')}?supply_id={$_GET['supply_id']}")!=-1){
                                     ifr.src =iframeUrl;
                                 }
                             }

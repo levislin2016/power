@@ -5,15 +5,14 @@ use app\index\model\Supply as SupplyModel;
 use app\lib\exception\BaseException;
 
 class Supply{
-    //供应商列表
-    public function selectList($params){
-        $list = SupplyModel::where(function ($query) use($params) {
-            if(!empty($params['search'])){ 
-                $query->where('name', 'like', '%'.$params['search'].'%');
-            }
-        })->field('id, company_id, name, phone, note,create_time')->order('create_time', 'desc')->paginate(10, false, [
-            'query'     => $params,
-        ]);
+    // 获取列表
+    public function getList($params, $limit = 15){
+        $where = [];
+        if (isset($params['search']) && $params['search']){
+            $where[] = ['name', 'like', "%{$params['search']}%"];
+        }
+
+        $list = SupplyModel::where($where)->order('create_time desc')->paginate($limit);
         return $list;
     }
 
@@ -70,5 +69,7 @@ class Supply{
             ];
         }
     }
+
+
 
 } 

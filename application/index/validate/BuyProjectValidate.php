@@ -9,9 +9,9 @@ use app\index\model\Project as ProjectModel;
 class BuyProjectValidate extends BaseValidate
 {
     protected $rule = [
-        'id'         => 'checkBuyStatus',
-        'buy_id'     => 'require|unique:BuyProject,buy_id^project_id',
-        'project_id' => 'require|unique:BuyProject,buy_id^project_id|checkProjectStatus',
+        'id'         => 'checkDel',
+        'buy_id'     => 'require|unique:BuyProject,buy_id^project_id|checkBuyStatus',
+        'project_id' => 'require|unique:BuyProject,buy_id^project_id',
     ];
 
     protected $message = [
@@ -43,10 +43,19 @@ class BuyProjectValidate extends BaseValidate
         # 判断采购单的状态是否可以删除工程
         $buy = BuyModel::get($data['buy_id']);
         if ($buy->getData('status') != 1){
-            return '采购单必须为 [待确认] 状态！才能进行删除操作！';
+            return '采购单必须为 [待确认] 状态！才能进行操作！';
         }
+        return true;
+    }
+
+    // 删除采购工程,判断是否有采购的详情
+    protected function checkDel($value,$rule,$data=[])
+    {
         # 判断是否有采购材料
-        $ret = BuyInfoModel::get(['buy_id' => $data['buy_id']]);
+        $ret = BuyInfoModel::get([
+            'buy_id'     => $data['buy_id'],
+            'project_id' => $data['project_id'],
+        ]);
         if ($ret){
             return '请先删除该工程下的采购材料，才能进行工程的删除操作！';
         }

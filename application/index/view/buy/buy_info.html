@@ -1,5 +1,5 @@
 {include file="public/header" /}
-<div class="wrap-container clearfix">
+<div class="layui-layer-content clearfix">
     <div class="column-content-detail">
         <!--- 头部搜索框 --->
         <div class="layui-card">
@@ -143,12 +143,13 @@
                 ,{field: 'goods_name', title: '名称', align:'center',sort:true}
                 ,{field: 'goods_number', title: '编号', align:'center',sort:true}
                 ,{field: 'num', title: '采购数量', align:'center',sort:true, width:120, edit:'text'}
-                ,{field: 'num_ok', title: '累计采购（本次）', align:'center',sort:true, width:180}
+                ,{field: 'num_ok', title: '已采购', align:'center',sort:true, width:120}
                 ,{field: 'need_need', title: '预算数量', align:'center',sort:true, width:120}
-                ,{field: 'need_need_ok', title: '累计采购（总计）', align:'center',sort:true, width:180}
+                ,{field: 'need_need_ok', title: '累计采购', align:'center',sort:true, width:150}
+                ,{field: 'supply_name', title: '供应商', align:'center', width:150, event:'supply'}
+                ,{field: 'price', title: '价格', sort:true, align:'center', width:100, edit:'text'}
                 ,{field: 'unit_name', title: '单位', align:'center', width:100}
                 ,{field: 'need_type', title: '类型', align:'center',sort:true, templet:"#template_type", width:80}
-                ,{field: 'create_time', title: '创建时间', sort:true, align:'center', width:180}
                 ,{field: 'number', title: '操作', templet:'#toolbar', fixed:'right', align:'center', width:100}
             ]],parseData: function(res){ //res 即为原始返回的数据
                 return {
@@ -171,7 +172,7 @@
             var oldvalue = $(this).prev().text();
             $.post("{:url('buy/ajax_edit_buyinfo')}", form_data, function(ret){
                 if (ret.code == 200){
-                    layer.msg('['+ data.goods_name +'] <br>数量更改为：'+ value,{offset:'t'});
+                    layer.msg('['+ data.goods_name +'] <br>更改为：'+ value,{offset:'t'});
                 }else{
                     var objTemp = {};
                     objTemp[field] = oldvalue;
@@ -203,6 +204,23 @@
                         layer.close(index);
                     });
                 break;
+                case 'supply':
+                    layer.open({
+                        type : 2,
+                        content:"{:url('buy/supply')}" + "?buyinfo_id=" + obj.data.id + '&buy_id=' + obj.data.buy_id + '&goods_id=' + obj.data.goods_id,
+                        title:false,
+                        offset:'r',
+                        btnAlign: 'c',
+                        area: ['15%', '100%'],
+                        shadeClose: true,
+                        closeBtn:0,
+                        anim: 5,
+                        isOutAnim:true,
+                        end:function(){
+                            table_reload();
+                        }
+                    });
+                break;
             }
         });
 
@@ -223,5 +241,7 @@
             });
         });
     })
+
+
 </script>
 {include file="public/footer" /}

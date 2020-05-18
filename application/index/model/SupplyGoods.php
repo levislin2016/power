@@ -7,11 +7,15 @@ class SupplyGoods extends Base{
 //    }
 
     public function supply(){
-        return $this->hasOne('Supply', 'id', 's_id');
+        return $this->hasOne('Supply', 'id', 'supply_id')->bind([
+            'supply_name' => 'name',
+        ]);
     }
 
     public function goods(){
-        return $this->hasOne('Goods', 'id', 'g_id');
+        return $this->hasOne('Goods', 'id', 'goods_id')->bind([
+            'goods_name' => 'name',
+        ]);
     }
 
 }

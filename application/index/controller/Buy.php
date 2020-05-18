@@ -132,9 +132,17 @@ class Buy extends Base{
 
     // 确认生成采购单
     public function ajax_sure(){
-        $list = model('buyInfo', 'service')->sure(input('post.'));
+        $list = model('buy', 'service')->sure(input('post.'));
         return returnJson($list['data'], $list['code'], $list['msg']);
     }
+
+    // 显示供应商列表
+    public function supply(){
+
+        return view('supply', ['data' => []]);
+    }
+
+
 
 
 }

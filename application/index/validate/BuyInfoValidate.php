@@ -15,6 +15,8 @@ class BuyInfoValidate extends BaseValidate
         'buy_id'     => 'require|unique:BuyInfo,buy_id^project_id^goods_id',
         'project_id' => 'require|unique:BuyInfo,buy_id^project_id^goods_id',
         'goods_id'   => 'require|unique:BuyInfo,buy_id^project_id^goods_id',
+        'price'      => 'float|>:0',
+        'supply_id'  => 'checkBuyStatus',
     ];
 
     protected $message = [
@@ -22,12 +24,11 @@ class BuyInfoValidate extends BaseValidate
         'buy_id.unique'      => '请勿重复采购该材料！',
         'project_id.unique'  => '请勿重复采购该材料！',
         'goods_id.unique'    => '请勿重复采购该材料！',
-
     ];
 
     protected $scene = [
         'add'  => ['num.>', 'buy_id', 'project_id', 'goods_id'],
-        'edit' => ['id', 'num'],
+        'edit' => ['id', 'num', 'price'],
         'del'  => ['id'],
     ];
 
@@ -62,7 +63,7 @@ class BuyInfoValidate extends BaseValidate
         return true;
     }
 
-    // 判断采购单能否生成
+    // 判断确认生成采购单
     protected function checkSure($value,$rule,$data=[])
     {
         $list = BuyInfoModel::with(['project', 'goods' => ['unit', 'type']])->all(['buy_id' => $value])->toArray();
@@ -71,13 +72,22 @@ class BuyInfoValidate extends BaseValidate
         }
 
         $buy = BuyModel::get($value);
+        if ($buy->getData('status') == 2){
+            return "采购单已经为 [采购中] 状态。请勿重复生成！";
+        }
         if ($buy->getData('status') != 1){
             return "采购单状态必须为 [待确认] 才能确认生成采购单！";
         }
 
         foreach ($list as $k => $v){
-            if ($v['num'] == 0){
-                return "生成失败！<br>工程：{$v['project_name']}<br>材料：{$v['goods_name']} 数量不能为 0！";
+            if (!$v['num']){
+                return "生成失败！<br>工程：{$v['project_name']}<br>材料：{$v['goods_name']} 数量未填写或不能为0！";
+            }
+            if (!$v['supply_id']){
+                return "生成失败！<br>工程：{$v['project_name']}<br>材料：{$v['goods_name']} 供应商未选择！";
+            }
+            if (!$v['price']){
+                return "生成失败！<br>工程：{$v['project_name']}<br>材料：{$v['goods_name']} 价格未填写或不能为0！";
             }
         }
 

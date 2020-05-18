@@ -13,11 +13,14 @@ class Supply extends Base
     ];
 
     public function index(){
-        $params = input('get.');
-        $list = (new SupplyService)->selectList($params);
-        //dump($list->toArray());
-    	$this->assign('list', $list);
-        return $this->fetch();
+        $data['list'] = model('supply', 'service')->getList(input('get.'), input('get.limit'));
+        return view('index', ['data' => $data]);
+    }
+
+    // 获取材料对应的供应商列表
+    public function ajax_get_list(){
+        $list = model('supply', 'service')->getList(input('get.'), input('get.limit'))->toArray();
+        return returnJson($list, 200, '获取成功');
     }
 
     public function add(){ 

@@ -17,7 +17,7 @@
 					<form class="layui-form" action="">
 						<div class="layui-form-item">
 							<div class="layui-inline tool-btn">
-								<button type="button" class="layui-btn layui-btn-sm layui-btn-normal addBtn btn_tips" data-title="创建供应商材料" data-url="{:url('supply_goods/add')}?s_id={$_GET['id']}" data-h="388px"><i class="layui-icon">&#xe654;</i></button>
+								<button type="button" class="layui-btn layui-btn-sm layui-btn-normal addBtn btn_tips" data-title="创建供应商材料" data-url="{:url('supply_goods/add')}?supply_id={$_GET['supply_id']}" data-h="388px"><i class="layui-icon">&#xe654;</i></button>
 								<button type="button" class="layui-btn layui-btn-sm layui-btn-danger delBtn btn_tips" data-title="批量删除" data-url="{:url('supply_goods/del')}"><i class="layui-icon">&#xe640;</i></button>
 								<!-- <button class="layui-btn layui-btn-sm layui-btn-warm listOrderBtn hidden-xs" data-url="article-add.html"><i class="iconfont">&#xe656;</i></button> -->
 							</div>
@@ -49,7 +49,7 @@
 								</tr>
 							</thead>
 							<tbody>
-							{volist name="list" id="vo"}
+							{volist name="data.list" id="vo"}
 								<tr>
 									<td><input type="checkbox" name="" lay-skin="primary" data-id="{$vo['id']}"></td>
 									<td class="hidden-xs">{$vo['id']}</td>									
@@ -59,7 +59,7 @@
 									<td>{$vo['create_time']}</td>
 									<td>
 										<div class="layui-inline">
-											<button class="layui-btn layui-btn-sm layui-btn-normal edit-btn btn_tips" data-title="修改供应商" data-url="{:url('supply_goods/add')}?id={$vo['id']}&s_id={$_GET['id']}" data-h="388px"><i class="layui-icon">&#xe642;</i></button>
+											<button class="layui-btn layui-btn-sm layui-btn-normal edit-btn btn_tips" data-title="修改供应商" data-url="{:url('supply_goods/add')}?id={$vo['id']}&supply_id={$_GET['supply_id']}" data-h="388px"><i class="layui-icon">&#xe642;</i></button>
 											<button class="layui-btn layui-btn-sm layui-btn-danger del-btn btn_tips" data-title="删除" data-id="{$vo['id']}" data-url="{:url('supply_goods/del')}"><i class="layui-icon">&#xe640;</i></button>
 										</div>
 									</td>

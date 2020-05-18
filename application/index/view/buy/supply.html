@@ -1,0 +1,89 @@
+{include file="public/header" /}
+<div class="wrap-container clearfix">
+		<!--- 头部搜索框 --->
+		<form class="layui-form" lay-filter="search-form" style="display: none">
+
+
+				<input type="hidden" name="goods_id" value="{$Request.get.goods_id}"/>
+
+				<div class="layui-inline">
+					<div class="layui-input-inline">
+						<button class="layui-btn layui-bg-blue btn_search"><i class="layui-icon layui-icon-search"></i>搜索</button>
+						<button type="reset" class="layui-btn layui-btn-normal" id="empty"  lay-submit="" lay-filter="LAY-search">重置</button>
+					</div>
+				</div>
+		</form>
+
+		<!--- 头部搜索框 --->
+		<table id="table" lay-filter="table"></table>
+</div>
+{include file="public/script" /}
+
+
+<script>
+	var table_reload;
+	layui.use(['form', 'jquery', 'element', 'laydate', 'table'], function() {
+		var form = layui.form,
+				$ = layui.jquery,
+				laydate = layui.laydate,
+				table = layui.table;
+
+
+		var url = "{:url('supplyGoods/ajax_get_list')}";
+		//第一个实例
+		table.render({
+			elem: '#table'
+			,url: url//数据接口
+			,page: false //开启分页
+			,toolbar:false
+			,limit:100000
+
+			// ,height:'full-100'
+			,loading:true
+			,where:form.val("search-form")
+			,text:{
+				none:'暂无相关数据'
+			}
+			,cols: [[ //表头
+				{field: 'supply_name', title: '供应商名称', align:'center',sort:true}
+			]],parseData: function(res){ //res 即为原始返回的数据
+				return {
+					"code": res.code, //解析接口状态
+					"msg": res.msg, //解析提示文本
+					"count": res.data.total, //解析数据长度
+					"data": res.data.data //解析数据列表
+				};
+			},response: {
+				statusCode: 200 //规定成功的状态码，默认：0
+			}
+		});
+
+		//监听行点击事件
+		table.on('row(table)', function(obj){
+			var form_data = {
+				'id'         : "{$Request.get.buyinfo_id}",
+				'buy_id'     : "{$Request.get.buy_id}",
+				'supply_id'  : obj.data.supply_id,
+			};
+			$.post("{:url('buy/ajax_edit_buyInfo')}",form_data,function (ret) {
+				window.parent.layer.closeAll();
+			})
+		});
+
+
+		// 监听工具条事件
+		table.on('toolbar(table)', function(obj) {
+
+		});
+
+		// 监听工具条
+		table.on('tool(table)', function(obj) {
+			switch(obj.event){
+
+			}
+		});
+
+
+	})
+</script>
+{include file="public/footer" /}

@@ -15,10 +15,14 @@ class SupplyGoods extends Base
     ];
 
     public function index(){
-        $params = input('get.');
-        $list = (new SupplyGoodsService)->selectList($params);
-    	$this->assign('list', $list);
-        return $this->fetch();
+        $data['list'] = model('supplyGoods', 'service')->getList(input('get.'), input('get.limit'));
+        return view('index', ['data' => $data]);
+    }
+
+    // 获取供应商对应的材料
+    public function ajax_get_list(){
+        $list = model('supplyGoods', 'service')->getList(input('get.'), input('get.limit'))->toArray();
+        return returnJson($list, 200, '获取成功');
     }
 
     public function add(){
