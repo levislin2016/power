@@ -142,6 +142,20 @@ class Buy extends Base{
         return view('supply', ['data' => []]);
     }
 
+    // 显示采购清单
+    public function total(){
+        $data['supply'] = model('buy', 'service')->getSupply(input('param.'));
+
+        return view('total', ['data' => $data]);
+    }
+
+    // 采购单清单明细
+    public function ajax_get_total(){
+        $list = model('buy', 'service')->total(input('param.'));
+        return returnJson($list, 200, '获取成功');
+    }
+
+
 
 
 

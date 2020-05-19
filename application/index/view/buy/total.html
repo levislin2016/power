@@ -1,0 +1,131 @@
+{include file="public/header" /}
+<style>
+	.layui-table, .layui-table-view{
+		margin: 0px 0px;
+	}
+</style>
+<div class="wrap-container clearfix">
+	<div class="column-content-detail">
+
+	<!--- 头部搜索框 --->
+		<div class="layui-card">
+
+		<form class="layui-form" lay-filter="search-form">
+
+
+			<input type="hidden" name="buy_id" value="{$Request.get.buy_id}"/>
+
+			<div class="layui-inline layui-form-pane">
+				<label class="layui-form-label">供应商</label>
+				<div class="layui-input-inline">
+					<select name="supply_id" lay-search="" lay-filter="select1">
+						<option value="">全部</option>
+						{volist name="data.supply" id="v"}
+						<option value="{$v.supply_id}">{$v.supply_name}</option>
+						{/volist}
+					</select>
+				</div>
+			</div>
+
+			<div class="layui-inline">
+				<div class="layui-input-inline" style="display: none">
+					<button class="layui-btn layui-bg-blue btn_search"><i class="layui-icon layui-icon-search"></i>搜索</button>
+					<button type="reset" class="layui-btn layui-btn-normal" id="empty"  lay-submit="" lay-filter="LAY-search">重置</button>
+				</div>
+			</div>
+		</form>
+	</div>
+
+
+		<!--- 头部搜索框 --->
+		<table id="table" lay-filter="table"></table>
+	</div>
+</div>
+{include file="public/script" /}
+
+
+<script>
+	var table_reload;
+	layui.use(['form', 'jquery', 'element', 'laydate', 'table'], function() {
+		var form = layui.form,
+				$ = layui.jquery,
+				laydate = layui.laydate,
+				table = layui.table;
+
+		form.on('select(select1)', function(data){
+			table_reload();
+			return false;
+		});
+
+		// 表格刷新方法 带form数据
+		table_reload = function(){
+			var where = form.val("search-form");
+			//执行重载
+			table.reload('table', {
+				where: where
+			});
+		};
+
+
+		var url = "{:url('buy/ajax_get_total')}";
+		//第一个实例
+		table.render({
+			elem: '#table'
+			,url: url//数据接口
+			,page: false //开启分页
+			,toolbar:true
+			,limit:100000
+
+			// ,height:'full-100'
+			,loading:true
+			,where:form.val("search-form")
+			,text:{
+				none:'暂无相关数据'
+			}
+			,cols: [[ //表头
+				{type:'numbers', title: '序号', align:'center', fixed:'left', sort:true,width:90}
+				,{field: 'type_name', title: '分类', align:'center',sort:true}
+				,{field: 'goods_name', title: '名称', align:'center',sort:true}
+				,{field: 'goods_number', title: '编号', align:'center',sort:true}
+				,{field: 'num', title: '采购数量', align:'center',sort:true, width:110}
+				,{field: 'num_ok', title: '已采购', align:'center',sort:true, width:110}
+				,{field: 'need_need', title: '预算数量', align:'center',sort:true, width:110}
+				,{field: 'need_need_ok', title: '累计采购', align:'center',sort:true, width:110}
+				,{field: 'price', title: '价格', sort:true, align:'center', width:100}
+				,{field: 'supply_name', title: '供应商', align:'center', width:150, event:'supply'}
+				,{field: 'unit_name', title: '单位', align:'center', width:90}
+				,{field: 'need_type', title: '类型', align:'center',sort:true, templet:"#template_type", width:80}
+			]],parseData: function(res){ //res 即为原始返回的数据
+				return {
+					"code": res.code, //解析接口状态
+					"msg": res.msg, //解析提示文本
+					"count": res.data.total, //解析数据长度
+					"data": res.data.data //解析数据列表
+				};
+			},response: {
+				statusCode: 200 //规定成功的状态码，默认：0
+			}
+		});
+
+		//监听行点击事件
+		table.on('row(table)', function(obj){
+
+		});
+
+
+		// 监听工具条事件
+		table.on('toolbar(table)', function(obj) {
+
+		});
+
+		// 监听工具条
+		table.on('tool(table)', function(obj) {
+			switch(obj.event){
+
+			}
+		});
+
+
+	})
+</script>
+{include file="public/footer" /}

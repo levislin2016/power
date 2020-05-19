@@ -4,15 +4,6 @@
 		<!--- 头部搜索框 --->
 		<div class="layui-card">
 			<div class="layui-form">
-
-				<div class="layui-form-item">
-					<div class="layui-inline layui-form-pane">
-						<div class="layui-inline">
-							<button class="layui-btn search_btn1 layui-bg-blue"><i class="layui-icon layui-icon-add-1"></i>添加采购工程</button>
-							<button class="layui-btn search_btn2 layui-bg-cyan"><i class="layui-icon layui-icon-ok"></i>确认生成采购单</button>
-						</div>
-					</div>
-				</div>
 				<form class="layui-form" lay-filter="search-form">
 					<div class="layui-form-item">
 						<div class="layui-inline layui-form-pane">
@@ -85,6 +76,14 @@
 </script>
 
 
+<script type="text/html" id="template_toolbar">
+	<div class="layui-btn-container">
+		<button class="layui-btn layui-btn-sm layui-bg-green" lay-event="add"><i class="layui-icon layui-icon-add-1"></i>添加采购工程</button>
+		<button class="layui-btn layui-btn-sm layui-bg-cyan" lay-event="sure"><i class="layui-icon layui-icon-ok"></i>确认生成采购单</button>
+		<button class="layui-btn layui-btn-sm layui-bg-black" lay-event="list"><i class="layui-icon layui-icon-list"></i>查看采购清单</button>
+	</div>
+</script>
+
 <script type="text/html" id="toolbar">
 	<div class="layui-btn-container">
 		<a class="layui-btn layui-btn-sm layui-bg-blue" lay-event="edit"><i class="layui-icon layui-icon-cart"></i>采购材料</a>
@@ -133,7 +132,7 @@
 			,url: "{:url('buy/ajax_get_project_list')}"//数据接口
 			// ,height: 'full-70'
 			,page: false //开启分页
-			,toolbar:true
+			,toolbar:'#template_toolbar'
 			,limit:100000
 			,loading:true
 			,where:form.val("search-form")
@@ -161,71 +160,94 @@
 			}
 		});
 
-		table.on('tool(table)', function(obj) {
-			if (obj.event == 'edit'){
-				layer.open({
-					type : 2,
-					content:"{:url('buy/buy_info')}" + '?id=' + obj.data.id + '&buy_id=' + obj.data.buy_id + '&project_id=' + obj.data.project_id,
-					title:['采购工程：' + obj.data.project_name  + '   业主：' + obj.data.contract_name, 'font-weight:bold'],
-					btnAlign: 'c',
-					area: ['100%', '100%'],
-					anim: 5,
-					isOutAnim:true,
-				});
-			}
-
-			if (obj.event == 'delete'){
-				layer.confirm('确定删除这条记录吗？', {icon: 3, title:'提示'}, function(index){
-					var form_data = obj.data;
-					$.post("{:url('buy/ajax_del_project')}",form_data, function(ret){
-						if(ret.code == 200){
-							layer.msg(ret.msg);
+		// 监听工具条
+		table.on('toolbar(table)', function(obj) {
+			switch (obj.event) {
+				// 添加采购工程
+				case 'add':
+					layer.open({
+						type : 2,
+						content:"{:url('buy/project')}" + "?id={$Request.get.id}",
+						title:'选择采购工程',
+						btnAlign: 'c',
+						area: ['95%', '95%'],
+						shadeClose: true,
+						anim: 5,
+						isOutAnim:true,
+						end:function(){
 							table_reload();
-						}else{
+						}
+					});
+				break;
+
+				// 确认生成采购单
+				case 'sure':
+					var form_data = {
+						buy_id: "{$Request.get.id}",
+					};
+					$.post("{:url('buy/ajax_sure')}", form_data, function (ret) {
+						if (ret.code == 200) {
+							layer.msg(ret.msg);
+						} else {
 							layer.msg(ret.msg, function () {
 
 							})
 						}
 					});
-					layer.close(index);
-				});
+				break;
+
+				// 查看采购清单
+				case 'list':
+					layer.open({
+						type : 2,
+						content:"{:url('buy/total')}" + '?buy_id={$Request.get.id}',
+						title:false,
+						offset:'auto',
+						btnAlign: 'c',
+						area: ['90%', '90%'],
+						shadeClose: true,
+						closeBtn:1,
+						anim: 5,
+						isOutAnim:true,
+					});
+				break;
 			}
 		});
 
+		// 监听按钮
+		table.on('tool(table)', function(obj) {
+			switch (obj.event) {
 
-		$('.search_btn1').on('click',function () {
-			layer.open({
-				type : 2,
-				content:"{:url('buy/project')}" + "?id={$Request.get.id}",
-				title:'选择采购工程',
-				btnAlign: 'c',
-				area: ['95%', '95%'],
-				shadeClose: true,
-				anim: 5,
-				isOutAnim:true,
-				end:function(){
-					table_reload();
-				}
-			});
-		})
+				case 'edit':
+					layer.open({
+						type : 2,
+						content:"{:url('buy/buy_info')}" + '?id=' + obj.data.id + '&buy_id=' + obj.data.buy_id + '&project_id=' + obj.data.project_id,
+						title:['采购工程：' + obj.data.project_name  + '   业主：' + obj.data.contract_name, 'font-weight:bold'],
+						btnAlign: 'c',
+						area: ['100%', '100%'],
+						anim: 5,
+						isOutAnim:true,
+					});
+				break;
 
-		// 确认生成采购单
-		$('.search_btn2').on('click',function () {
+				case 'delete':
+					layer.confirm('确定删除这条记录吗？', {icon: 3, title:'提示'}, function(index){
+						var form_data = obj.data;
+						$.post("{:url('buy/ajax_del_project')}",form_data, function(ret){
+							if(ret.code == 200){
+								layer.msg(ret.msg);
+								table_reload();
+							}else{
+								layer.msg(ret.msg, function () {
 
-			var form_data = {
-				buy_id: "{$Request.get.id}",
-			};
-			$.post("{:url('buy/ajax_sure')}", form_data, function (ret) {
-				if (ret.code == 200) {
-					layer.msg(ret.msg);
-				} else {
-					layer.msg(ret.msg, function () {
-
-					})
-				}
-			})
-		})
-
+								})
+							}
+						});
+						layer.close(index);
+					});
+				break;
+			}
+		});
 
 
 	})

@@ -11,4 +11,10 @@ class BuyProject extends Base{
             'contract_number'   => 'contract_number',
         ]);
     }
+
+    public function project2(){
+        return $this->hasOne('Project', 'id', 'project_id')->bind([
+            'project_name' => 'name',
+        ]);
+    }
 }

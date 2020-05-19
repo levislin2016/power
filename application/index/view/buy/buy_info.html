@@ -4,14 +4,6 @@
         <!--- 头部搜索框 --->
         <div class="layui-card">
             <div class="layui-form">
-
-                <div class="layui-form-item">
-                    <div class="layui-inline layui-form-pane">
-                        <div class="layui-inline">
-                            <button class="layui-btn search_btn1 layui-bg-blue"><i class="layui-icon layui-icon-add-1"></i>选择采购材料</button>
-                        </div>
-                    </div>
-                </div>
                 <form class="layui-form" lay-filter="search-form">
                     <div class="layui-form-item">
                         <div class="layui-inline layui-form-pane">
@@ -73,6 +65,12 @@
     {{# } }}
 </script>
 
+<script type="text/html" id="template_toolbar">
+    <div class="layui-btn-container">
+        <button class="layui-btn layui-bg-green layui-btn-sm" lay-event="add"><i class="layui-icon layui-icon-add-1"></i>选择采购材料</button>
+    </div>
+</script>
+
 
 <script type="text/html" id="toolbar">
     <div class="layui-btn-container">
@@ -129,7 +127,7 @@
             elem: '#table'
             ,url: url//数据接口
             ,page: false //开启分页
-            ,toolbar:true
+            ,toolbar:'#template_toolbar'
             ,limit:100000
             // ,height:'full-100'
             ,loading:true
@@ -186,6 +184,29 @@
         });
 
         // 监听工具条
+        table.on('toolbar(table)', function(obj) {
+            switch (obj.event) {
+
+                case 'add':
+                    layer.open({
+                        type : 2,
+                        content:"{:url('buy/need')}" + "?id={$Request.get.id}&buy_id={$Request.get.buy_id}&project_id={$Request.get.project_id}",
+                        title:'选择材料',
+                        btnAlign: 'c',
+                        area: ['95%', '95%'],
+                        shadeClose: true,
+                        anim: 5,
+                        isOutAnim:true,
+                        end:function(){
+                            table_reload();
+                        }
+                    });
+                break;
+
+            }
+        });
+
+        // 监听表格按钮
         table.on('tool(table)', function(obj) {
             switch(obj.event){
                 case 'delete':
@@ -222,23 +243,6 @@
                     });
                 break;
             }
-        });
-
-        // 选择采购材料
-        $('.search_btn1').on('click',function () {
-            layer.open({
-                type : 2,
-                content:"{:url('buy/need')}" + "?id={$Request.get.id}&buy_id={$Request.get.buy_id}&project_id={$Request.get.project_id}",
-                title:'选择材料',
-                btnAlign: 'c',
-                area: ['95%', '95%'],
-                shadeClose: true,
-                anim: 5,
-                isOutAnim:true,
-                end:function(){
-                    table_reload();
-                }
-            });
         });
     })
 

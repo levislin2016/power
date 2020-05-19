@@ -5,14 +5,7 @@
 				<div class="layui-card">
 					<div class="layui-form">
 
-						<div class="layui-form-item">
-							<div class="layui-inline layui-form-pane">
-								<div class="layui-inline">
-									<button class="layui-btn search_btn1 layui-bg-blue"><i class="layui-icon layui-icon-add-1"></i>添加采购单</button>
-									<button class="layui-btn search_btn2 layui-bg-blue"><i class="layui-icon layui-icon-list"></i>导出</button>
-								</div>
-							</div>
-						</div>
+
 						<form class="layui-form" lay-filter="search-form">
 								<div class="layui-form-item">
 									<div class="layui-inline layui-form-pane">
@@ -99,6 +92,13 @@
 		{{# } }}
 	</script>
 
+	<script type="text/html" id="template_toolbar">
+		<button class="layui-btn search_btn1 layui-bg-green layui-btn-sm" lay-event="add"><i class="layui-icon layui-icon-add-1"></i>添加采购单</button>
+<!--					<button class="layui-btn search_btn2 layui-bg-blue"><i class="layui-icon layui-icon-list"></i>导出</button>-->
+	</script>
+
+
+
 	<script type="text/html" id="template_type">
 		{{# if(d.type == '甲供'){ }}
 		<span class="layui-badge layui-bg-black">{{d.type}}</span>
@@ -159,7 +159,7 @@
 				,url: "{:url('buy/ajax_get_list')}"//数据接口
 				,height: 'full-100'
 				,page: true //开启分页
-				,toolbar:true
+				,toolbar:'#template_toolbar'
 				,limit:20
 				,loading:true
 				,where:{
@@ -169,8 +169,8 @@
 				}
 				,cols: [[ //表头
 					{field: 'id', title: 'ID', width:100, sort: true, fixed: 'left', align:'center'}
-					,{field: 'number', title: '采购单编号', align:'center'}
-					,{field: 'from', title: '工程列表', align:'center'}
+					,{field: 'number', title: '采购单编号', align:'center', width:200}
+					,{field: 'buy_project', title: '工程列表', align:'center'}
 					,{field: 'number', title: '采购清单', align:'center'}
 					,{field: 'from', title: '类型', sort:true, align:'center', width:80}
 					,{field: 'status', title: '状态', sort:true, templet:'#template_status', align:'center', width:90}
@@ -222,57 +222,44 @@
 				}
 			});
 
-			$('.search_btn2').click(function(){
-				var form_data = form.val("search-form");
-				$.get("{:url('buy/ajax_get_list')}",form_data, function (res) {
-					if (res.code == 200){
-						res.data.data.unshift({
-							id: 'ID',
-							number: '采购单编号',
-							status: '状态',
-							create_time:'创建时间',
-							type:'类型',
+			// 监听工具条
+			table.on('toolbar(table)', function(obj) {
+				switch (obj.event) {
+					case 'add':
+						layer.open({
+							type : 1,
+							content:$('.buy_type'),
+							title:'请选择采购单类型：',
+							offset: '200px',
+							btn:['确认', '取消'],
+							btnAlign: 'c',
+							anim: 5,
+							yes:function(index,layero){
+								var type_val = $('.buy_type_val:checked').val();
+								var form_data = {
+									'from' : type_val,
+								};
+								$.post("{:url('buy/add_buy')}", form_data,function (ret) {
+									if (ret.code == 200){
+										table_reload()
+									}else{
+										layer.msg(ret.msg,function(){
+
+										});
+									}
+									layer.close(index);
+								})
+							},btn2:function(index,layero){
+								layer.close(index);
+							}
 						});
-						LAY_EXCEL.exportExcel(res.data.data, '采购单.xlsx', 'xlsx')
-					}
-				})
+					break;
+
+				}
 			});
 
 
-			$('.search_btn1').on('click',function () {
-				layer.open({
-					type : 1,
-					content:$('.buy_type'),
-					title:'请选择采购单类型：',
-					offset: '200px',
-					btn:['确认', '取消'],
-					btnAlign: 'c',
-					anim: 5,
-					yes:function(index,layero){
-						var type_val = $('.buy_type_val:checked').val();
-						var form_data = {
-							'from' : type_val,
-						};
-						$.post("{:url('buy/add_buy')}", form_data,function (ret) {
-							if (ret.code == 200){
-								//执行重载
-								table.reload('table', {
-									page: {
-										curr: 1 //重新从第 1 页开始
-									}
-								});
-							}else{
-								layer.msg(ret.msg,function(){
 
-								});
-							}
-							layer.close(index);
-						})
-					},btn2:function(index,layero){
-						layer.close(index);
-					}
-				});
-			})
 		})
 	</script>
 {include file="public/footer" /}
