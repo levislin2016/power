@@ -36,4 +36,13 @@ class Project extends Base{
         ]);
     }
 
+    public function supply(){
+        return $this->hasOne('supply', 'contract_id', 'contract_id')->bind([
+            'supply_id'   => 'id',
+            'supply_name' => 'name',
+        ]);
+    }
+
+
+
 }

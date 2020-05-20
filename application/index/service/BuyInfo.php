@@ -3,6 +3,7 @@ namespace app\index\service;
 
 use app\index\model\Buy as BuyModel;
 use app\index\model\BuyInfo as BuyInfoModel;
+use app\index\model\Project as ProjectModel;
 use app\index\model\Need as NeedModel;
 use think\Db;
 
@@ -25,6 +26,10 @@ class BuyInfo{
             $where[] = ['buy_id', '=', $params['buy_id']];
         }
 
+        if (isset($params['type']) && $params['type']){
+            $where[] = ['type', '=', $params['type']];
+        }
+
         if (isset($params['create_time']) && $params['create_time']){
             $time = explode('至', $params['create_time']);
             $where[] = ['Need.create_time', 'between time', [trim($time[0]), trim($time[1])]];
@@ -41,6 +46,10 @@ class BuyInfo{
         }
         $validate = validate('BuyInfoValidate');
         Db::startTrans();
+
+        // 获取工程项目对应的业主
+        $project = ProjectModel::with(['supply'])->get($params['project_id']);
+
         foreach ($params['json_arr'] as $k => $v){
             $data = [
                 'buy_id'     => $params['buy_id'],
@@ -48,7 +57,13 @@ class BuyInfo{
                 'goods_id'   => $v['goods_id'],
                 'num'        => $v['need'] - $v['need_ok'],
                 'need_id'    => $v['id'],
+                'type'       => $v['type'] == '自购'?'1':'2',
             ];
+
+            // 如果是甲供材料，供应商直接为业主对应的供应商
+            if ($v['type'] == '甲供'){
+                $data['supply_id'] = $project['supply_id'];
+            }
 
             // 验证场景
             if (!$validate->scene('add')->check($data)){
@@ -74,7 +89,7 @@ class BuyInfo{
             return returnInfo('', 201, '修改错误 原因：' . $validate->getError());
         }
         $data = [
-            'id'    => $params['id'],
+            'id' => $params['id'],
         ];
         if (isset($params['num'])){
             $data['num'] = $params['num'];

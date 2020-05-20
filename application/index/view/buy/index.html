@@ -24,15 +24,10 @@
 										</div>
 									</div>
 
-
 									<div class="layui-inline layui-form-pane">
-										<label class="layui-form-label">类型</label>
+										<label class="layui-form-label">工程名称</label>
 										<div class="layui-input-inline">
-											<select name="from" lay-search="" lay-filter="select1">
-												{volist name="data.from" id="v"}
-													<option value="{$key}">{$v}</option>
-												{/volist}
-											</select>
+											<input type="text" name="search2" placeholder="请输入工程名称..." autocomplete="off" class="layui-input search"/>
 										</div>
 									</div>
 
@@ -108,13 +103,23 @@
 		{{# } }}
 	</script>
 
+	<script type="text/html" id="template_list">
+		<div class="layui-btn-container">
+			<button class="layui-btn layui-btn-sm layui-btn-black" lay-event="list"><i class="layui-icon layui-icon-list"></i>查看采购清单</button>
+		</div>
+	</script>
+
+
+
 	<script type="text/html" id="toolbar">
 		<div class="layui-btn-container">
 			{{# if(d.status != '已作废'){ }}
-				<a class="layui-btn layui-btn-sm layui-bg-blue" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>编辑</a>
+				<a class="layui-btn layui-btn-sm layui-bg-blue" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>采购工程</a>
+				<a class="layui-btn layui-btn-sm layui-bg-blue" lay-event="list"><i class="layui-icon layui-icon-list"></i>采购清单</a>
+				<a class="layui-btn layui-btn-sm layui-bg-cyan" lay-event="list"><i class="layui-icon layui-icon-list"></i>采购入库</a>
+				<a class="layui-btn layui-btn-sm layui-bg-cyan" lay-event="list"><i class="layui-icon layui-icon-form"></i>入库记录</a>
 				<button class="layui-btn layui-btn-sm layui-bg-gray" lay-event="cancel"><i class="layui-icon layui-icon-close-fill"></i>作废</button>
 			{{# } }}
-
 		</div>
 	</script>
 
@@ -170,12 +175,10 @@
 				,cols: [[ //表头
 					{field: 'id', title: 'ID', width:100, sort: true, fixed: 'left', align:'center'}
 					,{field: 'number', title: '采购单编号', align:'center', width:200}
-					,{field: 'buy_project', title: '工程列表', align:'center'}
-					,{field: 'number', title: '采购清单', align:'center'}
-					,{field: 'from', title: '类型', sort:true, align:'center', width:80}
+					,{field: 'buy_project', title: '工程列表', align:'left'}
 					,{field: 'status', title: '状态', sort:true, templet:'#template_status', align:'center', width:90}
 					,{field: 'create_time', title: '创建时间', sort:true, align:'center', width:180}
-					,{field: 'number', title: '操作', templet:'#toolbar', fixed:'right', align:'center', width:180}
+					,{field: 'number', title: '操作', templet:'#toolbar', fixed:'right', align:'center', width:500}
 				]],parseData: function(res){ //res 即为原始返回的数据
 					return {
 						"code": res.code, //解析接口状态
@@ -218,6 +221,21 @@
 							}
 						});
 						layer.close(index);
+					});
+				}
+
+				if (obj.event == 'list'){
+					layer.open({
+						type : 2,
+						content:"{:url('buy/total')}" + '?buy_id=' + obj.data.id,
+						title:false,
+						offset:'auto',
+						btnAlign: 'c',
+						area: ['90%', '90%'],
+						shadeClose: true,
+						closeBtn:1,
+						anim: 5,
+						isOutAnim:true,
 					});
 				}
 			});

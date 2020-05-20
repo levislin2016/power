@@ -16,15 +16,6 @@ class Buy extends Base{
         return $statusName[$value];
     }
 
-    public function getFromAttr($value)
-    {
-        $status = [
-            1 => '自购',
-            2 => '甲供',
-        ];
-        return $status[$value];
-    }
-
     // [修改器] 获取采购单对应的工程列表
     public function setBuyProjectAttr($value)
     {

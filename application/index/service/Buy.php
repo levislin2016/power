@@ -4,22 +4,28 @@ namespace app\index\service;
 use app\index\model\SupplyGoods as SupplyGoodsModel;
 use app\index\model\Goods as GoodsModel;
 use app\index\model\Buy as BuyModel;
-use app\index\model\BuyInfo as BuyInfoModel;
-use app\index\model\Need as NeedModel;
-use app\index\model\StockOrder as StockOrderModel;
-use app\index\model\StockOrderInfo as StockOrderInfoModel;
 use app\index\model\Project as ProjectModel;
-use app\index\model\StockAll as StockAllModel;
-use app\index\model\ProjectStock as ProjectStockModel;
-use app\lib\exception\BaseException;
+use app\index\model\BuyInfo as BuyInfoModel;
+
 use think\Db;
 
 class Buy{
 
     public function getList($params, $limit = 10){
         $where = [];
+        $where2 = [];
+        $hasWhere = [];
         if (isset($params['search']) && $params['search']){
             $where[] = ['number', 'like', "%{$params['search']}%"];
+        }
+
+        if (isset($params['search2']) && $params['search2']){
+            $where2[] = ['name', 'like', "%{$params['search2']}%"];
+            $project = ProjectModel::where($where2)->field('id')->all()->toArray();
+            $project_ids = array_column($project, 'id');
+            if ($project_ids){
+                $hasWhere[] = ['project_id', 'in', $project_ids];
+            }
         }
 
         if (isset($params['create_time']) && $params['create_time']){
@@ -31,11 +37,11 @@ class Buy{
             $where[] = ['status', '=', $params['status']];
         }
 
-        if (isset($params['from']) && $params['from']){
-            $where[] = ['from', '=', $params['from']];
+        if (isset($params['search2']) && $params['search2']) {
+            $list = BuyModel::hasWhere('buyProject', $hasWhere)->with(['buyProject' => ['project2']])->where($where)->order('create_time desc')->paginate($limit);
+        }else{
+            $list = BuyModel::with(['buyProject' => ['project2']])->where($where)->order('create_time desc')->paginate($limit);
         }
-
-        $list = BuyModel::with(['buyProject' => ['project2']])->where($where)->order('create_time desc')->paginate($limit);
         return $list;
     }
 

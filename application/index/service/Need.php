@@ -25,6 +25,10 @@ class Need{
             $where[] = ['type', '=', $params['type']];
         }
 
+        if (isset($params['status']) && $params['status']){
+            $where[] = ['status', '=', $params['status']];
+        }
+
         if (isset($params['create_time']) && $params['create_time']){
             $time = explode('至', $params['create_time']);
             $where[] = ['Need.create_time', 'between time', [trim($time[0]), trim($time[1])]];
@@ -44,6 +48,7 @@ class Need{
                 'project_id' => $params['id'],
                 'type'       => $params['type'],
                 'goods_id'   => $v['id'],
+                'status'     => 1,
             ];
 
             // 验证场景

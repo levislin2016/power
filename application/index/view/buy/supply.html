@@ -66,7 +66,13 @@
 				'supply_id'  : obj.data.supply_id,
 			};
 			$.post("{:url('buy/ajax_edit_buyInfo')}",form_data,function (ret) {
-				window.parent.layer.closeAll();
+				if (ret.code == 200){
+					window.parent.layer.closeAll();
+				}else{
+					window.parent.layer.msg(ret.msg,function(){
+
+					})
+				}
 			})
 		});
 

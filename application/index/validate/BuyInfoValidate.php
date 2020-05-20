@@ -12,23 +12,23 @@ class BuyInfoValidate extends BaseValidate
     protected $rule = [
         'id'         => 'checkBuyStatus',
         'num'        => 'checkNum',
-        'buy_id'     => 'require|unique:BuyInfo,buy_id^project_id^goods_id',
-        'project_id' => 'require|unique:BuyInfo,buy_id^project_id^goods_id',
-        'goods_id'   => 'require|unique:BuyInfo,buy_id^project_id^goods_id',
+        'buy_id'     => 'require|unique:BuyInfo,buy_id^project_id^goods_id^type',
+        'project_id' => 'require|unique:BuyInfo,buy_id^project_id^goods_id^type',
+        'goods_id'   => 'require|unique:BuyInfo,buy_id^project_id^goods_id^type',
+        'type'       => 'require|unique:BuyInfo,buy_id^project_id^goods_id^type',
         'price'      => 'float|>:0',
-        'supply_id'  => 'checkBuyStatus',
+        'supply_id'  => 'checkBuyStatus|checkType',
     ];
 
     protected $message = [
-        'num'                => '该材料已采购完成，无需再次采购',
         'buy_id.unique'      => '请勿重复采购该材料！',
         'project_id.unique'  => '请勿重复采购该材料！',
         'goods_id.unique'    => '请勿重复采购该材料！',
     ];
 
     protected $scene = [
-        'add'  => ['num.>', 'buy_id', 'project_id', 'goods_id'],
-        'edit' => ['id', 'num', 'price'],
+        'add'  => ['num.>', 'buy_id', 'project_id', 'goods_id', 'type'],
+        'edit' => ['id', 'num', 'price', 'supply_id'],
         'del'  => ['id'],
     ];
 
@@ -49,6 +49,16 @@ class BuyInfoValidate extends BaseValidate
             return '采购单状态必须为 [待确认]！';
         }
 
+        return true;
+    }
+
+    // 判断材料是自购还是甲供，甲供不可更改供应商
+    protected function checkType($value,$rule,$data=[])
+    {
+        $ret = BuyInfoModel::get($data['id']);
+        if ($ret['type'] == '2'){
+            return '该材料为 [甲供] 类别, 不允许修改供应商';
+        }
         return true;
     }
 
@@ -83,10 +93,10 @@ class BuyInfoValidate extends BaseValidate
             if (!$v['num']){
                 return "生成失败！<br>工程：{$v['project_name']}<br>材料：{$v['goods_name']} 数量未填写或不能为0！";
             }
-            if (!$v['supply_id']){
+            if ($v['type'] == 1 && !$v['supply_id']){
                 return "生成失败！<br>工程：{$v['project_name']}<br>材料：{$v['goods_name']} 供应商未选择！";
             }
-            if (!$v['price']){
+            if ($v['type'] == 1 && !$v['price']){
                 return "生成失败！<br>工程：{$v['project_name']}<br>材料：{$v['goods_name']} 价格未填写或不能为0！";
             }
         }

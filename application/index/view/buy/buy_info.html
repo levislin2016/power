@@ -22,6 +22,17 @@
                             </div>
                         </div>
 
+                        <div class="layui-inline layui-form-pane">
+                            <label class="layui-form-label">类型</label>
+                            <div class="layui-input-inline">
+                                <select name="type" lay-search="" lay-filter="select1">
+                                    {volist name="data.type" id="v"}
+                                    <option value="{$key}">{$v}</option>
+                                    {/volist}
+                                </select>
+                            </div>
+                        </div>
+
                         <input type="hidden" name="project_id" value="{$Request.get.project_id}"/>
                         <input type="hidden" name="buy_id" value="{$Request.get.buy_id}"/>
 
@@ -34,6 +45,8 @@
                     </div>
                 </form>
             </div>
+
+
 
         </div>
         <!--- 头部搜索框 --->
