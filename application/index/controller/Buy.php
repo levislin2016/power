@@ -1,23 +1,10 @@
 <?php
 namespace app\index\controller;
 
-use app\index\service\Need as NeedService;
-use app\index\service\BuyProject as BuyProjectService;
-use app\index\service\BuyInfo as BuyInfoService;
-use app\index\service\Buy as BuyService;
-use app\index\model\Project as ProjectModel;
-use app\index\model\Stock as StockModel;
 use app\index\model\Contract as ContractModel;
-use app\index\model\StockAll as StockAllModel;
-use app\index\model\SupplyGoods as SupplyGoodsModel;
-use app\index\model\BuyInfo as BuyInfoModel;
-use app\index\model\Buy as BuyModel;
-use app\index\model\Goods as GoodsModel;
-use app\index\validate\BuyProjectValidate;
-use app\lib\exception\BaseException;
-use app\index\validate\CreateBuyValidate;
-use app\index\validate\CreatePutValidate;
+use app\index\model\Store as StoreModel;
 use think\Db;
+use think\Validate;
 
 class Buy extends Base{
     protected $beforeActionList = [
@@ -154,6 +141,35 @@ class Buy extends Base{
         $list = model('buy', 'service')->total(input('param.'));
         return returnJson($list, 200, '获取成功');
     }
+
+    // 显示采购入库
+    public function buy_info_in(){
+        $data['store'] = StoreModel::all();
+        return view('buy_info_in', ['data' => $data]);
+    }
+
+    // 进行采购入库
+    public function ajax_stock_in(){
+        $list = model('stock', 'service')->in(input('param.'));
+        return returnJson($list['data'], $list['code'], $list['msg']);
+    }
+
+
+    // 检查是否为正整数
+    public function ajax_check_num(){
+        $validate = Validate::make([
+            'stock_num'  => 'number|min:0',
+        ],[
+            'stock_num.number'  => '请输入不含负号、特殊符号、小于0 的数字',
+        ]);
+
+        if (!$validate->check(input('post.'))) {
+            return returnJson('', 201, $validate->getError());
+        }
+
+        return returnJson('', 200, '成功');
+    }
+
 
 
 

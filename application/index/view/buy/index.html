@@ -116,7 +116,7 @@
 			{{# if(d.status != '已作废'){ }}
 				<a class="layui-btn layui-btn-sm layui-bg-blue" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>采购工程</a>
 				<a class="layui-btn layui-btn-sm layui-bg-blue" lay-event="list"><i class="layui-icon layui-icon-list"></i>采购清单</a>
-				<a class="layui-btn layui-btn-sm layui-bg-cyan" lay-event="list"><i class="layui-icon layui-icon-list"></i>采购入库</a>
+				<a class="layui-btn layui-btn-sm layui-bg-cyan" lay-event="stock_in"><i class="layui-icon layui-icon-list"></i>采购入库</a>
 				<a class="layui-btn layui-btn-sm layui-bg-cyan" lay-event="list"><i class="layui-icon layui-icon-form"></i>入库记录</a>
 				<button class="layui-btn layui-btn-sm layui-bg-gray" lay-event="cancel"><i class="layui-icon layui-icon-close-fill"></i>作废</button>
 			{{# } }}
@@ -238,6 +238,23 @@
 						isOutAnim:true,
 					});
 				}
+
+				// 采购入库
+				if (obj.event == 'stock_in'){
+					layer.open({
+						type : 2,
+						content:"{:url('buy/buy_info_in')}" + '?id=' + obj.data.id,
+						title:['采购单编号：' + obj.data.number  + '   状态：' + obj.data.status + '   创建时间：' + obj.data.create_time, 'font-weight:bold'],
+						btnAlign: 'c',
+						area: ['100%', '100%'],
+						anim: 5,
+						isOutAnim:true,
+						end:function(){
+							table_reload();
+						}
+					});
+				}
+
 			});
 
 			// 监听工具条

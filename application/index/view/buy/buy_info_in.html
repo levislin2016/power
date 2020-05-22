@@ -7,15 +7,6 @@
                 <form class="layui-form" lay-filter="search-form">
                     <div class="layui-form-item">
                         <div class="layui-inline layui-form-pane">
-                            <label class="layui-form-label">时间范围</label>
-                            <div class="layui-input-inline">
-                                <input type="text" name="create_time" style="width: 513px" value="" class="layui-input" id="time" readonly="readonly" placeholder="开始时间 - 结束时间">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="layui-form-item">
-                        <div class="layui-inline layui-form-pane">
                             <label class="layui-form-label">名称|编号</label>
                             <div class="layui-input-inline">
                                 <input type="text" name="search" placeholder="请输入名称或编号..." autocomplete="off" class="layui-input search"/>
@@ -23,11 +14,12 @@
                         </div>
 
                         <div class="layui-inline layui-form-pane">
-                            <label class="layui-form-label">类型</label>
+                            <label class="layui-form-label">入库仓库</label>
                             <div class="layui-input-inline">
                                 <select name="type" lay-search="" lay-filter="select1">
-                                    {volist name="data.type" id="v"}
-                                    <option value="{$key}">{$v}</option>
+                                    <option value="">请选择入库仓库</option>
+                                    {volist name="data.store" id="v"}
+                                    <option value="{$v.id}">{$v.name}</option>
                                     {/volist}
                                 </select>
                             </div>
@@ -38,7 +30,7 @@
 
                         <div class="layui-inline">
                             <div class="layui-input-inline">
-                                <button class="layui-btn layui-bg-blue btn_search"><i class="layui-icon layui-icon-search"></i>搜索</button>
+                                <button class="layui-btn layui-bg-blue"><i class="layui-icon layui-icon-search"></i>搜索</button>
                                 <button type="reset" class="layui-btn layui-btn-normal" id="empty"  lay-submit="" lay-filter="LAY-search">重置</button>
                             </div>
                         </div>
@@ -53,15 +45,8 @@
 
 
         <div class="layui-form" id="table-list">
-
             <table id="table" lay-filter="table"></table>
 
-            <div class="buy_type" style="display: none;margin-top: 10px;">
-                <center>
-                    <input type="radio" class="buy_type_val" name="sex" value="1" title="自购" checked>
-                    <input type="radio" class="buy_type_val" name="sex" value="2" title="甲供">
-                </center>
-            </div>
 
         </div>
     </div>
@@ -80,7 +65,9 @@
 
 <script type="text/html" id="template_toolbar">
     <div class="layui-btn-container">
-        <button class="layui-btn layui-bg-green layui-btn-sm" lay-event="add"><i class="layui-icon layui-icon-add-1"></i>选择采购材料</button>
+        <button class="layui-btn layui-bg-green layui-btn-sm" lay-event="stock_sure"><i class="layui-icon layui-icon-ok"></i>确认入库</button>
+<!--        <button class="layui-btn layui-bg-green layui-btn-sm" lay-event="stock_add"><i class="layui-icon layui-icon-survey"></i>1.生成入库单</button>-->
+<!--        <button class="layui-btn layui-bg-red layui-btn-sm" lay-event="stock_sure"><i class="layui-icon layui-icon-delete"></i>作废入库单</button>-->
     </div>
 </script>
 
@@ -93,10 +80,20 @@
 
 <script>
     var table_reload;
-    layui.use(['form', 'jquery', 'element', 'laydate', 'table'], function() {
+
+    // 自定义模块，这里只需要开放soulTable即可
+    layui.config({
+        base: '/static/modules/',   // 第三方模块所在目录
+        version: 'v1.5.10' // 插件版本号
+    }).extend({
+        soulTable: 'soulTable/soulTable.slim'
+    });
+
+    layui.use(['form', 'element', 'laydate', 'table', 'soulTable', 'jquery'], function() {
         var form = layui.form,
             $ = layui.jquery,
             laydate = layui.laydate,
+            soulTable = layui.soulTable,
             table = layui.table;
 
         //日期范围
@@ -138,6 +135,7 @@
         //第一个实例
         table.render({
             elem: '#table'
+            ,id:'table'
             ,url: url//数据接口
             ,page: false //开启分页
             ,toolbar:'#template_toolbar'
@@ -148,20 +146,22 @@
             ,text:{
                 none:'暂无相关数据'
             }
+            ,filter: {
+                clearFilter: true
+            }
             ,cols: [[ //表头
                 {type:'numbers', title: '序号', align:'center', fixed:'left', sort:true,width:90}
+                ,{field: 'project_name', title: '工程名称', align:'center',sort:true,filter: true}
                 ,{field: 'type_name', title: '分类', align:'center',sort:true}
                 ,{field: 'goods_name', title: '名称', align:'center',sort:true}
                 ,{field: 'goods_number', title: '编号', align:'center',sort:true}
-                ,{field: 'num', title: '采购数量', align:'center',sort:true, width:120, edit:'text'}
+                ,{field: 'num', title: '采购数量', align:'center',sort:true, width:120}
                 ,{field: 'num_ok', title: '已采购', align:'center',sort:true, width:120}
-                ,{field: 'need_need', title: '预算数量', align:'center',sort:true, width:120}
-                ,{field: 'need_need_ok', title: '累计采购', align:'center',sort:true, width:120}
+                ,{field: 'stock_num',title: '入库数量', align:'center',sort:true, width:120, edit:'text'}
                 ,{field: 'unit_name', title: '单位', align:'center', width:100}
-                ,{field: 'supply_name', title: '供应商', align:'center', width:150, event:'supply'}
-                ,{field: 'price', title: '价格', sort:true, align:'center', width:100, edit:'text'}
+                ,{field: 'supply_name', title: '供应商', align:'center', width:150}
+                ,{field: 'price', title: '价格', sort:true, align:'center', width:100}
                 ,{field: 'need_type', title: '类型', align:'center',sort:true, templet:"#template_type", width:80}
-                ,{field: 'number', title: '操作', templet:'#toolbar', fixed:'right', align:'center', width:100}
             ]],parseData: function(res){ //res 即为原始返回的数据
                 return {
                     "code": res.code, //解析接口状态
@@ -171,6 +171,11 @@
                 };
             },response: {
                 statusCode: 200 //规定成功的状态码，默认：0
+            },done: function() {
+                console.log(1)
+                console.log(soulTable)
+                // 在 done 中开启
+                soulTable.render(this)
             }
         });
 
@@ -180,8 +185,12 @@
                 ,data = obj.data //得到所在行所有键值
                 ,field = obj.field; //得到字段
             var form_data = obj.data;
-            var oldvalue = $(this).prev().text();
-            $.post("{:url('buy/ajax_edit_buyinfo')}", form_data, function(ret){
+            // var oldvalue = $(this).prev().text();
+            // var objTemp = {};
+            // objTemp[field] = oldvalue;
+            // obj.update(objTemp);
+
+            $.post("{:url('buy/ajax_check_num')}", form_data, function(ret){
                 if (ret.code == 200){
                     layer.msg('['+ data.goods_name +'] <br>更改为：'+ value,{offset:'t'});
                 }else{
@@ -200,21 +209,21 @@
         table.on('toolbar(table)', function(obj) {
             switch (obj.event) {
 
-                case 'add':
-                    layer.open({
-                        type : 2,
-                        content:"{:url('buy/need')}" + "?id={$Request.get.id}&buy_id={$Request.get.buy_id}&project_id={$Request.get.project_id}",
-                        title:'选择材料',
-                        btnAlign: 'c',
-                        area: ['95%', '95%'],
-                        shadeClose: true,
-                        anim: 5,
-                        isOutAnim:true,
-                        end:function(){
-                            table_reload();
+                case 'stock_sure':
+                    var form_data = {
+                        'json_data' : layui.table.cache.table
+                    };
+                    $.post("{:url('buy/ajax_stock_in')}", form_data,function(ret){
+                        if (ret.code == 200){
+                            layer.msg(ret.msg);
+                        }else{
+                            layer.msg(ret.msg,function () {
+
+                            });
                         }
                     });
                 break;
+
 
             }
         });
@@ -223,37 +232,10 @@
         table.on('tool(table)', function(obj) {
             switch(obj.event){
                 case 'delete':
-                    layer.confirm('确定删除这条记录吗？', {icon: 3, title:'提示'}, function(index){
-                        var form_data = obj.data;
-                        $.post("{:url('buy/ajax_del_buyinfo')}",form_data, function(ret){
-                            if(ret.code == 200){
-                                layer.msg(ret.msg);
-                                table_reload();
-                            }else{
-                                layer.msg(ret.msg, function () {
 
-                                })
-                            }
-                        });
-                        layer.close(index);
-                    });
                 break;
                 case 'supply':
-                    layer.open({
-                        type : 2,
-                        content:"{:url('buy/supply')}" + "?buyinfo_id=" + obj.data.id + '&buy_id=' + obj.data.buy_id + '&goods_id=' + obj.data.goods_id,
-                        title:false,
-                        offset:'r',
-                        btnAlign: 'c',
-                        area: ['15%', '100%'],
-                        shadeClose: true,
-                        closeBtn:0,
-                        anim: 5,
-                        isOutAnim:true,
-                        end:function(){
-                            table_reload();
-                        }
-                    });
+
                 break;
             }
         });

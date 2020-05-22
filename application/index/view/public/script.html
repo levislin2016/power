@@ -1,12 +1,43 @@
-<script src="__STATIC__/admin/js/jquery.min-3.3.0.js"></script>
-<script src="__STATIC__/admin/layui/layui.js" type="text/javascript" charset="utf-8"></script>
-<script src="__STATIC__/admin/js/common.js" type="text/javascript" charset="utf-8"></script>
-<script src="__STATIC__/admin/js/wk.js?v=4" type="text/javascript" charset="utf-8"></script>
-<script src="__STATIC__/admin/js/excel.js?v=2" type="text/javascript" charset="utf-8"></script>
+<script src="__STATIC__/admin/layui/layui.all.js" type="text/javascript" charset="utf-8"></script>
 <script>
-    $(document).keyup(function(event){
-        if(event.keyCode ==13){
-            $(".btn_search").trigger("click");
-        }
-    });
+    // // 自定义模块，这里只需要开放soulTable即可
+    // layui.config({
+    //     base: '/static/modules/',   // 第三方模块所在目录
+    //     version: 'v1.5.10' // 插件版本号
+    // }).extend({
+    //     soulTable: 'soulTable/soulTable.slim',
+    // });
+    //
+    //
+    // var form = layui.form,
+    //     $ = layui.jquery,
+    //     laydate = layui.laydate,
+    //     soulTable = layui.soulTable,
+    //     table = layui.table;
+    //
+    //
+    // // 表格刷新方法 带form数据
+    // table_reload = function(){
+    //     var where = form.val("search-form");
+    //     //执行重载
+    //     table.reload('table', {
+    //         where: where
+    //     });
+    // };
+    //
+    // //日期范围
+    // laydate.render({
+    //     elem: '#time'
+    //     ,range: '至'
+    //     ,type:'datetime'
+    //
+    // });
+
+
+
+    // $(document).keyup(function(event){
+    //     if(event.keyCode ==13){
+    //         $(".btn_search").trigger("click");
+    //     }
+    // });
 </script>

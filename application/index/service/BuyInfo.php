@@ -35,7 +35,7 @@ class BuyInfo{
             $where[] = ['Need.create_time', 'between time', [trim($time[0]), trim($time[1])]];
         }
 
-        $list = BuyInfoModel::hasWhere('goods', $hasWhere)->with(['goods' => ['unit', 'type'], 'need', 'supply'])->where($where)->order('create_time desc')->paginate($limit);
+        $list = BuyInfoModel::hasWhere('goods', $hasWhere)->with(['goods' => ['unit', 'type'], 'need', 'supply', 'project'])->where($where)->order('create_time desc')->paginate($limit);
         return $list;
     }
 

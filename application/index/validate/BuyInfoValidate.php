@@ -11,16 +11,17 @@ class BuyInfoValidate extends BaseValidate
 {
     protected $rule = [
         'id'         => 'checkBuyStatus',
-        'num'        => 'checkNum',
-        'buy_id'     => 'require|unique:BuyInfo,buy_id^project_id^goods_id^type',
-        'project_id' => 'require|unique:BuyInfo,buy_id^project_id^goods_id^type',
-        'goods_id'   => 'require|unique:BuyInfo,buy_id^project_id^goods_id^type',
-        'type'       => 'require|unique:BuyInfo,buy_id^project_id^goods_id^type',
+        'num'        => 'float|checkNum',
+        'buy_id'     => 'require|unique:BuyInfo,buy_id^project_id^goods_id^type|checkBuyStatus',
+        'project_id' => 'require|unique:BuyInfo,buy_id^project_id^goods_id^type|checkBuyStatus',
+        'goods_id'   => 'require|unique:BuyInfo,buy_id^project_id^goods_id^type|checkBuyStatus',
+        'type'       => 'require|unique:BuyInfo,buy_id^project_id^goods_id^type|checkBuyStatus',
         'price'      => 'float|>:0',
         'supply_id'  => 'checkBuyStatus|checkType',
     ];
 
     protected $message = [
+        'num.float'          => '请输入正确的数字！',
         'buy_id.unique'      => '请勿重复采购该材料！',
         'project_id.unique'  => '请勿重复采购该材料！',
         'goods_id.unique'    => '请勿重复采购该材料！',

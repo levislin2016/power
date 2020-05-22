@@ -1,0 +1,202 @@
+{include file="public/header" /}
+	<div class="wrap-container clearfix">
+			<div class="column-content-detail">
+				<!--- 头部搜索框 --->
+				<div class="layui-card">
+					<div class="layui-form">
+
+
+						<form class="layui-form" lay-filter="search-form">
+
+								<div class="layui-form-item">
+									<div class="layui-inline layui-form-pane">
+										<label class="layui-form-label">仓库名称</label>
+										<div class="layui-input-inline">
+											<input type="text" name="search" placeholder="请输入仓库名称..." autocomplete="off" class="layui-input search"/>
+										</div>
+									</div>
+
+									<div class="layui-inline">
+										<div class="layui-input-inline">
+											<button class="layui-btn layui-bg-blue btn_search"><i class="layui-icon layui-icon-search"></i>搜索</button>
+											<button type="reset" class="layui-btn layui-btn-normal" id="empty"  lay-submit="" lay-filter="LAY-search">重置</button>
+										</div>
+									</div>
+								</div>
+						</form>
+					</div>
+
+				</div>
+				<!--- 头部搜索框 --->
+
+
+				<div class="layui-form" id="table-list">
+
+					<table id="table" lay-filter="table"></table>
+
+
+				</div>
+			</div>
+	</div>
+	{include file="public/script" /}
+
+
+	<script type="text/html" id="template_toolbar">
+		<button class="layui-btn search_btn1 layui-bg-green layui-btn-sm" lay-event="add"><i class="layui-icon layui-icon-add-1"></i>添加仓库</button>
+<!--					<button class="layui-btn search_btn2 layui-bg-blue"><i class="layui-icon layui-icon-list"></i>导出</button>-->
+	</script>
+
+	<script type="text/html" id="template_tool">
+		<div class="layui-btn-container">
+			<button class="layui-btn layui-btn-sm layui-bg-green" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>编辑</button>
+<!--			<button class="layui-btn layui-btn-sm layui-bg-gray" lay-event="delete"><i class="layui-icon layui-icon-delete"></i>删除</button>-->
+		</div>
+	</script>
+
+
+
+
+	<script>
+		layui.use(['form', 'jquery', 'element', 'laydate', 'table'], function() {
+			var form = layui.form,
+				$ = layui.jquery,
+				laydate = layui.laydate,
+				table = layui.table;
+
+			//日期范围
+			laydate.render({
+				elem: '#time'
+				,range: '至'
+				,type:'datetime'
+
+			});
+
+			table_reload = function(){
+				var where =  form.val("search-form");
+				//执行重载
+				table.reload('table', {
+					where: where
+				});
+			};
+
+			form.on('submit(search-form)',function (data) {
+				table_reload();
+				return false;
+			});
+
+			// 监听下拉框选择
+			form.on('select(select1)', function(data){
+				table_reload();
+				return false;
+			});
+
+
+			//第一个实例
+			table.render({
+				elem: '#table'
+				,url: "{:url('store/ajax_get_list')}"//数据接口
+				,height: 'full-100'
+				,page: true //开启分页
+				,toolbar:'#template_toolbar'
+				,limit:20
+				,loading:true
+				,where:{
+				}
+				,text:{
+					none:'暂无相关数据'
+				}
+				,cols: [[ //表头
+					{field: 'id', title: 'ID', sort: true, fixed: 'left', align:'center'}
+					,{field: 'name', title: '仓库名称', align:'center'}
+					,{field: 'create_time', title: '创建时间', sort:true, align:'center'}
+					,{field: 'number', title: '操作', templet:'#template_tool', fixed:'right', align:'center'}
+				]],parseData: function(res){ //res 即为原始返回的数据
+					return {
+						"code": res.code, //解析接口状态
+						"msg": res.msg, //解析提示文本
+						"count": res.data.total, //解析数据长度
+						"data": res.data.data //解析数据列表
+					};
+				},response: {
+					statusCode: 200 //规定成功的状态码，默认：0
+				}
+			});
+
+			table.on('tool(table)', function(obj) {
+				switch (obj.event) {
+					case 'edit':
+						layer.prompt({
+							title:'修改',
+							value:obj.data.name,
+						},function(value, index, elem){
+							var form_data = {
+								'name' : value,
+								'id'   : obj.data.id,
+							};
+							$.post("{:url('store/ajax_add')}",form_data, function(ret){
+								if(ret.code == 200){
+									layer.msg(ret.msg);
+									layer.close(index);
+									table_reload();
+								}else{
+									layer.msg(ret.msg, function () {
+
+									})
+								}
+							});
+						});
+					break;
+
+					case 'cancel':
+						layer.confirm('确定作废这张采购单吗？', {icon: 3, title:'提示'}, function(index){
+							var form_data = obj.data;
+							$.post("{:url('buy/ajax_cancel')}",form_data, function(ret){
+								if(ret.code == 200){
+									layer.msg(ret.msg);
+									table_reload();
+								}else{
+									layer.msg(ret.msg, function () {
+
+									})
+								}
+							});
+							layer.close(index);
+						});
+					break;
+				}
+
+
+			});
+
+			// 监听工具条
+			table.on('toolbar(table)', function(obj) {
+				switch (obj.event) {
+					case 'add':
+						layer.prompt({
+							title:'添加仓库',
+						},function(value, index, elem){
+							var form_data = {
+								'name' : value,
+							};
+							$.post("{:url('store/ajax_add')}",form_data, function(ret){
+								if(ret.code == 200){
+									layer.msg(ret.msg);
+									layer.close(index);
+									table_reload();
+								}else{
+									layer.msg(ret.msg, function () {
+
+									})
+								}
+							});
+						});
+					break;
+
+				}
+			});
+
+
+
+		})
+	</script>
+{include file="public/footer" /}
