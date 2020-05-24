@@ -24,6 +24,10 @@ class Stock{
             $where[] = ['type', '=', $params['type']];
         }
 
+        if (isset($params['buy_id']) && $params['buy_id']){
+            $where[] = ['buy_id', '=', $params['buy_id']];
+        }
+
         $list = StockModel::where($where)->order('create_time desc')->paginate($limit);
         return $list;
     }
