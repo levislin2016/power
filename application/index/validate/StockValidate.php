@@ -5,10 +5,10 @@ namespace app\index\validate;
 class StockValidate extends BaseValidate
 {
     protected $rule = [
-        'name' => 'require',
+        'store_id' => 'require',
     ];
 
     protected $message = [
-        'name.require' => '仓库名称不能为空',
+        'store_id.require' => '请选择入库仓库！',
     ];
 }

@@ -45,8 +45,8 @@ class BuyInfo{
             return returnInfo('', 201, '请勾选要添加的材料！！');
         }
         $validate = validate('BuyInfoValidate');
-        Db::startTrans();
 
+        Db::startTrans();
         // 获取工程项目对应的业主
         $project = ProjectModel::with(['supply'])->get($params['project_id']);
 
@@ -55,7 +55,7 @@ class BuyInfo{
                 'buy_id'     => $params['buy_id'],
                 'project_id' => $v['project_id'],
                 'goods_id'   => $v['goods_id'],
-                'num'        => $v['need'] - $v['need_ok'],
+                'num'        => $v['need'] - $v['buy'],
                 'need_id'    => $v['id'],
                 'type'       => $v['type'] == '自购'?'1':'2',
             ];
@@ -78,6 +78,7 @@ class BuyInfo{
             }
         }
         Db::commit();
+
         return returnInfo('', 200, "添加成功！");
     }
 

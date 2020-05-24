@@ -16,7 +16,7 @@ class BuyInfoValidate extends BaseValidate
         'project_id' => 'require|unique:BuyInfo,buy_id^project_id^goods_id^type|checkBuyStatus',
         'goods_id'   => 'require|unique:BuyInfo,buy_id^project_id^goods_id^type|checkBuyStatus',
         'type'       => 'require|unique:BuyInfo,buy_id^project_id^goods_id^type|checkBuyStatus',
-        'price'      => 'float|>:0',
+        'price'      => 'float',
         'supply_id'  => 'checkBuyStatus|checkType',
     ];
 
@@ -57,7 +57,7 @@ class BuyInfoValidate extends BaseValidate
     protected function checkType($value,$rule,$data=[])
     {
         $ret = BuyInfoModel::get($data['id']);
-        if ($ret['type'] == '2'){
+        if ($data['id'] != $ret['id'] && $ret['type'] == '2'){
             return '该材料为 [甲供] 类别, 不允许修改供应商';
         }
         return true;
@@ -66,7 +66,7 @@ class BuyInfoValidate extends BaseValidate
     // 判断采购数量不能大于预算数量
     protected function checkNum($value,$rule,$data=[])
     {
-        $max = $data['need_need'] - $data['need_need_ok'];
+        $max = $data['need_need'] - $data['need_buy'];
         if ($data['num'] > $max){
             return "采购数量不得大于 未采购数量：{$max}";
         }

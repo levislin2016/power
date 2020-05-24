@@ -3,7 +3,7 @@ namespace app\index\service;
 
 use app\index\model\Project as ProjectModel;
 use app\index\model\ProjectWoker as ProjectWokerModel;
-use app\index\model\ProjectStock as ProjectStockModel;
+use app\index\model\Need as ProjectStockModel;
 use app\index\model\StockAll as StockAllModel;
 use app\lib\exception\BaseException;
 

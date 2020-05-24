@@ -1,7 +1,7 @@
 <?php
 namespace app\index\service;
 
-use app\index\model\Need as NeedModel;
+use app\index\model\Need as ProjectStockModel;
 use app\index\model\Goods as GoodsModel;
 use app\index\service\Type as TypeService;
 use app\lib\exception\BaseException;
@@ -34,7 +34,7 @@ class Need{
             $where[] = ['Need.create_time', 'between time', [trim($time[0]), trim($time[1])]];
         }
 
-        $list = NeedModel::hasWhere('goods', $hasWhere)->with(['goods' => ['unit', 'type']])->where($where)->order('create_time desc')->paginate($limit);
+        $list = ProjectStockModel::hasWhere('goods', $hasWhere)->with(['goods' => ['unit', 'type']])->where($where)->order('create_time desc')->paginate($limit);
         return $list;
     }
 
@@ -43,6 +43,7 @@ class Need{
         if (!isset($params['goods_list']) || !$params['goods_list']){
             return returnInfo('', 201, '请勾选要添加的材料！！');
         }
+
         foreach ($params['goods_list'] as $k => $v){
             $data = [
                 'project_id' => $params['id'],
@@ -57,7 +58,7 @@ class Need{
                 return returnInfo('', 201, "材料：{$v['name']} 添加失败 <br>原因：" . $validate->getError());
             }
 
-            $ret_add = NeedModel::create($data);
+            $ret_add = ProjectStockModel::create($data);
             if (!$ret_add){
                 return returnInfo('', 201, '添加预算材料错误！');
             }
@@ -73,7 +74,7 @@ class Need{
             return returnInfo('', 201, $validate->getError());
         }
 
-        $ret = NeedModel::update([
+        $ret = ProjectStockModel::update([
             'need' => $params['need'],
         ], ['id' => $params['id']]);
         if (!$ret){
@@ -91,7 +92,7 @@ class Need{
             return returnJson('', 201, $validate->getError());
         }
 
-        $ret = NeedModel::destroy($params['id']);
+        $ret = ProjectStockModel::destroy($params['id']);
         if (!$ret){
             return returnInfo('', 201, '删除错误！');
         }
@@ -101,7 +102,7 @@ class Need{
 
     // 核对预算材料
     public function check($params){
-        $ret = NeedModel::update([
+        $ret = ProjectStockModel::update([
             'check' => $params['check'],
         ], ['id' => $params['id']]);
         if (!$ret){

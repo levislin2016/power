@@ -1,8 +1,8 @@
 <?php
 namespace app\index\controller;
 
-use app\index\service\Stock as StockService;
-use app\index\model\Stock as StockModel;
+use app\index\service\StockInfo as StockService;
+use app\index\model\StockInfo as StockModel;
 use app\lib\exception\BaseException;
 use app\index\validate\StockValidate;
 

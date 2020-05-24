@@ -4,9 +4,13 @@ namespace app\index\model;
 class Need extends Base{
 
     protected $insert = [
-        'need'    => 0,
-        'need_ok' => 0,
-        'check'   => 1,
+        'need'       => 0,
+        'buy'        => 0,
+        'in'         => 0,
+        'adjust_in'  => 0,
+        'adjust_out' => 0,
+        'get'        => 0,
+        'check'      => 1,
     ];
 
     public static function init()

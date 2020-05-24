@@ -4,15 +4,6 @@
 		<!--- 头部搜索框 --->
 		<div class="layui-card">
 			<div class="layui-form">
-
-				<div class="layui-form-item">
-					<div class="layui-inline layui-form-pane">
-						<div class="layui-inline">
-							<button class="layui-btn search_btn1 layui-bg-blue"><i class="layui-icon layui-icon-add-1"></i>添加材料</button>
-							<button class="layui-btn search_btn2 layui-bg-green"><i class="layui-icon layui-icon-triangle-r"></i>开始工程</button>
-						</div>
-					</div>
-				</div>
 				<form class="layui-form" lay-filter="search-form">
 					<div class="layui-form-item">
 						<div class="layui-inline layui-form-pane">
@@ -115,6 +106,12 @@
 	</div>
 </script>
 
+
+<script type="text/html" id="template_toolbar">
+	<button class="layui-btn layui-btn-sm layui-bg-green" lay-event="add"><i class="layui-icon layui-icon-add-1"></i>添加材料</button>
+	<button class="layui-btn layui-btn-sm layui-bg-blue" lay-event="start"><i class="layui-icon layui-icon-triangle-r"></i>开始工程</button>
+</script>
+
 <script>
 	var table_reload;
 	layui.use(['form', 'jquery', 'element', 'laydate', 'table'], function() {
@@ -182,7 +179,7 @@
 			elem: '#table'
 			,url: url//数据接口
 			,page: false //开启分页
-			,toolbar:true
+			,toolbar:'#template_toolbar'
 			,limit:100000
 			// ,height:'full-100'
 			,loading:true
@@ -192,15 +189,19 @@
 			}
 			,cols: [[ //表头
 				{type:'numbers', title: '序号', align:'center', fixed:'left', sort:true,width:90}
-				,{field: 'type_name', title: '分类', align:'center',sort:true}
+				,{field: 'type_name', title: '分类', align:'center',sort:true,}
 				,{field: 'goods_name', title: '名称', align:'center',sort:true}
 				,{field: 'goods_number', title: '编号', align:'center',sort:true}
-				,{field: 'need', title: '数量', align:'center',sort:true, width:120, edit:'text'}
-				,{field: 'need_ok', title: '累计采购', align:'center',sort:true, width:120}
-				,{field: 'unit_name', title: '单位', align:'center', width:100}
+				,{field: 'need', title: '预算', align:'center',sort:true, width:75, edit:'text'}
+				,{field: 'buy', title: '采购', align:'center',sort:true, width:75}
+				,{field: 'in', title: '入库', align:'center',sort:true, width:75}
+				,{field: 'adjust_in', title: '调拨入', align:'center',sort:true, width:90}
+				,{field: 'adjust_out', title: '调拨出', align:'center',sort:true, width:90}
+				,{field: 'get', title: '已领', align:'center',sort:true, width:75}
+				,{field: 'unit_name', title: '单位', align:'center', width:75}
 				,{field: 'type', title: '类型', align:'center',sort:true, templet:"#template_type", width:80}
-				,{field: 'check', title: '核对', align:'center',sort:true, templet:"#template_check", width:100}
-				,{field: 'create_time', title: '创建时间', sort:true, align:'center', width:180}
+				,{field: 'check', title: '核对', align:'center',sort:true, templet:"#template_check", width:90}
+				,{field: 'create_time', title: '创建时间', sort:true, align:'center', width:160}
 				,{field: 'number', title: '操作', templet:'#toolbar', fixed:'right', align:'center', width:100}
 			]],parseData: function(res){ //res 即为原始返回的数据
 				return {
@@ -237,15 +238,50 @@
 		});
 
 		// 监听工具条
+		table.on('toolbar(table)', function(obj) {
+			switch(obj.event){
+				case 'add':
+					layer.open({
+						type : 2,
+						content:"{:url('need/goods')}" + "?id={$Request.get.id}",
+						title:'选择材料',
+						btnAlign: 'c',
+						area: ['95%', '95%'],
+						shadeClose: true,
+						anim: 5,
+						isOutAnim:true,
+						end:function(){
+							table_reload();
+						}
+					});
+					break;
+
+				case 'start':
+					var form_data = {
+						'id' : "{$Request.get.id}",
+					};
+					$.post("{:url('project/ajax_start')}",form_data, function(ret){
+						if(ret.code == 200){
+							layer.msg(ret.msg)
+						}else{
+							layer.msg(ret.msg, function () {
+
+							})
+						}
+					});
+					break;
+
+
+			}
+
+		});
+
+		// 监听工具条
 		table.on('tool(table)', function(obj) {
 			switch(obj.event){
 				case 'delete':
 					layer.confirm('确定删除这条记录吗？', {icon: 3, title:'提示'}, function(index){
-						var form_data = {
-							id         : obj.data.id,
-							project_id : "{$Request.get.id}",
-						};
-						$.post("{:url('need/ajax_del')}",form_data, function(ret){
+						$.post("{:url('need/ajax_del')}",obj.data, function(ret){
 							if(ret.code == 200){
 								layer.msg(ret.msg);
 								table_reload();
@@ -261,38 +297,6 @@
 			}
 		});
 
-		// 添加材料
-		$('.search_btn1').on('click',function () {
-			layer.open({
-				type : 2,
-				content:"{:url('need/goods')}" + "?id={$Request.get.id}",
-				title:'选择材料',
-				btnAlign: 'c',
-				area: ['95%', '95%'],
-				shadeClose: true,
-				anim: 5,
-				isOutAnim:true,
-				end:function(){
-					table_reload();
-				}
-			});
-		});
-
-		// 开始工程
-		$('.search_btn2').on('click',function () {
-			var form_data = {
-				'id' : "{$Request.get.id}",
-			};
-			$.post("{:url('project/ajax_start')}",form_data, function(ret){
-				if(ret.code == 200){
-					layer.msg(ret.msg)
-				}else{
-					layer.msg(ret.msg, function () {
-
-					})
-				}
-			});
-		});
 	})
 </script>
 {include file="public/footer" /}

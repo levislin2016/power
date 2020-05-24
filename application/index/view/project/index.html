@@ -5,14 +5,6 @@
         <div class="layui-card">
             <div class="layui-form">
 
-                <div class="layui-form-item">
-                    <div class="layui-inline layui-form-pane">
-                        <div class="layui-inline">
-                            <button class="layui-btn search_btn1 layui-bg-blue"><i class="layui-icon layui-icon-add-1"></i>添加工程</button>
-                            <button class="layui-btn search_btn2 layui-bg-blue"><i class="layui-icon layui-icon-list"></i>导出</button>
-                        </div>
-                    </div>
-                </div>
                 <form class="layui-form" lay-filter="search-form">
                     <div class="layui-form-item">
                         <div class="layui-inline layui-form-pane">
@@ -103,12 +95,16 @@
 <script type="text/html" id="toolbar">
     <div class="layui-btn-container">
         {{# if(d.status != '已作废'){ }}
-        <a class="layui-btn layui-btn-sm layui-bg-green" lay-event="need"><i class="layui-icon layui-icon-list"></i>预算</a>
+        <a class="layui-btn layui-btn-sm layui-bg-green" lay-event="goods"><i class="layui-icon layui-icon-list"></i>材料</a>
         <a class="layui-btn layui-btn-sm layui-bg-blue" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>编辑</a>
         <button class="layui-btn layui-btn-sm layui-bg-gray" lay-event="delete"><i class="layui-icon layui-icon-delete"></i>删除</button>
         {{# } }}
 
     </div>
+</script>
+
+<script type="text/html" id="template_toolbar">
+    <button class="layui-btn layui-btn-sm layui-bg-green" lay-event="add"><i class="layui-icon layui-icon-add-1"></i>添加工程</button>
 </script>
 
 <script>
@@ -152,7 +148,7 @@
             ,url: url//数据接口
             ,height: 'full-100'
             ,page: true //开启分页
-            ,toolbar:true
+            ,toolbar:'#template_toolbar'
             ,limit:20
             ,loading:true
             ,where:{
@@ -181,10 +177,25 @@
             }
         });
 
+        // 监听工具条
+        table.on('toolbar(table)', function(obj) {
+            switch(obj.event) {
+                case 'add':
+                    layer.open({
+                        type : 2,
+                        content:"{:url('project/add')}",
+                        title:'添加工程',
+                        btnAlign: 'c',
+                        area: ['50%', '50%'],
+                        anim: 5,
+                        isOutAnim:true,
+                    });
+            }
+        });
+
         table.on('tool(table)', function(obj) {
             switch(obj.event){
-
-                case 'need':
+                case 'goods':
                     layer.open({
                         type : 2,
                         content:"{:url('need/index')}" + '?id=' + obj.data.id,
@@ -234,39 +245,6 @@
                 break;
             }
         });
-
-        $('.search_btn1').on('click',function () {
-            layer.open({
-                type : 2,
-                content:"{:url('project/add')}",
-                title:'添加工程',
-                btnAlign: 'c',
-                area: ['50%', '50%'],
-                anim: 5,
-                isOutAnim:true,
-                end:function(){
-                    table_reload();
-                }
-            });
-        });
-
-        $('.search_btn2').click(function(){
-            var form_data = form.val("search-form");
-            $.get(url,form_data, function (res) {
-                if (res.code == 200){
-                    res.data.data.unshift({
-                        id: 'ID',
-                        number: '采购单编号',
-                        status: '状态',
-                        create_time:'创建时间',
-                        type:'类型',
-                    });
-                    LAY_EXCEL.exportExcel(res.data.data, '采购单.xlsx', 'xlsx')
-                }
-            })
-        });
-
-
 
     })
 </script>

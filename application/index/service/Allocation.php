@@ -2,7 +2,7 @@
 namespace app\index\service;
 
 use app\index\model\Project as ProjectModel;
-use app\index\model\ProjectStock as ProjectStockModel;
+use app\index\model\Need as ProjectStockModel;
 use app\index\model\ShoppingCart as ShoppingCartModel;
 use app\index\service\Project as ProjectService;
 use app\index\model\StockOrder as StockOrderModel;

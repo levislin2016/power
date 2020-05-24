@@ -4,7 +4,7 @@ namespace app\index\service;
 use app\index\model\StockOrder as StockOrderModel;
 use app\index\model\StockOrderInfo as StockOrderInfoModel;
 use app\index\model\ProjectWoker as ProjectWokerModel;
-use app\index\model\ProjectStock as ProjectStockModel;
+use app\index\model\Need as ProjectStockModel;
 use app\index\model\Contract as ContractModel;
 use app\index\model\StockAll as StockAllModel;
 use app\index\model\SupplyGoods as SupplyGoodsModel;

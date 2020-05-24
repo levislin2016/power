@@ -4,7 +4,7 @@ namespace app\index\service;
 use app\index\model\Project as ProjectModel;
 use app\index\model\ProjectEnd as ProjectEndModel;
 use app\index\model\ProjectEndInfo as ProjectEndInfoModel;
-use app\index\model\ProjectStock as ProjectStockModel;
+use app\index\model\Need as ProjectStockModel;
 use app\index\model\ProjectWoker as ProjectWokerModel;
 use app\index\model\StockAll as StockAllModel;
 use app\index\model\StockOrder as StockOrderModel;
