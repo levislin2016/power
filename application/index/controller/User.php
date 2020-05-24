@@ -18,17 +18,24 @@ class User extends Base
     ];
 
     public function index(){
-        $params = input('get.');
-    	$list = (new UserService)->select_list($params);
-    	$this->assign('list', $list);
-        return $this->fetch();
+        return view('index');
+    }
+
+    public function ajax_get_list(){
+    	$list = model('user', 'service')->select_list(input('get.'), input('limit'));
+        return returnJson($list, 200, '获取成功!');
+
     }
 
     public function role(){
-        $params = input('get.');
-        $list = (new UserService)->role_list($params);
-        $this->assign('list', $list);
-        return $this->fetch();
+        return view('role');
+
+    }
+
+    public function ajax_get_role_list(){
+        $list = model('user', 'service')->role_list(input('get.'), input('limit'));
+        return returnJson($list, 200, '获取成功!');
+
     }
 
 
@@ -154,6 +161,7 @@ class User extends Base
 
         return [
             'msg' => '操作成功',
+            'code' => 200
         ];
     }
 
@@ -170,6 +178,7 @@ class User extends Base
 
     	return [
                 'msg' => '操作成功',
+                'code' => 200
             ];
     }
     

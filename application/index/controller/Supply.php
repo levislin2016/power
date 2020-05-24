@@ -13,8 +13,7 @@ class Supply extends Base
     ];
 
     public function index(){
-        $data['list'] = model('supply', 'service')->getList(input('get.'), input('get.limit'));
-        return view('index', ['data' => $data]);
+        return view('index');
     }
 
     // 获取材料对应的供应商列表
@@ -66,6 +65,7 @@ class Supply extends Base
 
     	return [
                 'msg' => '操作成功',
+                'code' => '200'
             ];
     }
 

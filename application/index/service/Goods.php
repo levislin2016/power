@@ -10,7 +10,7 @@ use think\facade\App;
 
 class Goods{
     // 获取材料列表
-    public function getList($params, $limit = 10, $order = 'desc'){
+    public function getList($params, $limit = 15){
         $where = [];
         if (isset($params['search']) && $params['search']){
             $where[] = ['name|number', 'like', "%{$params['search']}%"];
@@ -27,12 +27,13 @@ class Goods{
             $where[] = ['create_time', 'between time', [trim($time[0]), trim($time[1])]];
         }
 
-        $list = GoodsModel::with(['unit', 'type'])->where($where)->order('create_time desc')->paginate($limit);
+        $list = GoodsModel::with(['unit', 'type', 'cate'])->where($where)->order('create_time desc')->paginate($limit);
         return $list;
     }
 
     //材料列表
     public function selectList($params){
+
         $list = GoodsModel::with(['company'=>function($query){
             $query->field('id,name');
         },'unit'=>function($query){
@@ -76,6 +77,7 @@ class Goods{
                 ]);
         }else {
             $data['company_id'] = session('power_user.company_id');
+            $data['image'] = '/static/upload/'.$data['image'];
             $user = GoodsModel::create($data);
             if (!$user) {
                 throw new BaseException(
@@ -86,6 +88,7 @@ class Goods{
             }
             return [
                 'msg' => '添加材料成功',
+                'code' => '200'
             ];
         }
     }
@@ -96,6 +99,7 @@ class Goods{
             $find = $find->toArray();
             if($find['id'] == $id){
                 $data['update_time'] = time();
+                $data['image'] = '/static/upload/'.$data['image'];
                 $res = GoodsModel::where('id', $id)->update($data);
                 return [
                     'msg' => '修改材料成功',
@@ -118,6 +122,7 @@ class Goods{
             }
             return [
                 'msg' => '修改材料成功',
+                'code' => '200'
             ];
         }
     }

@@ -11,15 +11,15 @@ class Unit extends Base
     protected $beforeActionList = [
         'checkLogoin'
     ];
-
     public function index(){
-        $params = input('get.');
-        $list = (new UnitService)->selectList($params);
-        //dump($list->toArray());
-    	$this->assign('list', $list);
-        return $this->fetch();
+        return view('index');
     }
 
+    // 获取材料对应的供应商列表
+    public function ajax_get_list(){
+        $list = model('unit', 'service')->selectList(input('get.'), input('get.limit'))->toArray();
+        return returnJson($list, 200, '获取成功');
+    }
     public function add(){ 
         $id = input('get.id', '');
         if($id){
@@ -63,7 +63,8 @@ class Unit extends Base
 
     	return [
                 'msg' => '操作成功',
-            ];
+                'code' => '200'
+        ];
     }
 
 

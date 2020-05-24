@@ -13,11 +13,13 @@ class Cate extends Base
     ];
 
     public function index(){
-        $params = input('get.');
-        $list = (new CateService)->selectList($params);
-    	$this->assign('list', $list['list']);
-    	$this->assign('page', $list['page']);
-        return $this->fetch();
+        return view('index');
+    }
+
+    // 获取材料对应的供应商列表
+    public function ajax_get_list(){
+        $list = model('cate', 'service')->selectList(input('get.'), input('get.limit'))->toArray();
+        return returnJson($list['data'], 0, '获取成功');
     }
 
     public function add(){ 
@@ -112,6 +114,7 @@ class Cate extends Base
 
     	return [
                 'msg' => '操作成功',
+                'cate' => '200'
             ];
     }
 

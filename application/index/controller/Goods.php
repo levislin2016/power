@@ -16,10 +16,13 @@ class Goods extends Base
     ];
 
     public function index(){
-        $params = input('get.');
-        $list = (new GoodsService)->selectList($params);
-        $this->assign('list', $list);
-        return $this->fetch();
+        return view('index');
+    }
+
+    // 获取材料对应的供应商列表
+    public function ajax_get_list(){
+        $list = model('goods', 'service')->getList(input('get.'), input('get.limit'))->toArray();
+        return returnJson($list, 200, '获取成功');
     }
 
     # ajax 获取页面数据
@@ -46,6 +49,19 @@ class Goods extends Base
         //材料分类列表
         $cate_list = CateModel::all();
         $this->assign('cate_list', $cate_list);
+
+        $id = input('get.id', '');
+        if($id){
+            $list = GoodsModel::with(['unit', 'type', 'cate'])->get($id);
+            if(!$list){
+                throw new BaseException(
+                    [
+                        'msg' => '非法错误，请重试！',
+                        'errorCode' => 30001
+                    ]);
+            }
+            $this->assign('list', $list);
+        }
         return $this->fetch();
     }
 
@@ -102,13 +118,14 @@ class Goods extends Base
     	if(!$res){
     		throw new BaseException(
 	            [
-	                'msg' => '删除合同错误！',
+	                'msg' => '删除材料错误！',
 	                'errorCode' => 30006
 	            ]);
     	}
 
     	return [
                 'msg' => '操作成功',
+                'code' => '200'
             ];
     }
 

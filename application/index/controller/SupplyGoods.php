@@ -1,6 +1,7 @@
 <?php
 namespace app\index\controller;
 
+use app\index\model\Type;
 use app\index\service\SupplyGoods as SupplyGoodsService;
 use app\index\model\SupplyGoods as SupplyGoodsModel;
 use app\index\model\Supply as SupplyModel;
@@ -15,13 +16,23 @@ class SupplyGoods extends Base
     ];
 
     public function index(){
-        $data['list'] = model('supplyGoods', 'service')->getList(input('get.'), input('get.limit'));
-        return view('index', ['data' => $data]);
+        return view('index');
+    }
+
+    public function goods(){
+        $data['type'] = Type::all();
+        return view('goods', ['data' => $data]);
     }
 
     // 获取供应商对应的材料
     public function ajax_get_list(){
         $list = model('supplyGoods', 'service')->getList(input('get.'), input('get.limit'))->toArray();
+        return returnJson($list, 200, '获取成功');
+    }
+
+    // 获取供应商对应的材料
+    public function ajax_get_goods(){
+        $list = model('supplyGoods', 'service')->getGoodsList(input('get.'), input('get.limit'))->toArray();
         return returnJson($list, 200, '获取成功');
     }
 
@@ -45,6 +56,11 @@ class SupplyGoods extends Base
         return $this->fetch();
     }
 
+    public function ajax_add(){
+        $list = model('supply_goods', 'service')->add_contract(input('post.'));
+        return returnJson($list['data'], $list['code'], $list['msg']);
+    }
+
     public function save(){ 
         $id = input('param.id', '');
         $validate = new SupplyGoodsValidate();
@@ -65,13 +81,14 @@ class SupplyGoods extends Base
     	if(!$res){ 
     		throw new BaseException(
 	            [
-	                'msg' => '删除业主错误！',
+	                'msg' => '删除供应商错误！',
 	                'errorCode' => 30006
 	            ]);
     	}
 
     	return [
                 'msg' => '操作成功',
+                'code' => '200'
             ];
     }
 

@@ -188,31 +188,39 @@
                             , last: "尾页" //不显示尾页
 
                         }
+						,done: function (res, curr, count) {
+							$('.layui-table').css("width","100%");
+							$("th[data-field='bar']").css("border-right",'none');
+						}
                         , cols: [[
-                            , {field: 'id', title: 'ID', width:80,sort: true}
-                            , {field: 'stock_name', width:210,title: '仓库名', sort: true}
-                            , {field: 'c_number', width:210,title: '合同编号', sort: true}
-                            , {field: 'project_name',width:210, title: '项目名'}
-                            , {field: 'supply_goods_name', width:210,title: '材料'}
-                            , {field: 'have', width:210,title: '可调拨数', sort: true}
-                            , {fixed: 'right', title:'操作', width:80, align: 'center', toolbar: '#barDemo'} //这里的toolbar值是模板元素的选择器
+                            , {field: 'id', title: 'ID', sort: true, align:'center'}
+                            , {field: 'stock_name', title: '仓库名', sort: true, align:'center'}
+                            , {field: 'c_number',title: '合同编号', sort: true, align:'center'}
+                            , {field: 'project_name', title: '项目名', align:'center'}
+                            , {field: 'supply_goods_name', title: '材料', align:'center'}
+                            , {field: 'have', title: '可调拨数', sort: true, align:'center'}
+                            , {fixed: 'right', title:'操作',  align: 'center', toolbar: '#barDemo'} //这里的toolbar值是模板元素的选择器
                         ]]
                     });
                     table.render({
                         elem: '.all2'
                         , url: "{:url('allocation/project_list')}?search="+$("#search").val()+"&project_id="+$('#project_id option:selected').val()+"&is_type="
                         , page: true
+						,done: function (res, curr, count) {
+							$('.layui-table').css("width","100%");
+							$("th[data-field='bar']").css("border-right",'none');
+						}
                         , cols: [[
-                            , {field: 'contract_number', width:150,title: '合同编号', sort: true}
-                            , {field: 'owner_name',width:150, title: '业主'}
-                            , {field: 'name', width:190,title: '项目名'}
-                            , {field: 'status_name', title: '状态', width:80, templet: '#status_name'}
-                            , {field: 'woker_name', width:120,title: '工程队'}
-                            , {field: 'goods', width:120,title: '材料'}
-                            , {field: 'can_num',width:80,title: '可领'}
-                            , {field: 'get_num', width:80,title: '已领'}
-                            , {field: 'not_num', width:80,title: '可调拨数量'}
-                            , {fixed: 'right', title:'操作', width:70,align: 'center', toolbar: '#barDemo1'} //这里的toolbar值是模板元素的选择器
+                            , {field: 'contract_number', title: '合同编号', sort: true, align:'center'}
+                            , {field: 'owner_name', title: '业主', align:'center'}
+                            , {field: 'name', title: '项目名', align:'center'}
+                            , {field: 'status_name', title: '状态',  templet: '#status_name', align:'center'}
+                            , {field: 'woker_name', title: '工程队', align:'center'}
+                            , {field: 'goods', title: '材料', align:'center'}
+                            , {field: 'can_num',title: '可领', align:'center'}
+                            , {field: 'get_num', title: '已领', align:'center'}
+                            , {field: 'not_num', title: '可调拨数量', align:'center'}
+                            , {fixed: 'right', title:'操作', align: 'center', toolbar: '#barDemo1', width:300} //这里的toolbar值是模板元素的选择器
                         ]]
                     });
                     table.render({
@@ -228,30 +236,38 @@
                             , last: "尾页" //不显示尾页
 
                         }
+						,done: function (res, curr, count) {
+							$('.layui-table').css("width","100%");
+							$("th[data-field='bar']").css("border-right",'none');
+						}
                         , cols: [[
-                            , {field: 'id', title: 'ID', width:80,sort: true}
-                            , {field: 'stock_name', width:210,title: '仓库名', sort: true}
-                            , {field: 'c_number', width:210,title: '合同编号', sort: true}
-                            , {field: 'project_name',width:210, title: '项目名'}
-                            , {field: 'supply_goods_name', width:210,title: '材料'}
-                            , {field: 'have', width:210,title: '可调拨数',overflow:scroll}
-                            , {fixed: 'right', title:'操作',width:80, align: 'center', toolbar: '#barDemo'} //这里的toolbar值是模板元素的选择器
+                            , {field: 'id', title: 'ID', sort: true, align:'center'}
+                            , {field: 'stock_name', title: '仓库名', sort: true, align:'center'}
+                            , {field: 'c_number', title: '合同编号', sort: true, align:'center'}
+                            , {field: 'project_name', title: '项目名', align:'center'}
+                            , {field: 'supply_goods_name', title: '材料', align:'center'}
+                            , {field: 'have', title: '可调拨数',overflow:scroll, align:'center'}
+                            , {fixed: 'right', title:'操作', toolbar: '#barDemo', align:'center', width:300} //这里的toolbar值是模板元素的选择器
                         ]]
                     });
                     table.render({
                         elem: '.all4'
                         , url: "{:url('allocation/project_stock_list')}?search="+$("#search").val()+"&project_id="+$('#project_id option:selected').val()+"&is_type="
                         , page: true
+						,done: function (res, curr, count) {
+							$('.layui-table').css("width","100%");
+							$("th[data-field='bar']").css("border-right",'none');
+						}
                         , cols: [[
-                            , {field: 'contract_number', width:150,title: '合同编号', sort: true}
-                            , {field: 'owner_name',width:150, title: '业主'}
-                            , {field: 'name', width:190,title: '项目名'}
-                            , {field: 'status_name', title: '状态', width:80, templet: '#status_name'}
-                            , {field: 'goods', width:120,title: '材料'}
-                            , {field: 'can_num',width:80,title: '可领'}
-                            , {field: 'get_num', width:80,title: '已领'}
-                            , {field: 'in', width:80,title: '可调拨数量'}
-                            , {fixed: 'right', title:'操作', width:70,align: 'center', toolbar: '#barDemo2'} //这里的toolbar值是模板元素的选择器
+                            , {field: 'contract_number', title: '合同编号', sort: true, align:'center'}
+                            , {field: 'owner_name', title: '业主', align:'center'}
+                            , {field: 'name', title: '项目名', align:'center'}
+                            , {field: 'status_name', title: '状态', templet: '#status_name', align:'center'}
+                            , {field: 'goods', title: '材料', align:'center'}
+                            , {field: 'can_num',title: '可领', align:'center'}
+                            , {field: 'get_num', title: '已领', align:'center'}
+                            , {field: 'in', title: '可调拨数量', align:'center'}
+                            , {fixed: 'right', title:'操作', align: 'center', toolbar: '#barDemo2', width:300} //这里的toolbar值是模板元素的选择器
                         ]]
                     });
 
@@ -281,31 +297,39 @@
                             , last: "尾页" //不显示尾页
 
                         }
+						,done: function (res, curr, count) {
+							$('.layui-table').css("width","100%");
+							$("th[data-field='bar']").css("border-right",'none');
+						}
                         , cols: [[
-                            , {field: 'id', title: 'ID', width:80,sort: true}
-                            , {field: 'stock_name', width:210,title: '仓库名', sort: true}
-                            , {field: 'c_number', width:210,title: '合同编号', sort: true}
-                            , {field: 'project_name',width:210, title: '项目名'}
-                            , {field: 'supply_goods_name', width:210,title: '材料'}
-                            , {field: 'have', width:210,title: '可调拨数', sort: true}
-                            , {fixed: 'right', title:'操作', width:80, align: 'center', toolbar: '#barDemo'} //这里的toolbar值是模板元素的选择器
+                            , {field: 'id', title: 'ID', sort: true}
+                            , {field: 'stock_name', title: '仓库名', sort: true}
+                            , {field: 'c_number', title: '合同编号', sort: true}
+                            , {field: 'project_name', title: '项目名'}
+                            , {field: 'supply_goods_name', title: '材料'}
+                            , {field: 'have', align:'center',title: '可调拨数', sort: true}
+                            , {fixed: 'right', title:'操作', align:'center', align: 'center', toolbar: '#barDemo'} //这里的toolbar值是模板元素的选择器
                         ]]
                     });
                     table.render({
                         elem: '.all2'
                         , url: "{:url('allocation/project_list')}?search="+$("#search").val()+"&project_id="+$('#project_id option:selected').val()+"&is_type="
                         , page: true
+						,done: function (res, curr, count) {
+							$('.layui-table').css("width","100%");
+							$("th[data-field='bar']").css("border-right",'none');
+						}
                         , cols: [[
-                            , {field: 'contract_number', width:150,title: '合同编号', sort: true}
-                            , {field: 'owner_name',width:150, title: '业主'}
-                            , {field: 'name', width:190,title: '项目名'}
-                            , {field: 'status_name', title: '状态', width:80, templet: '#status_name'}
-                            , {field: 'woker_name', width:120,title: '工程队'}
-                            , {field: 'goods', width:120,title: '材料'}
-                            , {field: 'can_num',width:80,title: '可领'}
-                            , {field: 'get_num', width:80,title: '已领'}
-                            , {field: 'not_num', width:80,title: '可调拨数量'}
-                            , {fixed: 'right', title:'操作', width:70,align: 'center', toolbar: '#barDemo1'} //这里的toolbar值是模板元素的选择器
+                            , {field: 'contract_number', align:'center',title: '合同编号', sort: true}
+                            , {field: 'owner_name',align:'center', title: '业主'}
+                            , {field: 'name', title: '项目名', align:'center'}
+                            , {field: 'status_name', title: '状态', align:'center', templet: '#status_name'}
+                            , {field: 'woker_name', align:'center',title: '工程队'}
+                            , {field: 'goods', align:'center',title: '材料'}
+                            , {field: 'can_num',align:'center',title: '可领'}
+                            , {field: 'get_num', align:'center',title: '已领'}
+                            , {field: 'not_num', align:'center',title: '可调拨数量'}
+                            , {fixed: 'right', title:'操作',align: 'center', toolbar: '#barDemo1', width:300} //这里的toolbar值是模板元素的选择器
                         ]]
                     });
                     table.render({
@@ -321,30 +345,38 @@
                             , last: "尾页" //不显示尾页
 
                         }
+						,done: function (res, curr, count) {
+							$('.layui-table').css("width","100%");
+							$("th[data-field='bar']").css("border-right",'none');
+						}
                         , cols: [[
-                            , {field: 'id', title: 'ID', width:80,sort: true}
-                            , {field: 'stock_name', width:210,title: '仓库名', sort: true}
-                            , {field: 'c_number', width:210,title: '合同编号', sort: true}
-                            , {field: 'project_name',width:210, title: '项目名'}
-                            , {field: 'supply_goods_name', width:210,title: '材料'}
-                            , {field: 'have', width:210,title: '可调拨数',overflow:scroll}
-                            , {fixed: 'right', title:'操作',width:80, align: 'center', toolbar: '#barDemo'} //这里的toolbar值是模板元素的选择器
+                            , {field: 'id', title: 'ID', align:'center',sort: true}
+                            , {field: 'stock_name', align:'center',title: '仓库名', sort: true}
+                            , {field: 'c_number', align:'center',title: '合同编号', sort: true}
+                            , {field: 'project_name',align:'center', title: '项目名'}
+                            , {field: 'supply_goods_name', align:'center',title: '材料'}
+                            , {field: 'have', align:'center',title: '可调拨数',overflow:scroll}
+                            , {fixed: 'right', title:'操作',align:'center', toolbar: '#barDemo', width:300} //这里的toolbar值是模板元素的选择器
                         ]]
                     });
                     table.render({
                         elem: '.all4'
                         , url: "{:url('allocation/project_stock_list')}?search="+$("#search").val()+"&project_id="+$('#project_id option:selected').val()+"&is_type="
                         , page: true
+						,done: function (res, curr, count) {
+							$('.layui-table').css("width","100%");
+							$("th[data-field='bar']").css("border-right",'none');
+						}
                         , cols: [[
-                            , {field: 'contract_number', width:150,title: '合同编号', sort: true}
-                            , {field: 'owner_name',width:150, title: '业主'}
-                            , {field: 'name', width:190,title: '项目名'}
-                            , {field: 'status_name', title: '状态', width:80, templet: '#status_name'}
-                            , {field: 'goods', width:120,title: '材料'}
-                            , {field: 'can_num',width:80,title: '可领'}
-                            , {field: 'get_num', width:80,title: '已领'}
-                            , {field: 'in', width:80,title: '可调拨数量'}
-                            , {fixed: 'right', title:'操作', width:70,align: 'center', toolbar: '#barDemo2'} //这里的toolbar值是模板元素的选择器
+                            , {field: 'contract_number', align:'center',title: '合同编号', sort: true}
+                            , {field: 'owner_name',align:'center', title: '业主'}
+                            , {field: 'name', title: '项目名', align:'center'}
+                            , {field: 'status_name', title: '状态', align:'center', templet: '#status_name'}
+                            , {field: 'goods', align:'center',title: '材料'}
+                            , {field: 'can_num',align:'center',title: '可领'}
+                            , {field: 'get_num', align:'center',title: '已领'}
+                            , {field: 'in', align:'center',title: '可调拨数量'}
+                            , {fixed: 'right', title:'操作', align: 'center', toolbar: '#barDemo2', width:300} //这里的toolbar值是模板元素的选择器
                         ]]
                     });
 
@@ -378,31 +410,39 @@
                                     , last: "尾页" //不显示尾页
 
                                 }
+								,done: function (res, curr, count) {
+									$('.layui-table').css("width","100%");
+									$("th[data-field='bar']").css("border-right",'none');
+								}
                                 , cols: [[
-                                    , {field: 'id', title: 'ID', width:80,sort: true}
-                                    , {field: 'stock_name', width:210,title: '仓库名', sort: true}
-                                    , {field: 'c_number', width:210,title: '合同编号', sort: true}
-                                    , {field: 'project_name',width:210, title: '项目名'}
-                                    , {field: 'supply_goods_name', width:210,title: '材料'}
-                                    , {field: 'have', width:210,title: '可调拨数', sort: true}
-                                    , {fixed: 'right', title:'操作', width:80, align: 'center', toolbar: '#barDemo'} //这里的toolbar值是模板元素的选择器
+                                    , {field: 'id', title: 'ID', align:'center',sort: true}
+                                    , {field: 'stock_name', align:'center',title: '仓库名', sort: true}
+                                    , {field: 'c_number', align:'center',title: '合同编号', sort: true}
+                                    , {field: 'project_name',align:'center', title: '项目名'}
+                                    , {field: 'supply_goods_name', align:'center',title: '材料'}
+                                    , {field: 'have', align:'center',title: '可调拨数', sort: true}
+                                    , {fixed: 'right', title:'操作', align:'center', toolbar: '#barDemo', width:300} //这里的toolbar值是模板元素的选择器
                                 ]]
                             });
                             table.render({
                                 elem: '.all2'
                                 , url: "{:url('allocation/project_list')}?search="+$("#search").val()+"&project_id="+$('#project_id option:selected').val()+"&is_type="
                                 , page: true
+								,done: function (res, curr, count) {
+									$('.layui-table').css("width","100%");
+									$("th[data-field='bar']").css("border-right",'none');
+								}
                                 , cols: [[
-                                    , {field: 'contract_number', width:150,title: '合同编号', sort: true}
-                                    , {field: 'owner_name',width:150, title: '业主'}
-                                    , {field: 'name', width:190,title: '项目名'}
-                                    , {field: 'status_name', title: '状态', width:80, templet: '#status_name'}
-                                    , {field: 'woker_name', width:120,title: '工程队'}
-                                    , {field: 'goods', width:120,title: '材料'}
-                                    , {field: 'can_num',width:80,title: '可领'}
-                                    , {field: 'get_num', width:80,title: '已领'}
-                                    , {field: 'not_num', width:80,title: '可调拨数量'}
-                                    , {fixed: 'right', title:'操作', width:70,align: 'center', toolbar: '#barDemo1'} //这里的toolbar值是模板元素的选择器
+                                    , {field: 'contract_number', align:'center',title: '合同编号', sort: true}
+                                    , {field: 'owner_name',align:'center', title: '业主'}
+                                    , {field: 'name', title: '项目名', align:'center'}
+                                    , {field: 'status_name', title: '状态', align:'center', templet: '#status_name'}
+                                    , {field: 'woker_name', align:'center',title: '工程队'}
+                                    , {field: 'goods', align:'center',title: '材料'}
+                                    , {field: 'can_num',align:'center',title: '可领'}
+                                    , {field: 'get_num', align:'center',title: '已领'}
+                                    , {field: 'not_num', align:'center',title: '可调拨数量'}
+                                    , {fixed: 'right', title:'操作', align: 'center', toolbar: '#barDemo1', width:300} //这里的toolbar值是模板元素的选择器
                                 ]]
                             });
                             table.render({
@@ -418,30 +458,38 @@
                                     , last: "尾页" //不显示尾页
 
                                 }
+								,done: function (res, curr, count) {
+									$('.layui-table').css("width","100%");
+									$("th[data-field='bar']").css("border-right",'none');
+								}
                                 , cols: [[
-                                    , {field: 'id', title: 'ID', width:80,sort: true}
-                                    , {field: 'stock_name', width:210,title: '仓库名', sort: true}
-                                    , {field: 'c_number', width:210,title: '合同编号', sort: true}
-                                    , {field: 'project_name',width:210, title: '项目名'}
-                                    , {field: 'supply_goods_name', width:210,title: '材料'}
-                                    , {field: 'have', width:210,title: '可调拨数',overflow:scroll}
-                                    , {fixed: 'right', title:'操作',width:80, align: 'center', toolbar: '#barDemo'} //这里的toolbar值是模板元素的选择器
+                                    , {field: 'id', title: 'ID', align:'center',sort: true}
+                                    , {field: 'stock_name', align:'center',title: '仓库名', sort: true}
+                                    , {field: 'c_number', align:'center',title: '合同编号', sort: true}
+                                    , {field: 'project_name',align:'center', title: '项目名'}
+                                    , {field: 'supply_goods_name', align:'center',title: '材料'}
+                                    , {field: 'have', align:'center',title: '可调拨数',overflow:scroll}
+                                    , {fixed: 'right', title:'操作',align:'center',  toolbar: '#barDemo', width:300} //这里的toolbar值是模板元素的选择器
                                 ]]
                             });
                             table.render({
                                 elem: '.all4'
                                 , url: "{:url('allocation/project_stock_list')}?search="+$("#search").val()+"&project_id="+$('#project_id option:selected').val()+"&is_type="
                                 , page: true
+								,done: function (res, curr, count) {
+									$('.layui-table').css("width","100%");
+									$("th[data-field='bar']").css("border-right",'none');
+								}
                                 , cols: [[
-                                    , {field: 'contract_number', width:150,title: '合同编号', sort: true}
-                                    , {field: 'owner_name',width:150, title: '业主'}
-                                    , {field: 'name', width:190,title: '项目名'}
-                                    , {field: 'status_name', title: '状态', width:80, templet: '#status_name'}
-                                    , {field: 'goods', width:120,title: '材料'}
-                                    , {field: 'can_num',width:80,title: '可领'}
-                                    , {field: 'get_num', width:80,title: '已领'}
-                                    , {field: 'in', width:80,title: '可调拨数量'}
-                                    , {fixed: 'right', title:'操作', width:70,align: 'center', toolbar: '#barDemo2'} //这里的toolbar值是模板元素的选择器
+                                    , {field: 'contract_number', align:'center',title: '合同编号', sort: true}
+                                    , {field: 'owner_name',align:'center', title: '业主'}
+                                    , {field: 'name', title: '项目名', align:'center'}
+                                    , {field: 'status_name', title: '状态', align:'center', templet: '#status_name'}
+                                    , {field: 'goods', align:'center',title: '材料'}
+                                    , {field: 'can_num',align:'center',title: '可领'}
+                                    , {field: 'get_num', align:'center',title: '已领'}
+                                    , {field: 'in', align:'center',title: '可调拨数量'}
+                                    , {fixed: 'right', title:'操作', align: 'center', toolbar: '#barDemo2', width:300} //这里的toolbar值是模板元素的选择器
                                 ]]
                             });
 
@@ -462,31 +510,39 @@
                             , last: "尾页" //不显示尾页
 
                         }
+						,done: function (res, curr, count) {
+							$('.layui-table').css("width","100%");
+							$("th[data-field='bar']").css("border-right",'none');
+						}
                         , cols: [[
-                            , {field: 'id', title: 'ID', width:80,sort: true}
-                            , {field: 'stock_name', width:210,title: '仓库名', sort: true}
-                            , {field: 'c_number', width:210,title: '合同编号', sort: true}
-                            , {field: 'project_name',width:210, title: '项目名'}
-                            , {field: 'supply_goods_name', width:210,title: '材料'}
-                            , {field: 'have', width:210,title: '可调拨数', sort: true}
-                            , {fixed: 'right', title:'操作', width:80, align: 'center', toolbar: '#barDemo'} //这里的toolbar值是模板元素的选择器
+                            , {field: 'id', title: 'ID', align:'center',sort: true}
+                            , {field: 'stock_name', align:'center',title: '仓库名', sort: true}
+                            , {field: 'c_number', align:'center',title: '合同编号', sort: true}
+                            , {field: 'project_name',align:'center', title: '项目名'}
+                            , {field: 'supply_goods_name', align:'center',title: '材料'}
+                            , {field: 'have', align:'center',title: '可调拨数', sort: true}
+                            , {fixed: 'right', title:'操作', align:'center', align: 'center', toolbar: '#barDemo', width:300} //这里的toolbar值是模板元素的选择器
                         ]]
                     });
                     table.render({
                         elem: '.all2'
                         , url: "{:url('allocation/project_list')}?search="+$("#search").val()+"&project_id="+$('#project_id option:selected').val()+"&is_type="
                         , page: true
+						,done: function (res, curr, count) {
+							$('.layui-table').css("width","100%");
+							$("th[data-field='bar']").css("border-right",'none');
+						}
                         , cols: [[
-                            , {field: 'contract_number', width:150,title: '合同编号', sort: true}
-                            , {field: 'owner_name',width:150, title: '业主'}
-                            , {field: 'name', width:190,title: '项目名'}
-                            , {field: 'status_name', title: '状态', width:80, templet: '#status_name'}
-                            , {field: 'woker_name', width:120,title: '工程队'}
-                            , {field: 'goods', width:120,title: '材料'}
-                            , {field: 'can_num',width:80,title: '可领'}
-                            , {field: 'get_num', width:80,title: '已领'}
-                            , {field: 'not_num', width:80,title: '可调拨数量'}
-                            , {fixed: 'right', title:'操作', width:70,align: 'center', toolbar: '#barDemo1'} //这里的toolbar值是模板元素的选择器
+                            , {field: 'contract_number', align:'center',title: '合同编号', sort: true}
+                            , {field: 'owner_name',align:'center', title: '业主'}
+                            , {field: 'name', title: '项目名', align:'center'}
+                            , {field: 'status_name', title: '状态', align:'center', templet: '#status_name'}
+                            , {field: 'woker_name', align:'center',title: '工程队'}
+                            , {field: 'goods', align:'center',title: '材料'}
+                            , {field: 'can_num',align:'center',title: '可领'}
+                            , {field: 'get_num', align:'center',title: '已领'}
+                            , {field: 'not_num', align:'center',title: '可调拨数量'}
+                            , {fixed: 'right', title:'操作',align: 'center', toolbar: '#barDemo1', width:300} //这里的toolbar值是模板元素的选择器
                         ]]
                     });
                     table.render({
@@ -502,30 +558,38 @@
                             , last: "尾页" //不显示尾页
 
                         }
+						,done: function (res, curr, count) {
+							$('.layui-table').css("width","100%");
+							$("th[data-field='bar']").css("border-right",'none');
+						}
                         , cols: [[
-                            , {field: 'id', title: 'ID', width:80,sort: true}
-                            , {field: 'stock_name', width:210,title: '仓库名', sort: true}
-                            , {field: 'c_number', width:210,title: '合同编号', sort: true}
-                            , {field: 'project_name',width:210, title: '项目名'}
-                            , {field: 'supply_goods_name', width:210,title: '材料'}
-                            , {field: 'have', width:210,title: '可调拨数',overflow:scroll}
-                            , {fixed: 'right', title:'操作',width:80, align: 'center', toolbar: '#barDemo'} //这里的toolbar值是模板元素的选择器
+                            , {field: 'id', title: 'ID', align:'center',sort: true}
+                            , {field: 'stock_name', align:'center',title: '仓库名', sort: true}
+                            , {field: 'c_number', align:'center',title: '合同编号', sort: true}
+                            , {field: 'project_name',align:'center', title: '项目名'}
+                            , {field: 'supply_goods_name', align:'center',title: '材料'}
+                            , {field: 'have', align:'center',title: '可调拨数',overflow:scroll}
+                            , {fixed: 'right', title:'操作',align: 'center', toolbar: '#barDemo', width:300} //这里的toolbar值是模板元素的选择器
                         ]]
                     });
                     table.render({
                         elem: '.all4'
                         , url: "{:url('allocation/project_stock_list')}?search="+$("#search").val()+"&project_id="+$('#project_id option:selected').val()+"&is_type="
                         , page: true
+						,done: function (res, curr, count) {
+							$('.layui-table').css("width","100%");
+							$("th[data-field='bar']").css("border-right",'none');
+						}
                         , cols: [[
-                            , {field: 'contract_number', width:150,title: '合同编号', sort: true}
-                            , {field: 'owner_name',width:150, title: '业主'}
-                            , {field: 'name', width:190,title: '项目名'}
-                            , {field: 'status_name', title: '状态', width:80, templet: '#status_name'}
-                            , {field: 'goods', width:120,title: '材料'}
-                            , {field: 'can_num',width:80,title: '可领'}
-                            , {field: 'get_num', width:80,title: '已领'}
-                            , {field: 'in', width:80,title: '可调拨数量'}
-                            , {fixed: 'right', title:'操作', width:70,align: 'center', toolbar: '#barDemo2'} //这里的toolbar值是模板元素的选择器
+                            , {field: 'contract_number', align:'center',title: '合同编号', sort: true}
+                            , {field: 'owner_name',align:'center', title: '业主'}
+                            , {field: 'name', title: '项目名', align:'center'}
+                            , {field: 'status_name', title: '状态', align:'center', templet: '#status_name'}
+                            , {field: 'goods', align:'center',title: '材料'}
+                            , {field: 'can_num',align:'center',title: '可领'}
+                            , {field: 'get_num', align:'center',title: '已领'}
+                            , {field: 'in', align:'center',title: '可调拨数量'}
+                            , {fixed: 'right', title:'操作', align: 'center', toolbar: '#barDemo2', width:300} //这里的toolbar值是模板元素的选择器
                         ]]
                     });
 
@@ -640,31 +704,39 @@
                                 , last: "尾页" //不显示尾页
 
                             }
+							,done: function (res, curr, count) {
+								$('.layui-table').css("width","100%");
+								$("th[data-field='bar']").css("border-right",'none');
+							}
                             , cols: [[
-                                , {field: 'id', title: 'ID', width:80,sort: true}
-                                , {field: 'stock_name', width:210,title: '仓库名', sort: true}
-                                , {field: 'c_number', width:210,title: '合同编号', sort: true}
-                                , {field: 'project_name',width:210, title: '项目名'}
-                                , {field: 'supply_goods_name', width:210,title: '材料'}
-                                , {field: 'have', width:210,title: '可调拨数', sort: true}
-                                , {fixed: 'right', title:'操作', width:80, align: 'center', toolbar: '#barDemo'} //这里的toolbar值是模板元素的选择器
+                                , {field: 'id', title: 'ID', align:'center',sort: true}
+                                , {field: 'stock_name', align:'center',title: '仓库名', sort: true}
+                                , {field: 'c_number', align:'center',title: '合同编号', sort: true}
+                                , {field: 'project_name',align:'center', title: '项目名'}
+                                , {field: 'supply_goods_name', align:'center',title: '材料'}
+                                , {field: 'have', align:'center',title: '可调拨数', sort: true}
+                                , {fixed: 'right', title:'操作', align: 'center', toolbar: '#barDemo', width:300} //这里的toolbar值是模板元素的选择器
                             ]]
                         });
                         table.render({
                             elem: '.all2'
                             , url: "{:url('allocation/project_list')}?search="+$("#search").val()+"&project_id="+$('#project_id option:selected').val()+"&is_type="
                             , page: true
+							,done: function (res, curr, count) {
+								$('.layui-table').css("width","100%");
+								$("th[data-field='bar']").css("border-right",'none');
+							}
                             , cols: [[
-                                , {field: 'contract_number', width:150,title: '合同编号', sort: true}
-                                , {field: 'owner_name',width:150, title: '业主'}
-                                , {field: 'name', width:190,title: '项目名'}
-                                , {field: 'status_name', title: '状态', width:80, templet: '#status_name'}
-                                , {field: 'woker_name', width:120,title: '工程队'}
-                                , {field: 'goods', width:120,title: '材料'}
-                                , {field: 'can_num',width:80,title: '可领'}
-                                , {field: 'get_num', width:80,title: '已领'}
-                                , {field: 'not_num', width:80,title: '可调拨数量'}
-                                , {fixed: 'right', title:'操作', width:70,align: 'center', toolbar: '#barDemo1'} //这里的toolbar值是模板元素的选择器
+                                , {field: 'contract_number', align:'center',title: '合同编号', sort: true}
+                                , {field: 'owner_name',align:'center', title: '业主'}
+                                , {field: 'name', title: '项目名', align:'center'}
+                                , {field: 'status_name', title: '状态', align:'center', templet: '#status_name'}
+                                , {field: 'woker_name', align:'center',title: '工程队'}
+                                , {field: 'goods', align:'center',title: '材料'}
+                                , {field: 'can_num',align:'center',title: '可领'}
+                                , {field: 'get_num', align:'center',title: '已领'}
+                                , {field: 'not_num', align:'center',title: '可调拨数量'}
+                                , {fixed: 'right', title:'操作', align: 'center', toolbar: '#barDemo1', width:300} //这里的toolbar值是模板元素的选择器
                             ]]
                         });
                         table.render({
@@ -680,30 +752,38 @@
                                 , last: "尾页" //不显示尾页
 
                             }
+							,done: function (res, curr, count) {
+								$('.layui-table').css("width","100%");
+								$("th[data-field='bar']").css("border-right",'none');
+							}
                             , cols: [[
-                                , {field: 'id', title: 'ID', width:80,sort: true}
-                                , {field: 'stock_name', width:210,title: '仓库名', sort: true}
-                                , {field: 'c_number', width:210,title: '合同编号', sort: true}
-                                , {field: 'project_name',width:210, title: '项目名'}
-                                , {field: 'supply_goods_name', width:210,title: '材料'}
-                                , {field: 'have', width:210,title: '可调拨数',overflow:scroll}
-                                , {fixed: 'right', title:'操作',width:80, align: 'center', toolbar: '#barDemo'} //这里的toolbar值是模板元素的选择器
+                                , {field: 'id', title: 'ID', align:'center',sort: true}
+                                , {field: 'stock_name', align:'center',title: '仓库名', sort: true}
+                                , {field: 'c_number', align:'center',title: '合同编号', sort: true}
+                                , {field: 'project_name',align:'center', title: '项目名'}
+                                , {field: 'supply_goods_name', align:'center',title: '材料'}
+                                , {field: 'have', align:'center',title: '可调拨数',overflow:scroll}
+                                , {fixed: 'right', title:'操作',align: 'center', toolbar: '#barDemo', width:300} //这里的toolbar值是模板元素的选择器
                             ]]
                         });
                         table.render({
                             elem: '.all4'
                             , url: "{:url('allocation/project_stock_list')}?search="+$("#search").val()+"&project_id="+$('#project_id option:selected').val()+"&is_type="
                             , page: true
+							,done: function (res, curr, count) {
+								$('.layui-table').css("width","100%");
+								$("th[data-field='bar']").css("border-right",'none');
+							}
                             , cols: [[
-                                , {field: 'contract_number', width:150,title: '合同编号', sort: true}
-                                , {field: 'owner_name',width:150, title: '业主'}
-                                , {field: 'name', width:190,title: '项目名'}
-                                , {field: 'status_name', title: '状态', width:80, templet: '#status_name'}
-                                , {field: 'goods', width:120,title: '材料'}
-                                , {field: 'can_num',width:80,title: '可领'}
-                                , {field: 'get_num', width:80,title: '已领'}
-                                , {field: 'in', width:80,title: '可调拨数量'}
-                                , {fixed: 'right', title:'操作', width:70,align: 'center', toolbar: '#barDemo2'} //这里的toolbar值是模板元素的选择器
+                                , {field: 'contract_number', align:'center',title: '合同编号', sort: true}
+                                , {field: 'owner_name',align:'center', title: '业主'}
+                                , {field: 'name', title: '项目名', align:'center'}
+                                , {field: 'status_name', title: '状态', align:'center', templet: '#status_name'}
+                                , {field: 'goods', align:'center',title: '材料'}
+                                , {field: 'can_num',align:'center',title: '可领'}
+                                , {field: 'get_num', align:'center',title: '已领'}
+                                , {field: 'in', align:'center',title: '可调拨数量'}
+                                , {fixed: 'right', title:'操作',align: 'center', toolbar: '#barDemo2', width:350} //这里的toolbar值是模板元素的选择器
                             ]]
                         });
 

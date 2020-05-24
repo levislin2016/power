@@ -16,7 +16,7 @@ class Goods extends Base{
 //    }
 
     public function cate(){
-        return $this->hasOne('Cate', 'id', 'cate_id');
+        return $this->hasOne('Cate', 'id', 'cate_id')->bind(['cate_name' => 'name']);
     }
 
     public function unit(){

@@ -6,16 +6,14 @@ use app\lib\exception\BaseException;
 
 class Owner{
     //合同列表
-    public function selectList($params){
+    public function selectList($params, $limit = 15){
         $list = OwnerModel::where(function ($query) use($params) {
             if(!empty($params['search'])){ 
                 $query->where('name', 'like', '%'.$params['search'].'%');
             }
         })->field('id, company_id, name, create_time')
         ->order('create_time', 'desc')
-        ->paginate(10, false, [
-            'query'     => $params,
-        ]);
+        ->paginate($limit);
         return $list;
     }
 
@@ -39,6 +37,7 @@ class Owner{
             }
             return [
                 'msg' => '添加业主成功',
+                'code' => 200
             ];
         }
     }
@@ -50,6 +49,7 @@ class Owner{
             if($find['id'] == $id){
                 return [
                     'msg' => '修改业主成功',
+                    'code' => 200
                 ];
             }else{
                 throw new BaseException(
@@ -69,6 +69,7 @@ class Owner{
             }
             return [
                 'msg' => '更改业主成功',
+                'code' => 200
             ];
         }
     }

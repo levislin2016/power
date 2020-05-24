@@ -6,39 +6,36 @@ use app\lib\exception\BaseException;
 
 class Cate{
     //合同列表
-    public function selectList($params){
+    public function selectList($params, $limit = 15){
         $list = CateModel::where(function ($query) use($params) {
             if(!empty($params['search'])){ 
                 $query->where('name', 'like', '%'.$params['search'].'%');
             }
-        })->field('id, pid, name, create_time, lv')->order(['lv','create_time' => 'desc'])->paginate(10, false, [
-            'query'     => $params,
-        ]);
-        $page = $list->render();
+        })->field('id, pid, name, create_time, lv')->order(['lv','create_time' => 'desc'])->paginate($limit);
 
-        if($list) {
-            $list = $list->toArray();
-            $pids = array_filter(array_column($list['data'], 'pid'));
-            $cat_list = [];
-            if ($pids) {
-                $cat_list = CateModel::where('id', 'in', $pids)->column('name', 'id');
-            }
+//        if($list) {
+//            $list = $list->toArray();
+//            $pids = array_filter(array_column($list['data'], 'pid'));
+//            $cat_list = [];
+//            if ($pids) {
+//                $cat_list = CateModel::where('id', 'in', $pids)->column('name', 'id');
+//            }
+//
+//            if($list['data']) {
+//                foreach ($list['data'] as &$v) {
+//                        $v['p_name'] = $v['lv'].'级分类';
+//                        $v['p_cate'] = '';
+//                        if($v['pid']){
+//                            if(isset($cat_list[$v['pid']])) {
+//                                $v['p_cate'] = $cat_list[$v['pid']];
+//                            }
+//                        }
+//
+//                }
+//            }
+//        }
 
-            if($list['data']) {
-                foreach ($list['data'] as &$v) {
-                        $v['p_name'] = $v['lv'].'级分类';
-                        $v['p_cate'] = '';
-                        if($v['pid']){
-                            if(isset($cat_list[$v['pid']])) {
-                                $v['p_cate'] = $cat_list[$v['pid']];
-                            }
-                        }
-
-                }
-            }
-        }
-
-        return ['list' => $list, 'page' => $page];
+        return $list;
     }
 
     public function add_contract($data){
@@ -53,6 +50,7 @@ class Cate{
         }
         return [
             'msg' => '添加分类成功',
+            'cate' => '200'
         ];
     }
 
@@ -70,6 +68,7 @@ class Cate{
         }
         return [
             'msg' => '添加分类成功',
+            'cate' => '200'
         ];
     }
 
@@ -84,6 +83,7 @@ class Cate{
         }
         return [
             'msg' => '更改分类成功',
+            'cate' => '200'
         ];
     }
 

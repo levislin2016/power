@@ -45,26 +45,21 @@ class User{
     }
 
     //管理员列表
-    public function select_list($params){
+    public function select_list($params, $limit = 15){
         $list = UserModel::alias('u')->where(function ($query) use($params) {
             if(!empty($params['search'])){ 
                 $query->where('username', 'like', '%'.$params['search'].'%');
             }
-        })->field('u.id, u.username, r.name as role_name')->leftJoin('role r','u.type = r.id')
-            ->paginate(10, false, [
-            'query'     => $params,
-        ]);
+        })->field('u.id, u.username, r.name as role_name')->leftJoin('role r','u.type = r.id')->paginate($limit);
         return $list;
     }
 
-    public function role_list($params){
+    public function role_list($params, $limit = 15){
         $list = RoleModel::where(function ($query) use($params) {
             if(!empty($params['search'])){
                 $query->where('name', 'like', '%'.$params['search'].'%');
             }
-        })->paginate(10, false, [
-                'query'     => $params,
-            ]);
+        })->paginate($limit);
         return $list;
     }
 
@@ -80,6 +75,7 @@ class User{
         }
         return [
             'msg' => '添加用户成功',
+            'code' => 200
         ];
     }
 
@@ -103,6 +99,7 @@ class User{
         }
         return [
             'msg' => '添加用户成功',
+            'code' => 200
         ];
     }
 
@@ -150,6 +147,7 @@ class User{
         }
         return [
             'msg' => '添加管理员角色成功',
+            'code' => 200
         ];
     }
 
@@ -176,6 +174,7 @@ class User{
         }
         return [
             'msg' => '修改管理员角色成功',
+            'code' => 200
         ];
     }
 

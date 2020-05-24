@@ -6,14 +6,12 @@ use app\lib\exception\BaseException;
 
 class Unit{
     //合同列表
-    public function selectList($params){
+    public function selectList($params, $limit = 15){
         $list = UnitModel::where(function ($query) use($params) {
             if(!empty($params['search'])){ 
                 $query->where('name', 'like', '%'.$params['search'].'%');
             }
-        })->field('id, company_id, name, create_time')->order('create_time', 'desc')->paginate(10, false, [
-            'query'     => $params,
-        ]);
+        })->field('id, company_id, name, create_time')->order('create_time', 'desc')->paginate($limit);
         return $list;
     }
 
@@ -29,6 +27,7 @@ class Unit{
         }
         return [
             'msg' => '添加计量单位成功',
+            'code' => '200'
         ];
     }
 
@@ -43,6 +42,7 @@ class Unit{
         }
         return [
             'msg' => '更改计量单位成功',
+            'code' => '200'
         ];
     }
 

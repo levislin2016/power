@@ -1,0 +1,223 @@
+{include file="public/header" /}
+<div class="wrap-container clearfix">
+	<div class="column-content-detail">
+		<!--- 头部搜索框 --->
+		<div class="layui-card">
+			<div class="layui-form">
+				<form class="layui-form" lay-filter="search-form">
+					<div class="layui-form-item">
+						<div class="layui-inline layui-form-pane">
+							<label class="layui-form-label">名称|编号</label>
+							<div class="layui-input-inline">
+								<input type="text" name="search" placeholder="请输入名称或编号..." autocomplete="off" class="layui-input search"/>
+							</div>
+						</div>
+						<input type="text" name="supply_id" value="{$Request.param.supply_id}" autocomplete="off" style="display:none" class="layui-input"/>
+
+						<div class="layui-inline layui-form-pane">
+							<label class="layui-form-label">分类</label>
+							<div class="layui-input-inline">
+								<select name="type_id" lay-search="" lay-filter="select1">
+									<option value="">全部</option>
+									{volist name="data.type" id="v"}
+									<option value="{$key}">{$v.name}</option>
+									{/volist}
+								</select>
+							</div>
+						</div>
+
+						<div class="layui-inline">
+							<div class="layui-input-inline">
+								<button class="layui-btn layui-bg-blue btn_search"><i class="layui-icon layui-icon-search"></i>搜索</button>
+								<button type="reset" class="layui-btn layui-btn-normal" id="empty"  lay-submit="" lay-filter="LAY-search">重置</button>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+
+		</div>
+		<!--- 头部搜索框 --->
+
+
+		<div class="layui-form" id="table-list">
+
+			<table id="table" lay-filter="table"></table>
+
+		</div>
+	</div>
+</div>
+{include file="public/script" /}
+
+<script type="text/html" id="template_check">
+	<div class="layui-btn-container">
+		<button class="layui-btn layui-btn-sm" lay-event="check_buy"><i class="layui-icon layui-icon-add-1"></i>添加选中材料</button>
+	</div>
+</script>
+
+
+<script>
+	var table_reload;
+	layui.use(['form', 'jquery', 'element', 'laydate', 'table'], function() {
+		var form = layui.form,
+				$ = layui.jquery,
+				laydate = layui.laydate,
+				table = layui.table;
+
+		//日期范围
+		laydate.render({
+			elem: '#time'
+			,range: '至'
+			,type:'datetime'
+
+		});
+
+		form.on('submit(search-form)',function (data) {
+			table_reload();
+			return false;
+		});
+
+		form.on('select(select1)', function(data){
+			table_reload();
+			return false;
+		});
+
+
+		table_reload = function(){
+			var where =  form.val("search-form");
+			//执行重载
+			table.reload('table', {
+				where: where
+			});
+		};
+
+		var url = "{:url('supply_goods/ajax_get_goods')}";
+		//第一个实例
+		table.render({
+			elem: '#table'
+			,url: url//数据接口
+			,page: true //开启分页
+			,toolbar:true
+			,height:'full-100'
+			,limit:30
+			,toolbar:'#template_check'
+			,loading:true
+			,where:form.val("search-form")
+			,text:{
+				none:'暂无相关数据'
+			}
+			,cols: [[ //表头
+				{type:'checkbox', fixed: 'left'}
+				,{field: 'id', title: 'ID', width:100, sort: true, align:'center'}
+				,{field: 'type_name', title: '分类', align:'center',sort:true}
+				,{field: 'name', title: '名称', align:'center',sort:true}
+				,{field: 'number', title: '编号', align:'center',sort:true}
+				,{field: '', title: '进货价', align:'center',sort:true, edit:'text'}
+				,{field: '', title: '备注', align:'center',sort:true, edit:'text'}
+				,{field: 'unit_name', title: '单位', align:'center', width:100}
+				,{field: 'create_time', title: '创建时间', sort:true, align:'center', width:180}
+			]],parseData: function(res){ //res 即为原始返回的数据
+				return {
+					"code": res.code, //解析接口状态
+					"msg": res.msg, //解析提示文本
+					"count": res.data.total, //解析数据长度
+					"data": res.data.data //解析数据列表
+				};
+			},response: {
+				statusCode: 200 //规定成功的状态码，默认：0
+			}
+		});
+
+		//监听单元格编辑
+		// table.on('edit(table)', function(obj){
+		// 	var value = obj.value //得到修改后的值
+		// 			,data = obj.data //得到所在行所有键值
+		// 			,field = obj.field; //得到字段
+		// 	var form_data = {
+		// 		id   : data.id,
+		// 		need : value,
+		// 	};
+		// 	$.post("{:url('need/ajax_edit')}", form_data, function (ret) {
+		// 		if(ret.code == 200){
+		// 			layer.msg(ret.msg)
+		// 		}else{
+		// 			layer.msg(ret.msg, function () {
+		//
+		// 			})
+		// 		}
+		// 	});
+		//
+		// });
+
+		table.on('toolbar(table)', function(obj) {
+			// 添加选中的材料(自购)
+			var checkStatus = table.checkStatus(obj.config.id);
+			var type = 1;
+			switch(obj.event){
+				case 'check_buy':
+					type = 1;
+				break;
+
+				case 'check':
+					type = 2;
+				break;
+
+
+			}
+			var data = checkStatus.data;
+			if (data.length <= 0){
+				layer.msg('请勾选要添加的材料！', function(){
+
+				});
+				return false;
+			}
+			var form_data = {
+				'id'         : "{$Request.get.supply_id}",
+				'goods_list' : data,
+				'type'       : type,
+			};
+			$.post("{:url('supply_goods/ajax_add')}", form_data, function (ret) {
+				if(ret.code == 200){
+					layer.msg(ret.msg)
+				}else{
+					layer.msg(ret.msg, function () {
+
+					})
+				}
+			});
+		});
+
+		$('.search_btn1').on('click',function () {
+			layer.open({
+				type : 2,
+				content:"{:url('goods/index')}",
+				title:'添加工程',
+				btnAlign: 'c',
+				area: ['100%', '100%'],
+				anim: 5,
+				shadeClose: true,
+				isOutAnim:true,
+			});
+		});
+
+		$('.search_btn2').click(function(){
+			var form_data = form.val("search-form");
+			$.get(url,form_data, function (res) {
+				if (res.code == 200){
+					res.data.data.unshift({
+						id: 'ID',
+						number: '采购单编号',
+						status: '状态',
+						create_time:'创建时间',
+						type:'类型',
+					});
+					LAY_EXCEL.exportExcel(res.data.data, '采购单.xlsx', 'xlsx')
+				}
+			})
+		});
+
+
+
+	})
+</script>
+{include file="public/footer" /}

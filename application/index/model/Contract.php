@@ -8,7 +8,7 @@ class Contract extends Base{
     }
 
     public function owner(){
-        return $this->hasOne('Owner', 'id', 'owner_id');
+        return $this->hasOne('Owner', 'id', 'owner_id')->bind(['owner_name' => 'name']);
     }
 
 }

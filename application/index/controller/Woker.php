@@ -14,13 +14,14 @@ class Woker extends Base
     ];
 
     public function index(){
-        $params = input('get.');
-        $list = (new WokerService)->select_list($params);
-        //dump($list->toArray());
-    	$this->assign('list', $list);
-        return $this->fetch();
+        return view('index');
     }
 
+    // 获取材料对应的供应商列表
+    public function ajax_get_list(){
+        $list = model('woker', 'service')->select_list(input('get.'), input('get.limit'))->toArray();
+        return returnJson($list, 200, '获取成功');
+    }
     public function add(){ 
         $id = input('get.id', '');
         if($id){
@@ -64,6 +65,7 @@ class Woker extends Base
 
     	return [
                 'msg' => '操作成功',
+                'code' => 200
             ];
     }
 

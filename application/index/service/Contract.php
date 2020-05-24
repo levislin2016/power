@@ -6,18 +6,14 @@ use app\lib\exception\BaseException;
 
 class Contract{
     //合同列表
-    public function select_list($params){ 
-        $list = ContractModel::with(['owner'=>function($query){
-            $query->field('id,name');
-        }])->where(function ($query) use($params) {
+    public function select_list($params, $limit = 15){
+        $list = ContractModel::with(['owner'])->where(function ($query) use($params) {
             if(!empty($params['search'])){ 
                 $query->where('number|name', 'like', '%'.$params['search'].'%');
             }
         })->field('id, company_id, number, name, owner_id, create_time')
         ->order('create_time', 'desc')
-        ->paginate(10, false, [
-            'query'     => $params,
-        ]);
+        ->paginate($limit);
         return $list;
     }
 
@@ -33,6 +29,7 @@ class Contract{
         }
         return [
             'msg' => '添加合同成功',
+            'code' => 200
         ];
     }
 
@@ -47,6 +44,7 @@ class Contract{
         }
         return [
             'msg' => '添加合同成功',
+            'code' => 200
         ];
     }
 

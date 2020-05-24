@@ -36,6 +36,7 @@ class Supply{
             }
             return [
                 'msg' => '添加供应商成功',
+                'code' => '200'
             ];
         }
     }
@@ -47,6 +48,7 @@ class Supply{
             if($find['id'] == $id){
                 return [
                     'msg' => '更改供应商成功',
+                    'code' => '200'
                 ];
             }else{
                 throw new BaseException(
@@ -66,6 +68,7 @@ class Supply{
             }
             return [
                 'msg' => '更改供应商成功',
+                'code' => '200'
             ];
         }
     }

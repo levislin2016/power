@@ -13,11 +13,12 @@ class Owner extends Base
     ];
 
     public function index(){
-        $params = input('get.');
-        $list = (new OwnerService)->selectList($params);
-        //dump($list->toArray());
-    	$this->assign('list', $list);
-        return $this->fetch();
+        return view('index');
+    }
+
+    public function ajax_get_list(){
+        $list = model('owner', 'service')->selectList(input('get.'), input('limit'));
+        return returnJson($list, 200, '获取成功!');
     }
 
     public function add(){ 
@@ -63,6 +64,7 @@ class Owner extends Base
 
     	return [
                 'msg' => '操作成功',
+                'code' => 200
             ];
     }
 

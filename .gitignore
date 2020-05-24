@@ -8,3 +8,4 @@ Thumbs.db
 config/database.php
 public/static/upload/
 runtime/
+public/.htaccess
