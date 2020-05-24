@@ -60,13 +60,6 @@
 
 					<table id="table" lay-filter="table"></table>
 
-					<div class="buy_type" style="display: none;margin-top: 10px;">
-						<center>
-							<input type="radio" class="buy_type_val" name="sex" value="1" title="自购" checked>
-							<input type="radio" class="buy_type_val" name="sex" value="2" title="甲供">
-						</center>
-					</div>
-
 				</div>
 			</div>
 	</div>
@@ -113,12 +106,16 @@
 
 	<script type="text/html" id="toolbar">
 		<div class="layui-btn-container">
-			{{# if(d.status != '已作废'){ }}
-				<a class="layui-btn layui-btn-sm layui-bg-blue" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>采购工程</a>
-				<a class="layui-btn layui-btn-sm layui-bg-blue" lay-event="list"><i class="layui-icon layui-icon-list"></i>采购清单</a>
-				<a class="layui-btn layui-btn-sm layui-bg-cyan" lay-event="stock_in"><i class="layui-icon layui-icon-list"></i>采购入库</a>
-				<a class="layui-btn layui-btn-sm layui-bg-cyan" lay-event="list"><i class="layui-icon layui-icon-form"></i>入库记录</a>
-				<button class="layui-btn layui-btn-sm layui-bg-gray" lay-event="cancel"><i class="layui-icon layui-icon-close-fill"></i>作废</button>
+
+			<a class="layui-btn layui-btn-sm layui-bg-blue" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>采购</a>
+			<a class="layui-btn layui-btn-sm layui-bg-blue" lay-event="list"><i class="layui-icon layui-icon-list"></i>清单</a>
+			{{# if(d.status == '采购中'){ }}
+			<a class="layui-btn layui-btn-sm layui-bg-cyan" lay-event="stock"><i class="layui-icon layui-icon-list"></i>入库</a>
+			<a class="layui-btn layui-btn-sm layui-bg-cyan" lay-event="stock_info"><i class="layui-icon layui-icon-form"></i>入库记录</a>
+			{{# } }}
+
+			{{# if(d.status == '待确认'){ }}
+			<button class="layui-btn layui-btn-sm layui-bg-gray" lay-event="cancel"><i class="layui-icon layui-icon-close-fill"></i>作废</button>
 			{{# } }}
 		</div>
 	</script>
@@ -178,7 +175,7 @@
 					,{field: 'buy_project', title: '工程列表', align:'left'}
 					,{field: 'status', title: '状态', sort:true, templet:'#template_status', align:'center', width:90}
 					,{field: 'create_time', title: '创建时间', sort:true, align:'center', width:180}
-					,{field: 'number', title: '操作', templet:'#toolbar', fixed:'right', align:'center', width:500}
+					,{field: 'number', title: '操作', templet:'#toolbar', fixed:'right', align:'left', width:500}
 				]],parseData: function(res){ //res 即为原始返回的数据
 					return {
 						"code": res.code, //解析接口状态
@@ -240,10 +237,10 @@
 				}
 
 				// 采购入库
-				if (obj.event == 'stock_in'){
+				if (obj.event == 'stock'){
 					layer.open({
 						type : 2,
-						content:"{:url('buy/buy_info_in')}" + '?id=' + obj.data.id,
+						content:"{:url('buy/stock')}" + '?id=' + obj.data.id,
 						title:['采购单编号：' + obj.data.number  + '   状态：' + obj.data.status + '   创建时间：' + obj.data.create_time, 'font-weight:bold'],
 						btnAlign: 'c',
 						area: ['100%', '100%'],
@@ -255,38 +252,43 @@
 					});
 				}
 
+				// 采购历史
+				if (obj.event == 'stock_info'){
+					layer.open({
+						type : 2,
+						content:"{:url('buy/stock_list')}" + '?id=' + obj.data.id,
+						title:['采购单编号：' + obj.data.number  + '   状态：' + obj.data.status + '   创建时间：' + obj.data.create_time, 'font-weight:bold'],
+						btnAlign: 'c',
+						area: ['100%', '100%'],
+						anim: 5,
+						isOutAnim:true,
+						end:function(){
+							table_reload();
+						}
+					});
+				}
+
+
+
 			});
 
 			// 监听工具条
 			table.on('toolbar(table)', function(obj) {
 				switch (obj.event) {
 					case 'add':
-						layer.open({
-							type : 1,
-							content:$('.buy_type'),
-							title:'请选择采购单类型：',
-							offset: '200px',
-							btn:['确认', '取消'],
-							btnAlign: 'c',
-							anim: 5,
-							yes:function(index,layero){
-								var type_val = $('.buy_type_val:checked').val();
-								var form_data = {
-									'from' : type_val,
-								};
-								$.post("{:url('buy/add_buy')}", form_data,function (ret) {
-									if (ret.code == 200){
-										table_reload()
-									}else{
-										layer.msg(ret.msg,function(){
+						var form_data = {
 
-										});
-									}
-									layer.close(index);
-								})
-							},btn2:function(index,layero){
-								layer.close(index);
+						};
+						$.post("{:url('buy/add_buy')}", form_data,function (ret) {
+							if (ret.code == 200){
+								layer.msg(ret.msg);
+								table_reload()
+							}else{
+								layer.msg(ret.msg,function(){
+
+								});
 							}
+							layer.close(index);
 						});
 					break;
 

@@ -2,10 +2,10 @@
 namespace app\index\service;
 
 use app\index\model\SupplyGoods as SupplyGoodsModel;
-use app\index\model\Goods as GoodsModel;
+use app\index\model\Need as NeedModel;
 use app\index\model\Buy as BuyModel;
-use app\index\model\Project as ProjectModel;
 use app\index\model\BuyInfo as BuyInfoModel;
+use app\index\model\Project as ProjectModel;
 
 use think\Db;
 
@@ -66,7 +66,6 @@ class Buy{
     public function addBuy($params){
         $data = [
             'number' => create_order_no('C'),
-            'from'   => $params['from'],
         ];
         $ret = BuyModel::create($data);
         if (!$ret){
@@ -90,6 +89,15 @@ class Buy{
         ]);
         if (!$ret){
             return returnInfo('', 201, '生成错误！');
+        }
+
+        $buy_info_list = BuyInfoModel::all(['buy_id' => $params['buy_id']]);
+        foreach ($buy_info_list as $k => $v){
+            NeedModel::where([
+                'goods_id'   => $v['goods_id'],
+                'project_id' => $v['project_id'],
+                'type'       => $v['type'],
+            ])->setInc('buy', $v['num']);
         }
 
         return returnInfo($ret, 200, '确认生成采购单成功, 采购单修改为 [采购中]！');
@@ -136,10 +144,10 @@ class Buy{
             }
             $arr[$key]['need_need'] += $v['need_need'];
 
-            if (!isset($arr[$key]['need_need_ok'])){
-                $arr[$key]['need_need_ok'] = 0;
+            if (!isset($arr[$key]['need_buy'])){
+                $arr[$key]['need_buy'] = 0;
             }
-            $arr[$key]['need_need_ok'] += $v['need_need_ok'];
+            $arr[$key]['need_buy'] += $v['need_buy'];
         }
         $new_arr = [];
         foreach ($arr as $k => $v){

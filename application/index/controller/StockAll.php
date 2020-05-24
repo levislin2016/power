@@ -1,7 +1,7 @@
 <?php
 namespace app\index\controller;
 
-use app\index\model\Stock as StockModel;
+use app\index\model\StockInfo as StockModel;
 use app\index\model\StockAll as StockAllModel;
 use app\index\service\StockAll as StockAllService;
 use app\index\model\ProjectWoker as ProjectWokerModel;

@@ -2,7 +2,7 @@
 namespace app\index\service;
 
 use app\index\model\StockAll as StockAllModel;
-use app\index\model\ProjectStock as ProjectStockModel;
+use app\index\model\Need as ProjectStockModel;
 use app\lib\exception\BaseException;
 
 class StockAll{

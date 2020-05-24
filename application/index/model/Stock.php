@@ -3,13 +3,9 @@ namespace app\index\model;
 
 class Stock extends Base{
 
-//    protected function base($query){
-//        $query->where('company_id', session('power_user.company_id'));
-//    }
-    protected $insert = [
-        'num'     => 1,
-    ];
-
-
+    public function getTypeAttr($value,$data){
+        $statusName = config('extra.stock_type');
+        return $statusName[$data['type']];
+    }
 
 }

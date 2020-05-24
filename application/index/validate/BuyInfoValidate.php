@@ -66,7 +66,7 @@ class BuyInfoValidate extends BaseValidate
     // 判断采购数量不能大于预算数量
     protected function checkNum($value,$rule,$data=[])
     {
-        $max = $data['need_need'] - $data['need_need_ok'];
+        $max = $data['need_need'] - $data['need_buy'];
         if ($data['num'] > $max){
             return "采购数量不得大于 未采购数量：{$max}";
         }

@@ -1,9 +1,13 @@
 <?php
 namespace app\index\model;
 
-class BuyInfo extends Base{
+class StockInfo extends Base{
+
+//    protected function base($query){
+//        $query->where('company_id', session('power_user.company_id'));
+//    }
     protected $insert = [
-        'num_ok' => 0
+        'num'     => 1,
     ];
 
 
@@ -35,9 +39,6 @@ class BuyInfo extends Base{
             'supply_name' => 'name',
         ]);
     }
-
-
-
 
 
 

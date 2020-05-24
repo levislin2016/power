@@ -1,79 +1,71 @@
 {include file="public/header" /}
 
-<form class="layui-form column-content-detail" method="post" action="{:url('project/ajax_add',array('id'=>$Request.param.id))}">
-	<div class="layui-tab">
-		<div class="layui-tab-content">
+<div class="layui-tab">
+	<div class="layui-tab-content">
+		<form class="layui-form" lay-filter="search-form">
+
 			<div class="layui-tab-item layui-show">
-				<div class="layui-form-item">
-					<label class="layui-form-label">合同编号：</label>
-					<div class="layui-input-block">
-						<select name="contract_id" required lay-verify="required" lay-verType="tips" lay-search="">
-							<option value=""></option>
-							{volist name="data.contract" id="v"}
-<!--									        	<option value="{$v['id']}" {eq name="list['contract_id']|default=''" value="$v['id']"}selected{/eq} >{$v['number']}</option>-->
-								<option value="{$v['id']}" {eq name="data.info.contract_id|default=''" value="$v['id']"}selected{/eq} >{$v['number']} - {$v['name']}</option>
-							{/volist}
-						</select>
-					</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">合同编号：</label>
+				<div class="layui-input-block">
+					<select name="contract_id" required lay-verify="required" lay-verType="tips" lay-search="">
+						<option value=""></option>
+						{volist name="data.contract" id="v"}
+							<option value="{$v['id']}" {eq name="data.info.contract_id|default=''" value="$v['id']"}selected{/eq} >{$v['number']} - {$v['name']}</option>
+						{/volist}
+					</select>
 				</div>
-
-
-				<div class="layui-form-item">
-					<label class="layui-form-label">工程名称：</label>
-					<div class="layui-input-block">
-						<input type="text" name="name" required lay-verify="required" lay-verType="tips" placeholder="请输入工程名称" autocomplete="off" class="layui-input" value="{$data.info.name|default=''}">
-					</div>
-				</div>
-
 			</div>
+
+
+			<div class="layui-form-item">
+				<label class="layui-form-label">工程名称：</label>
+				<div class="layui-input-block">
+					<input type="text" name="name" required lay-verify="required" lay-verType="tips" placeholder="请输入工程名称" autocomplete="off" class="layui-input" value="{$data.info.name|default=''}">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<div class="layui-input-block">
+					<button type="submit" class="layui-btn layui-btn-normal">立即提交</button>
+					<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+				</div>
+			</div>
+
 		</div>
+		</form>
 	</div>
-	<div class="layui-form-item" style="padding-left: 10px;">
-		<div class="layui-input-block">
-			<button class="layui-btn layui-btn-normal" lay-submit lay-filter="formDemo">立即提交</button>
-			<button type="reset" class="layui-btn layui-btn-primary">重置</button>
-		</div>
-	</div>
-</form>
+</div>
+
 {include file="public/script" /}
 <script>
-	layui.use(['form', 'jquery', 'laydate', 'layer', 'laypage', 'dialog', 'tool', 'element', 'layedit'], function() {
+	layui.use(['form', 'jquery', 'laydate', 'layer'], function() {
 			var form = layui.form,
 				layer = layui.layer,
-				$ = layui.jquery,
-				laypage = layui.laypage,
-				laydate = layui.laydate,
-				layedit = layui.layedit,
-				tool = layui.tool,
-				element = layui.element,
-				dialog = layui.dialog;
+				$ = layui.jquery;
 
-			form.on('submit(formDemo)', function (data) {
-
-				var url = data.form.action;
-				var param = data.field;
+			// 监听表单提交事件
+			form.on('submit(search-form)',function (data) {
+				var form_data = form.val("search-form");
 
 				loading = layer.load(2, {
 					shade: [0.2, '#000']
 				});
 
-				$.post(url, param, function (ret) {
+				$.post("{:url('project/ajax_add')}", form_data, function (ret) {
 					layer.close(loading);
 					if(ret.code != 200){
-						layer.msg(ret.msg, {icon: 2, shade: 0.1, time: 1000}, function(){
-
+						layer.msg(ret.msg, function () {
 						});
+					}else{
+						layer.msg(ret.msg);
+						window.parent.table_reload();
+						window.parent.layer.closeAll();
 						return false;
 					}
-					layer.msg(ret.msg, {icon: 1, shade: 0.1, time: 1000}, function () {
-					});
 				});
 
 				return false;
 			});
-
-
-
 
 		});
 </script>

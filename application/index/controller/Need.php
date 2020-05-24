@@ -65,24 +65,4 @@ class Need extends Base
 
         return view('ajax_page', ['data' => $data]);
     }
-
-    // 新增预算
-    public function add(){
-        $ret = (new NeedService)->add(input('post.'));
-        if ($ret['code'] != 200){
-            return returnJson('', 201, $ret['msg']);
-        }
-
-        return returnJson($ret['data'], 200, $ret['msg']);
-    }
-
-    // 修改预算
-    public function edit(){
-        $ret = NeedModel::update(input('param.'), ['id' => input('param.id')]);
-        if (!$ret){
-            return returnJson('', 201, '修改数量失败！');
-        }
-
-        return returnJson('', 200, '数量修改为：' . input('param.need'));
-    }
 }

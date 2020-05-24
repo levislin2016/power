@@ -193,36 +193,6 @@
 			});
 		});
 
-		$('.search_btn1').on('click',function () {
-			layer.open({
-				type : 2,
-				content:"{:url('goods/index')}",
-				title:'添加工程',
-				btnAlign: 'c',
-				area: ['100%', '100%'],
-				anim: 5,
-				shadeClose: true,
-				isOutAnim:true,
-			});
-		});
-
-		$('.search_btn2').click(function(){
-			var form_data = form.val("search-form");
-			$.get(url,form_data, function (res) {
-				if (res.code == 200){
-					res.data.data.unshift({
-						id: 'ID',
-						number: '采购单编号',
-						status: '状态',
-						create_time:'创建时间',
-						type:'类型',
-					});
-					LAY_EXCEL.exportExcel(res.data.data, '采购单.xlsx', 'xlsx')
-				}
-			})
-		});
-
-
 
 	})
 </script>

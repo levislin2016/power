@@ -4,19 +4,13 @@
         <!--- 头部搜索框 --->
         <div class="layui-card">
             <div class="layui-form">
+
                 <form class="layui-form" lay-filter="search-form">
                     <div class="layui-form-item">
                         <div class="layui-inline layui-form-pane">
-                            <label class="layui-form-label">名称|编号</label>
-                            <div class="layui-input-inline">
-                                <input type="text" name="search" placeholder="请输入名称或编号..." autocomplete="off" class="layui-input search"/>
-                            </div>
-                        </div>
-
-                        <div class="layui-inline layui-form-pane">
                             <label class="layui-form-label">入库仓库</label>
                             <div class="layui-input-inline">
-                                <select name="type" lay-search="" lay-filter="select1">
+                                <select name="store_id" lay-search="">
                                     <option value="">请选择入库仓库</option>
                                     {volist name="data.store" id="v"}
                                     <option value="{$v.id}">{$v.name}</option>
@@ -24,21 +18,9 @@
                                 </select>
                             </div>
                         </div>
-
-                        <input type="hidden" name="project_id" value="{$Request.get.project_id}"/>
-                        <input type="hidden" name="buy_id" value="{$Request.get.buy_id}"/>
-
-                        <div class="layui-inline">
-                            <div class="layui-input-inline">
-                                <button class="layui-btn layui-bg-blue"><i class="layui-icon layui-icon-search"></i>搜索</button>
-                                <button type="reset" class="layui-btn layui-btn-normal" id="empty"  lay-submit="" lay-filter="LAY-search">重置</button>
-                            </div>
-                        </div>
                     </div>
                 </form>
             </div>
-
-
 
         </div>
         <!--- 头部搜索框 --->
@@ -66,8 +48,6 @@
 <script type="text/html" id="template_toolbar">
     <div class="layui-btn-container">
         <button class="layui-btn layui-bg-green layui-btn-sm" lay-event="stock_sure"><i class="layui-icon layui-icon-ok"></i>确认入库</button>
-<!--        <button class="layui-btn layui-bg-green layui-btn-sm" lay-event="stock_add"><i class="layui-icon layui-icon-survey"></i>1.生成入库单</button>-->
-<!--        <button class="layui-btn layui-bg-red layui-btn-sm" lay-event="stock_sure"><i class="layui-icon layui-icon-delete"></i>作废入库单</button>-->
     </div>
 </script>
 
@@ -81,19 +61,23 @@
 <script>
     var table_reload;
 
-    // 自定义模块，这里只需要开放soulTable即可
-    layui.config({
-        base: '/static/modules/',   // 第三方模块所在目录
-        version: 'v1.5.10' // 插件版本号
-    }).extend({
-        soulTable: 'soulTable/soulTable.slim'
-    });
+    // // 自定义模块，这里只需要开放soulTable即可
+    // layui.config({
+    //     base: '/static/modules/',   // 第三方模块所在目录
+    //     version: 'v1.5.10' // 插件版本号
+    // }).extend({
+    //     soulTable: 'soulTable/soulTable',
+    //     tableChild: 'soulTable/tableChild',
+    //     tableMerge: 'soulTable/tableMerge',
+    //     tableFilter: 'soulTable/tableFilter',
+    //     excel: 'soulTable/excel',
+    // });
 
-    layui.use(['form', 'element', 'laydate', 'table', 'soulTable', 'jquery'], function() {
+    layui.use(['form', 'element', 'laydate', 'table', 'jquery'], function() {
         var form = layui.form,
             $ = layui.jquery,
             laydate = layui.laydate,
-            soulTable = layui.soulTable,
+            // soulTable = layui.soulTable,
             table = layui.table;
 
         //日期范围
@@ -147,11 +131,12 @@
                 none:'暂无相关数据'
             }
             ,filter: {
-                clearFilter: true
+                clearFilter: true,
+                items:{}
             }
             ,cols: [[ //表头
                 {type:'numbers', title: '序号', align:'center', fixed:'left', sort:true,width:90}
-                ,{field: 'project_name', title: '工程名称', align:'center',sort:true,filter: true}
+                ,{field: 'project_name', title: '工程名称', align:'center',sort:true}
                 ,{field: 'type_name', title: '分类', align:'center',sort:true}
                 ,{field: 'goods_name', title: '名称', align:'center',sort:true}
                 ,{field: 'goods_number', title: '编号', align:'center',sort:true}
@@ -171,11 +156,6 @@
                 };
             },response: {
                 statusCode: 200 //规定成功的状态码，默认：0
-            },done: function() {
-                console.log(1)
-                console.log(soulTable)
-                // 在 done 中开启
-                soulTable.render(this)
             }
         });
 
@@ -185,10 +165,7 @@
                 ,data = obj.data //得到所在行所有键值
                 ,field = obj.field; //得到字段
             var form_data = obj.data;
-            // var oldvalue = $(this).prev().text();
-            // var objTemp = {};
-            // objTemp[field] = oldvalue;
-            // obj.update(objTemp);
+            var oldvalue = $(this).prev().text();
 
             $.post("{:url('buy/ajax_check_num')}", form_data, function(ret){
                 if (ret.code == 200){
@@ -208,14 +185,18 @@
         // 监听工具条
         table.on('toolbar(table)', function(obj) {
             switch (obj.event) {
-
                 case 'stock_sure':
                     var form_data = {
+                        'store_id'  : form.val("search-form")['store_id'],
+                        'buy_id'    : "{$Request.get.id}",
                         'json_data' : layui.table.cache.table
                     };
+                    layer.load(2);
                     $.post("{:url('buy/ajax_stock_in')}", form_data,function(ret){
+                        layer.closeAll('loading');
                         if (ret.code == 200){
                             layer.msg(ret.msg);
+                            table_reload();
                         }else{
                             layer.msg(ret.msg,function () {
 
