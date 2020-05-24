@@ -16,7 +16,7 @@ class BuyInfoValidate extends BaseValidate
         'project_id' => 'require|unique:BuyInfo,buy_id^project_id^goods_id^type|checkBuyStatus',
         'goods_id'   => 'require|unique:BuyInfo,buy_id^project_id^goods_id^type|checkBuyStatus',
         'type'       => 'require|unique:BuyInfo,buy_id^project_id^goods_id^type|checkBuyStatus',
-        'price'      => 'float|>:0',
+        'price'      => 'float',
         'supply_id'  => 'checkBuyStatus|checkType',
     ];
 
