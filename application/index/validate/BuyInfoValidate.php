@@ -57,7 +57,7 @@ class BuyInfoValidate extends BaseValidate
     protected function checkType($value,$rule,$data=[])
     {
         $ret = BuyInfoModel::get($data['id']);
-        if ($ret['type'] == '2'){
+        if ($data['id'] != $ret['id'] && $ret['type'] == '2'){
             return '该材料为 [甲供] 类别, 不允许修改供应商';
         }
         return true;
