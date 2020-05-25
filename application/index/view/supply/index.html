@@ -46,7 +46,7 @@
 <script type="text/html" id="toolbar">
 	<div class="layui-btn-container">
 		<a class="layui-btn layui-btn-sm layui-bg-blue" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>修改供应商</a>
-		<a class="layui-btn layui-btn-sm layui-bg-blue" lay-event="list"><i class="layui-icon layui-icon-list"></i>创建供应商材料</a>
+		<a class="layui-btn layui-btn-sm layui-bg-blue" lay-event="list"><i class="layui-icon layui-icon-list"></i>供应材料管理</a>
 		<button class="layui-btn layui-btn-sm layui-bg-gray" lay-event="delete"><i class="layui-icon layui-icon-delete"></i>删除</button>
 	</div>
 </script>
@@ -120,7 +120,7 @@
 						content:"{:url('supply/add')}" + '?id=' + obj.data.id,
 						title:'修改供应商',
 						btnAlign: 'c',
-						area: ['50%', '50%'],
+						area: ['30%', '30%'],
 						anim: 5,
 						isOutAnim:true,
 
@@ -173,7 +173,7 @@
 						title:false,
 						offset:'auto',
 						btnAlign: 'c',
-						area: ['90%', '25%'],
+						area: ['30%', '30%'],
 						shadeClose: true,
 						closeBtn:1,
 						anim: 5,
