@@ -38,17 +38,18 @@ class Buy extends Base{
         $data['id'] = input('id');
         $data['list'] = model('buyProject', 'service')->getList($data, 20);
         $data['contract'] = ContractModel::all();
+        $data['project'] = model('project', 'service')->getList([
+            'status' => 2
+        ]);
 
         return view('edit', ['data' => $data]);
     }
 
-
-
-    // 获取采购单关联工程列表
-    public function ajax_get_project_list(){
-        $list = model('buyProject', 'service')->getList(input('get.'), input('get.limit'))->toArray();
-        return returnJson($list, 200, '获取成功');
-    }
+//    // 获取采购单关联工程列表
+//    public function ajax_get_project_list(){
+//        $list = model('buyProject', 'service')->getList(input('get.'), input('get.limit'))->toArray();
+//        return returnJson($list, 200, '获取成功');
+//    }
 
     // 作废采购单
     public function ajax_cancel(){
@@ -57,31 +58,31 @@ class Buy extends Base{
         return returnJson($ret['data'], $ret['code'], $ret['msg']);
     }
 
-    // 添加需要采购的工程
-    public function ajax_add_project(){
-        $ret = model('buyProject', 'service')->add(input('post.'));
+//    // 添加需要采购的工程
+//    public function ajax_add_project(){
+//        $ret = model('buyProject', 'service')->add(input('post.'));
+//
+//        return returnJson($ret['data'], $ret['code'], $ret['msg']);
+//    }
 
-        return returnJson($ret['data'], $ret['code'], $ret['msg']);
-    }
+//    // 删除采购的工程
+//    public function ajax_del_project(){
+//        $list = model('buyProject', 'service')->del(input('post.'));
+//        return returnJson($list['data'], $list['code'], $list['msg']);
+//    }
 
-    // 删除采购的工程
-    public function ajax_del_project(){
-        $list = model('buyProject', 'service')->del(input('post.'));
-        return returnJson($list['data'], $list['code'], $list['msg']);
-    }
+//    // 添加采购工程 弹框页面
+//    public function project(){
+//        $data['status'] = config('extra.project_status');
+//        $data['contract'] = ContractModel::all();
+//        return view('project', ['data' => $data]);
+//    }
 
-    // 添加采购工程 弹框页面
-    public function project(){
-        $data['status'] = config('extra.project_status');
-        $data['contract'] = ContractModel::all();
-        return view('project', ['data' => $data]);
-    }
-
-    // 显示工程项目的采购材料
-    public function buy_info(){
-        $data['type'] = config('extra.buy_from');
-        return view('buy_info', ['data' => $data]);
-    }
+//    // 显示工程项目的采购材料
+//    public function buy_info(){
+//        $data['type'] = config('extra.buy_from');
+//        return view('buy_info', ['data' => $data]);
+//    }
 
     // 获取采购工程的采购材料
     public function ajax_get_buyinfo_list(){
@@ -92,7 +93,9 @@ class Buy extends Base{
     // 显示工程的预算材料，选择采购
     public function need(){
         $data['type'] = config('extra.buy_from');
-        $list = model('need', 'service')->getList(input('get.'));
+        $data['project'] = model('project', 'service')->getList([
+            'status' => 2
+        ]);
 
         return view('need', ['data' => $data]);
     }

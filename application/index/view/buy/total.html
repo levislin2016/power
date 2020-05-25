@@ -84,6 +84,8 @@
 			}
 			,cols: [[ //表头
 				{type:'numbers', title: '序号', align:'center', fixed:'left', sort:true,width:90}
+				,{field: 'project_name', title: '工程名称', align:'center',sort:true}
+				,{field: 'supply_name', title: '供应商', align:'center', width:150, event:'supply'}
 				,{field: 'type_name', title: '分类', align:'center',sort:true}
 				,{field: 'goods_name', title: '名称', align:'center',sort:true}
 				,{field: 'goods_number', title: '编号', align:'center',sort:true}
@@ -92,9 +94,8 @@
 				,{field: 'need_need', title: '预算数量', align:'center',sort:true, width:110}
 				,{field: 'need_buy', title: '累计采购', align:'center',sort:true, width:110}
 				,{field: 'price', title: '价格', sort:true, align:'center', width:100}
-				,{field: 'supply_name', title: '供应商', align:'center', width:150, event:'supply'}
-				,{field: 'unit_name', title: '单位', align:'center', width:90}
-				,{field: 'need_type', title: '类型', align:'center',sort:true, templet:"#template_type", width:80}
+				,{field: 'unit_name', title: '单位', align:'center', width:75}
+				,{field: 'need_type', title: '类型', align:'center',sort:true, templet:"#template_type", width:75}
 			]],parseData: function(res){ //res 即为原始返回的数据
 				return {
 					"code": res.code, //解析接口状态

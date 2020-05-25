@@ -1,7 +1,8 @@
 <?php
 namespace app\index\service;
 
-use app\index\model\Need as ProjectStockModel;
+use app\index\model\Need as NeedModel;
+use app\index\model\Project as ProjectModel;
 use app\index\model\Goods as GoodsModel;
 use app\index\service\Type as TypeService;
 use app\lib\exception\BaseException;
@@ -13,6 +14,7 @@ class Need{
     public function getList($params, $limit = 15){
         $where = [];
         $hasWhere = [];
+        $projectWhere = [];
         if (isset($params['search']) && $params['search']){
             $hasWhere[] = ['name|number', 'like', "%{$params['search']}%"];
         }
@@ -29,12 +31,18 @@ class Need{
             $where[] = ['status', '=', $params['status']];
         }
 
+        if (isset($params['project_status']) && $params['project_status']){
+            $project_ids = ProjectModel::field('id')->where(['status' => 2])->all()->toArray();
+            $project_ids = array_column($project_ids, 'id');
+            $where[] = ['project_id', 'in', $project_ids];
+        }
+
         if (isset($params['create_time']) && $params['create_time']){
             $time = explode('至', $params['create_time']);
             $where[] = ['Need.create_time', 'between time', [trim($time[0]), trim($time[1])]];
         }
 
-        $list = ProjectStockModel::hasWhere('goods', $hasWhere)->with(['goods' => ['unit', 'type']])->where($where)->order('create_time desc')->paginate($limit);
+        $list = NeedModel::hasWhere('goods', $hasWhere)->with(['goods' => ['unit', 'type'], 'project'])->where($where)->order('create_time desc')->paginate($limit);
         return $list;
     }
 
@@ -58,7 +66,7 @@ class Need{
                 return returnInfo('', 201, "材料：{$v['name']} 添加失败 <br>原因：" . $validate->getError());
             }
 
-            $ret_add = ProjectStockModel::create($data);
+            $ret_add = NeedModel::create($data);
             if (!$ret_add){
                 return returnInfo('', 201, '添加预算材料错误！');
             }
@@ -74,7 +82,7 @@ class Need{
             return returnInfo('', 201, $validate->getError());
         }
 
-        $ret = ProjectStockModel::update([
+        $ret = NeedModel::update([
             'need' => $params['need'],
         ], ['id' => $params['id']]);
         if (!$ret){
@@ -92,7 +100,7 @@ class Need{
             return returnJson('', 201, $validate->getError());
         }
 
-        $ret = ProjectStockModel::destroy($params['id']);
+        $ret = NeedModel::destroy($params['id']);
         if (!$ret){
             return returnInfo('', 201, '删除错误！');
         }
@@ -102,7 +110,7 @@ class Need{
 
     // 核对预算材料
     public function check($params){
-        $ret = ProjectStockModel::update([
+        $ret = NeedModel::update([
             'check' => $params['check'],
         ], ['id' => $params['id']]);
         if (!$ret){

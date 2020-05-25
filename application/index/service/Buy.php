@@ -120,6 +120,7 @@ class Buy{
             $key = 'k' . $v['goods_id'] . '_' . $v['supply_id'];
             if (!isset($arr[$key])){
                 $arr[$key] = [
+                    'project_name' => $v['project_name'],
                     'goods_name'   => $v['goods_name'],
                     'goods_number' => $v['goods_number'],
                     'price'        => $v['price'],

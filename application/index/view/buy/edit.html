@@ -1,4 +1,9 @@
 {include file="public/header" /}
+<style>
+	td[data-field="num"] .layui-table-cell{
+		padding: 0px;
+	}
+</style>
 <div class="wrap-container clearfix">
 	<div class="column-content-detail">
 		<!--- 头部搜索框 --->
@@ -15,10 +20,16 @@
 					</div>
 
 					<div class="layui-form-item">
+
 						<div class="layui-inline layui-form-pane">
 							<label class="layui-form-label">工程名称</label>
-							<div class="layui-input-inline">
-								<input type="text" name="search" placeholder="请输入工程名称..." autocomplete="off" class="layui-input search"/>
+							<div class="layui-input-inline"  style="width: 513px">
+								<select name="project_id" lay-search="" lay-filter="select1">
+									<option value="">全部</option>
+									{volist name="data.project" id="v"}
+									<option value="{$v.id}">{$v.name}</option>
+									{/volist}
+								</select>
 							</div>
 						</div>
 
@@ -78,17 +89,29 @@
 
 <script type="text/html" id="template_toolbar">
 	<div class="layui-btn-container">
-		<button class="layui-btn layui-btn-sm layui-bg-green" lay-event="add"><i class="layui-icon layui-icon-add-1"></i>添加采购工程</button>
+		<button class="layui-btn layui-btn-sm layui-bg-green" lay-event="add"><i class="layui-icon layui-icon-add-1"></i>添加采购材料</button>
 		<button class="layui-btn layui-btn-sm layui-bg-cyan" lay-event="sure"><i class="layui-icon layui-icon-ok"></i>确认生成采购单</button>
 		<button class="layui-btn layui-btn-sm layui-bg-black" lay-event="list"><i class="layui-icon layui-icon-list"></i>查看采购清单</button>
 	</div>
 </script>
 
+<script type="text/html" id="template_type">
+	{{# if(d.need_type == '甲供'){ }}
+	<span class="layui-badge layui-bg-black">{{d.need_type}}</span>
+	{{# } }}
+	{{# if(d.need_type == '自购'){ }}
+	<span class="layui-badge layui-bg-blue">{{d.need_type}}</span>
+	{{# } }}
+</script>
+
 <script type="text/html" id="toolbar">
 	<div class="layui-btn-container">
-		<a class="layui-btn layui-btn-sm layui-bg-blue" lay-event="edit"><i class="layui-icon layui-icon-cart"></i>采购材料</a>
 		<button class="layui-btn layui-btn-sm layui-bg-gray" lay-event="delete"><i class="layui-icon layui-icon-delete"></i>删除</button>
 	</div>
+</script>
+
+<script type="text/html" id="template_input">
+	<input value="{{d.num}}" class="layui-input input-num" type="text" lay-filter="checkNum" placeholder="采购数量" style="border: none;height:30px;color:#666;text-align:center;padding-right: 10px">
 </script>
 
 <script>
@@ -127,27 +150,34 @@
 		};
 
 		//第一个实例
+		var url = "{:url('buy/ajax_get_buyinfo_list')}";
 		table.render({
 			elem: '#table'
-			,url: "{:url('buy/ajax_get_project_list')}"//数据接口
-			// ,height: 'full-70'
+			,url: url//数据接口
 			,page: false //开启分页
 			,toolbar:'#template_toolbar'
 			,limit:100000
+			// ,height:'full-100'
 			,loading:true
 			,where:form.val("search-form")
 			,text:{
 				none:'暂无相关数据'
 			}
 			,cols: [[ //表头
-				{type:'numbers', title: '序号', align:'center', fixed:'left', sort:true,width:90}
-				,{field: 'project_name', title: '工程名称', sort: true, align:'center'}
-				,{field: 'contract_name', title: '业主名称', sort: true, align:'center'}
-				,{field: 'contract_number', title: '合同编号', sort: true, align:'center'}
-				,{field: 'project_status', title: '状态', sort: true, align:'center', width:90, templet:'#template_status'}
-				,{field: 'project_open_time', title: '开工时间',sort: true,  align:'center', width:180}
-				,{field: 'create_time', title: '创建时间',sort: true,  align:'center', width:180}
-				,{field: 'number', title: '操作', templet:'#toolbar', fixed:'right', align:'center', width:200}
+				{type:'numbers', title: '序号', align:'center', fixed:'left', sort:true,width:80}
+				,{field: 'project_name', title: '工程名称', align:'center',sort:true}
+				// ,{field: 'type_name', title: '分类', align:'center',sort:true}
+				,{field: 'goods_name', title: '名称', align:'center',sort:true}
+				,{field: 'goods_number', title: '编号', align:'center',sort:true, width:110}
+				,{field: 'num', title: '采购数量', align:'center',sort:true, width:120,  templet:'#template_input'}
+				,{field: 'num_ok', title: '已采购', align:'center',sort:true, width:120}
+				,{field: 'need_need', title: '预算数量', align:'center',sort:true, width:120}
+				,{field: 'need_buy', title: '累计采购', align:'center',sort:true, width:120}
+				,{field: 'unit_name', title: '单位', align:'center', width:100}
+				,{field: 'supply_name', title: '供应商', align:'center', width:150, event:'supply'}
+				,{field: 'price', title: '价格', sort:true, align:'center', width:100, edit:'text'}
+				,{field: 'need_type', title: '类型', align:'center',sort:true, templet:"#template_type", width:80}
+				,{field: 'number', title: '操作', templet:'#toolbar', fixed:'right', align:'center', width:100}
 			]],parseData: function(res){ //res 即为原始返回的数据
 				return {
 					"code": res.code, //解析接口状态
@@ -160,15 +190,38 @@
 			}
 		});
 
+		//监听单元格编辑
+		table.on('edit(table)', function(obj){
+			var value = obj.value //得到修改后的值
+					,data = obj.data //得到所在行所有键值
+					,field = obj.field; //得到字段
+			var form_data = obj.data;
+			var oldvalue = $(this).prev().text();
+			$.post("{:url('buy/ajax_edit_buyinfo')}", form_data, function(ret){
+				if (ret.code == 200){
+					layer.msg('['+ data.goods_name +'] <br>更改为：'+ value,{offset:'t'});
+				}else{
+					var objTemp = {};
+					objTemp[field] = oldvalue;
+					obj.update(objTemp);
+					layer.msg(ret.msg,function () {
+
+					});
+					return false;
+				}
+			});
+		});
+
+
 		// 监听工具条
 		table.on('toolbar(table)', function(obj) {
 			switch (obj.event) {
-				// 添加采购工程
+				// 添加采购材料
 				case 'add':
 					layer.open({
 						type : 2,
-						content:"{:url('buy/project')}" + "?id={$Request.get.id}",
-						title:'选择采购工程',
+						content:"{:url('buy/need')}" + "?buy_id={$Request.get.id}",
+						title:'添加采购材料',
 						btnAlign: 'c',
 						area: ['95%', '95%'],
 						shadeClose: true,
@@ -216,24 +269,11 @@
 
 		// 监听按钮
 		table.on('tool(table)', function(obj) {
-			switch (obj.event) {
-
-				case 'edit':
-					layer.open({
-						type : 2,
-						content:"{:url('buy/buy_info')}" + '?id=' + obj.data.id + '&buy_id=' + obj.data.buy_id + '&project_id=' + obj.data.project_id,
-						title:['采购工程：' + obj.data.project_name  + '   业主：' + obj.data.contract_name, 'font-weight:bold'],
-						btnAlign: 'c',
-						area: ['100%', '100%'],
-						anim: 5,
-						isOutAnim:true,
-					});
-				break;
-
+			switch(obj.event){
 				case 'delete':
 					layer.confirm('确定删除这条记录吗？', {icon: 3, title:'提示'}, function(index){
 						var form_data = obj.data;
-						$.post("{:url('buy/ajax_del_project')}",form_data, function(ret){
+						$.post("{:url('buy/ajax_del_buyinfo')}",form_data, function(ret){
 							if(ret.code == 200){
 								layer.msg(ret.msg);
 								table_reload();
@@ -245,7 +285,24 @@
 						});
 						layer.close(index);
 					});
-				break;
+					break;
+				case 'supply':
+					layer.open({
+						type : 2,
+						content:"{:url('buy/supply')}" + "?buyinfo_id=" + obj.data.id + '&buy_id=' + obj.data.buy_id + '&goods_id=' + obj.data.goods_id,
+						title:false,
+						offset:'r',
+						btnAlign: 'c',
+						area: ['15%', '100%'],
+						shadeClose: true,
+						closeBtn:0,
+						anim: 5,
+						isOutAnim:true,
+						end:function(){
+							table_reload();
+						}
+					});
+					break;
 			}
 		});
 

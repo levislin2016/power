@@ -16,11 +16,25 @@
 						</div>
 					</div>
 
+
+
 					<div class="layui-form-item">
 						<div class="layui-inline layui-form-pane">
-							<label class="layui-form-label">名称|编号</label>
+							<label class="layui-form-label">工程名称</label>
+							<div class="layui-input-inline"  style="width: 513px">
+								<select name="project_id" lay-search="" lay-filter="select1">
+									<option value="">全部</option>
+									{volist name="data.project" id="v"}
+									<option value="{$v.id}">{$v.name}</option>
+									{/volist}
+								</select>
+							</div>
+						</div>
+
+						<div class="layui-inline layui-form-pane">
+							<label class="layui-form-label">材料名称</label>
 							<div class="layui-input-inline">
-								<input type="text" name="search" placeholder="请输入名称或编号..." autocomplete="off" class="layui-input search"/>
+								<input type="text" name="search" placeholder="请输入材料名称或编号..." autocomplete="off" class="layui-input search"/>
 							</div>
 						</div>
 
@@ -35,7 +49,7 @@
 							</div>
 						</div>
 
-						<input type="hidden" name="project_id" value="{$Request.get.project_id}"/>
+						<input type="hidden" name="project_status" value="2"/>
 						<input type="hidden" name="status" value="1"/>
 
 						<div class="layui-inline">
@@ -181,9 +195,9 @@
 			,url: url//数据接口
 			,page: false //开启分页
 			,toolbar:'#template_toolbar'
-			,limit:100000
+			,limit:1000000
 
-			// ,height:'full-100'
+			,height:'full-100'
 			,loading:true
 			,where:form.val("search-form")
 			,text:{
@@ -191,7 +205,8 @@
 			}
 			,cols: [[ //表头
 				{type:'checkbox', fixed: 'left'}
-				,{type:'numbers', title: '序号', align:'center', fixed:'left', sort:true,width:90}
+				,{type:'numbers', title: '序号', align:'center', fixed:'left', sort:true,width:80}
+				,{field: 'project_name', title: '工程名称', align:'center',sort:true}
 				,{field: 'type_name', title: '分类', align:'center',sort:true}
 				,{field: 'goods_name', title: '名称', align:'center',sort:true}
 				,{field: 'goods_number', title: '编号', align:'center',sort:true}
