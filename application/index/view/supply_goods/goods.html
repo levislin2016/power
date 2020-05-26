@@ -17,12 +17,14 @@
 						<div class="layui-inline layui-form-pane">
 							<label class="layui-form-label">分类</label>
 							<div class="layui-input-inline">
-								<select name="type_id" lay-search="" lay-filter="select1">
-									<option value="">全部</option>
-									{volist name="data.type" id="v"}
-									<option value="{$key}">{$v.name}</option>
-									{/volist}
-								</select>
+								<input type="text" id="tree" lay-filter="tree" class="layui-input" name="type_id" lay-filter="select1">
+
+<!--								<select name="type_id" lay-search="" lay-filter="select1">-->
+<!--									<option value="">全部</option>-->
+<!--									{volist name="data.type" id="v"}-->
+<!--									<option value="{$key}">{$v.name}</option>-->
+<!--									{/volist}-->
+<!--								</select>-->
 							</div>
 						</div>
 
@@ -58,10 +60,19 @@
 
 <script>
 	var table_reload;
-	layui.use(['form', 'jquery', 'element', 'laydate', 'table'], function() {
+
+	// 自定义模块，这里只需要开放soulTable即可
+	layui.config({
+		base: '/static/admin/layui/',   // 第三方模块所在目录
+	}).extend({
+		treeSelect: 'treeSelect'
+	});
+
+	layui.use(['form', 'jquery', 'element', 'laydate', 'table', 'treeSelect'], function() {
 		var form = layui.form,
 				$ = layui.jquery,
 				laydate = layui.laydate,
+				treeSelect = layui.treeSelect,
 				table = layui.table;
 
 		//日期范围
@@ -70,6 +81,27 @@
 			,range: '至'
 			,type:'datetime'
 
+		});
+		treeSelect.render({
+			// 选择器
+			elem: '#tree',
+			// 数据
+			data: "{:url('supply_goods/ajax_goods_list')}",
+			// 异步加载方式：get/post，默认get
+			type: 'get',
+			// 占位符
+			placeholder: '分类',
+			// 是否开启搜索功能：true/false，默认false
+			search: true,
+			// 点击回调
+			click: function(d){
+				console.log(d.current.id);
+				$("#tree").attr("value",d.current.id);
+			},
+			// 加载完成后的回调函数
+			success: function (d) {
+				console.log(d);
+			}
 		});
 
 		form.on('submit(search-form)',function (data) {
@@ -191,7 +223,7 @@
 			layer.open({
 				type : 2,
 				content:"{:url('goods/index')}",
-				title:'添加工程',
+				title:'添加材料分类',
 				btnAlign: 'c',
 				area: ['100%', '100%'],
 				anim: 5,

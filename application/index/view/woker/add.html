@@ -22,7 +22,7 @@
 								<div class="layui-form-item">
 									<label class="layui-form-label">工程队名称</label>
 									<div class="layui-input-block">
-										<input type="text" name="name" required lay-verify="required" lay-verType="tips" placeholder="请输入合同名称" autocomplete="off" class="layui-input" value="{$list['name']|default=''}">
+										<input type="text" name="name" required lay-verify="required" lay-verType="tips" placeholder="请输入工程队名称" autocomplete="off" class="layui-input" value="{$list['name']|default=''}">
 									</div>
 								</div>
 
@@ -85,6 +85,11 @@
                     	layer.msg(data.msg, {icon: 1, shade: 0.1, time: 1000}, function () {
                             parent.refresh();
                         });
+						if(data.code == 200){
+							layer.msg(data.msg);
+							window.parent.table_reload();
+							window.parent.layer.closeAll();
+						}
                     });
                     
                 	return false;

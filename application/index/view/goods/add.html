@@ -29,19 +29,19 @@
 					</div>
 				</div>
 
-				<div class="layui-form-item">
-					<label class="layui-form-label">图片：</label>
-					<div class="layui-input-block">
-						<img id=goods_image  style="height: 70px;width: 70px;display: none" src="">
-						<button type="button" class="layui-btn layui-btn layui-btn-normal" id="goodsImg">
-							<i class="layui-icon">&#xe67c;</i>上传图片
-						</button>
-					</div>
-				</div>
+<!--				<div class="layui-form-item">-->
+<!--					<label class="layui-form-label">图片：</label>-->
+<!--					<div class="layui-input-block">-->
+<!--						<img id=goods_image  style="height: 70px;width: 70px;display: none" src="">-->
+<!--						<button type="button" class="layui-btn layui-btn layui-btn-normal" id="goodsImg">-->
+<!--							<i class="layui-icon">&#xe67c;</i>上传图片-->
+<!--						</button>-->
+<!--					</div>-->
+<!--				</div>-->
 
-				<div class="layui-form-item">
+				<div class="layui-form-item" >
 					<label class="layui-form-label">单位：</label>
-					<div class="layui-input-block">
+					<div class="layui-input-block" style="float:left;margin: 0 0;">
 						<select name="unit_id" required lay-verify="required" lay-verType="tips" lay-verify="required" lay-search="">
 							<option value="">请选择材料单位</option>
 							{volist name="unit_list" id="vo"}
@@ -49,11 +49,8 @@
 							{/volist}
 						</select>
 					</div>
-				</div>
-
-				<div class="layui-form-item">
-					<label class="layui-form-label">分类：</label>
-					<div class="layui-input-block">
+					<label class="layui-form-label" style="float:left;">分类：</label>
+					<div class="layui-input-block"style="float:left;margin-left: 0px" >
 						<select name="cate_id" required lay-verify="required" lay-verType="tips" lay-verify="required" lay-search="">
 							<option value="">请选择材料分类</option>
 							{volist name="cate_list" id="vo"}
@@ -61,6 +58,12 @@
 							{/volist}
 						</select>
 					</div>
+
+
+				</div>
+
+				<div class="layui-form-item" style="float:right;">
+
 				</div>
 			</div>
 		</div>
@@ -96,6 +99,7 @@
                     $("#goodsImg").attr('value',res.data);
                     $("#goods_image").css('display','inline-block');
                     $("#goods_image").attr('src',"/static/upload/"+res.data);
+
                     return res.data
                 }else{
                     return 2
@@ -124,6 +128,11 @@
                 layer.msg(data.msg, {icon: 1, shade: 0.1, time: 1000}, function () {
                     parent.refresh();
                 });
+				if(data.code == 200){
+					layer.msg(data.msg);
+					window.parent.table_reload();
+					window.parent.layer.closeAll();
+				}
             });
 
             return false;

@@ -77,7 +77,7 @@ class Goods{
                 ]);
         }else {
             $data['company_id'] = session('power_user.company_id');
-            $data['image'] = '/static/upload/'.$data['image'];
+//            $data['image'] = '/static/upload/'.$data['image'];
             $user = GoodsModel::create($data);
             if (!$user) {
                 throw new BaseException(
@@ -99,10 +99,11 @@ class Goods{
             $find = $find->toArray();
             if($find['id'] == $id){
                 $data['update_time'] = time();
-                $data['image'] = '/static/upload/'.$data['image'];
+//                $data['image'] = '/static/upload/'.$data['image'];
                 $res = GoodsModel::where('id', $id)->update($data);
                 return [
                     'msg' => '修改材料成功',
+                    'code' => '200'
                 ];
             }else{
                 throw new BaseException(

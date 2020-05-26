@@ -4,6 +4,7 @@ namespace app\index\service;
 use app\index\model\SupplyGoods as SupplyGoodsModel;
 use app\index\model\Goods as GoodsModel;
 use app\lib\exception\BaseException;
+use app\index\model\Cate as CateModel;
 
 class SupplyGoods{
     //供应商列表
@@ -35,7 +36,7 @@ class SupplyGoods{
         }
 
         if (isset($params['type_id']) && $params['type_id']){
-            $where[] = ['type_id', '=', $params['type_id']];
+            $where[] = ['cate_id', '=', $params['type_id']];
         }
         $goods_ids = SupplyGoodsModel::field('id')->where(['supply_id' => $params['supply_id']])->column('goods_id');
 
@@ -46,9 +47,18 @@ class SupplyGoods{
             $time = explode('至', $params['create_time']);
             $where[] = ['create_time', 'between time', [trim($time[0]), trim($time[1])]];
         }
-
         $list = GoodsModel::with(['unit', 'type', 'cate'])->where($where)->order('create_time desc')->paginate($limit);
         return $list;
+    }
+
+
+    public function getCateList(){
+        $list = CateModel::field('id, pid, name, create_time, lv')->order(['lv','create_time' => 'desc'])->select();
+        if($list) {
+            $list = $list->toArray();
+            $res = model('cate', 'service')->get_attr($list,0);
+        }
+        return $res;
     }
 
     public function add_contract($data){
@@ -95,37 +105,21 @@ class SupplyGoods{
 
     public function save_contract($id, $data){
         $find = SupplyGoodsModel::field('id')->where(['supply_id' => $data['s_id'], 'goods_id' => $data['g_id']])->find();
-        if($find){
-            $find = $find->toArray();
-            if($find['id'] == $id){
-                return [
-                    'msg' => '更改供应商材料成功',
-                    'code' => '200'
-                ];
-            }else{
-                throw new BaseException(
-                    [
-                        'msg' => '更改供应商材料已存在！',
-                        'errorCode' => 30005
-                    ]);
-            }
-        }else {
-            $data_save = [
-                'supply_id' => $data['s_id'], 'goods_id' => $data['g_id'], 'price' => $data['price']
-            ];
-            $res = SupplyGoodsModel::where('id', $id)->update($data_save);
-            if (!$res) {
-                throw new BaseException(
-                    [
-                        'msg' => '修改供应商材料错误！',
-                        'errorCode' => 30005
-                    ]);
-            }
-            return [
-                'msg' => '更改供应商材料成功',
-                'code' => '200'
-            ];
+        $data_save = [
+            'supply_id' => $data['s_id'], 'goods_id' => $data['g_id'], 'price' => $data['price']
+        ];
+        $res = SupplyGoodsModel::where('id', $id)->update($data_save);
+        if (!$res) {
+            throw new BaseException(
+                [
+                    'msg' => '修改供应商材料错误！',
+                    'errorCode' => 30005
+                ]);
         }
+        return [
+            'msg' => '更改供应商材料成功',
+            'code' => '200'
+        ];
     }
 
 } 

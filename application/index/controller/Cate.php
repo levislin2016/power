@@ -19,7 +19,7 @@ class Cate extends Base
     // 获取材料对应的供应商列表
     public function ajax_get_list(){
         $list = model('cate', 'service')->selectList(input('get.'), input('get.limit'))->toArray();
-        return returnJson($list['data'], 0, '获取成功');
+        return returnJson($list, 0, '获取成功');
     }
 
     public function add(){ 

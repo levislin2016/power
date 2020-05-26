@@ -71,15 +71,16 @@
                     $.post(url, param, function (data) {
                     	layer.close(loading);
 						console.dir(data);
-                    	if(data.error_code){ 
-                            layer.msg(data.msg, {icon: 2, shade: 0.1, time: 1000}, function(){ 
-
-                            });
+                    	if(data.error_code){
+							layer.msg(data.msg, function () {
+							});
                             return false;
                         } 
-                    	layer.msg(data.msg, {icon: 1, shade: 0.1, time: 1000}, function () {
-                            parent.refresh();
-                        });
+                    	if(data.code == 200){
+							layer.msg(data.msg);
+							window.parent.table_reload();
+							window.parent.layer.closeAll();
+						}
                     });
                     
                 	return false;

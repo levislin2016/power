@@ -93,6 +93,11 @@
                             var index = parent.layer.getFrameIndex(window.name);
                             parent.layer.close(index);
                         });
+						if(data.code == 200){
+							layer.msg(data.msg);
+							window.parent.table_reload();
+							window.parent.layer.closeAll();
+						}
                     });
                     
                 	return false;

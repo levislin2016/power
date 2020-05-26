@@ -9,6 +9,7 @@ use app\index\model\Goods as GoodsModel;
 use app\lib\exception\BaseException;
 use app\index\validate\SupplyGoodsValidate;
 
+
 class SupplyGoods extends Base
 {
     protected $beforeActionList = [
@@ -21,7 +22,15 @@ class SupplyGoods extends Base
 
     public function goods(){
         $data['type'] = Type::all();
+//        $data['types'] =  model('cate', 'service')->selectList(input('get.'), input('get.limit'))->toArray();
+
         return view('goods', ['data' => $data]);
+    }
+
+    public function ajax_goods_list(){
+        $res = model('supply_goods', 'service')->getCateList(input('get.'), input('get.limit'));
+        return $res;
+
     }
 
     // 获取供应商对应的材料
