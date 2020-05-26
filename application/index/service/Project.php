@@ -11,8 +11,13 @@ class Project{
 
     public function getList($params, $limit = 15){
         $where = [];
+        $hasWhere = [];
         if (isset($params['search']) && $params['search']){
             $where[] = ['name', 'like', "%{$params['search']}%"];
+        }
+
+        if (isset($params['search2']) && $params['search2']){
+            $hasWhere[] = ['number', 'like', "%{$params['search2']}%"];
         }
 
         if (isset($params['create_time']) && $params['create_time']){
@@ -28,7 +33,7 @@ class Project{
             $where[] = ['status', '=', $params['status']];
         }
 
-        $list = ProjectModel::with('contract')->where($where)->order('create_time desc')->paginate($limit);
+        $list = ProjectModel::hasWhere('contract', $hasWhere)->with('contract')->where($where)->order('create_time desc')->paginate($limit);
         return $list;
     }
 

@@ -22,6 +22,24 @@ class Contract extends Base
         return returnJson($list, 200, '获取成功!');
     }
 
+    // 获取下拉列表的数据
+    public function ajax_get_sel_list(){
+        $list = model('contract', 'service')->select_list(input('get.'), input('limit'));
+        if (!$list){
+            return returnJson($list, 200, '获取成功!');
+        }
+        $arr = [];
+        foreach ($list as $k => $v){
+            $arr[] = [
+                'name' => "合同编号:{$v['number']} 名称：{$v['name']} 业主:{$v['owner_name']}",
+                'val'  => $v['id'],
+            ];
+        }
+        return returnJson($arr, 200, '获取成功!');
+    }
+
+
+
     public function add(){ 
         $owner_list = OwnerModel::all();
         $this->assign('owner_list', $owner_list);

@@ -96,13 +96,19 @@
 		{{# } }}
 	</script>
 
+	<div id="contract_box">
+		<div class="layui-row">
+			<div class="layui-col-lg12">
+				<div id="contract_list"></div>
+			</div>
+		</div>
+	</div>
+
 	<script type="text/html" id="template_list">
 		<div class="layui-btn-container">
 			<button class="layui-btn layui-btn-sm layui-btn-black" lay-event="list"><i class="layui-icon layui-icon-list"></i>查看采购清单</button>
 		</div>
 	</script>
-
-
 
 	<script type="text/html" id="toolbar">
 		<div class="layui-btn-container">
@@ -281,14 +287,23 @@
 						};
 						$.post("{:url('buy/add_buy')}", form_data,function (ret) {
 							if (ret.code == 200){
-								layer.msg(ret.msg);
-								table_reload()
+								layer.open({
+									type : 2,
+									content:"{:url('buy/edit')}" + '?id=' + ret.data.id,
+									title:['采购单编号：' + ret.data.number  + '   状态：' + ret.data.status + '   创建时间：' + ret.data.create_time, 'font-weight:bold'],
+									btnAlign: 'c',
+									area: ['100%', '100%'],
+									anim: 5,
+									isOutAnim:true,
+									end:function(){
+										table_reload();
+									}
+								});
 							}else{
 								layer.msg(ret.msg,function(){
 
 								});
 							}
-							layer.close(index);
 						});
 					break;
 

@@ -42,7 +42,14 @@
 	</div>
 </div>
 {include file="public/script" /}
-
+<script type="text/html" id="template_type">
+	{{# if(d.need_type == '甲供'){ }}
+	<span class="layui-badge layui-bg-black">{{d.need_type}}</span>
+	{{# } }}
+	{{# if(d.need_type == '自购'){ }}
+	<span class="layui-badge layui-bg-blue">{{d.need_type}}</span>
+	{{# } }}
+</script>
 
 <script>
 	var table_reload;

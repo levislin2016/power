@@ -11,20 +11,22 @@ class BuyInfoValidate extends BaseValidate
 {
     protected $rule = [
         'id'         => 'checkBuyStatus',
-        'num'        => 'float|checkNum',
+        'num'        => 'float|>=:0|checkNum',
         'buy_id'     => 'require|unique:BuyInfo,buy_id^project_id^goods_id^type|checkBuyStatus',
         'project_id' => 'require|unique:BuyInfo,buy_id^project_id^goods_id^type|checkBuyStatus',
         'goods_id'   => 'require|unique:BuyInfo,buy_id^project_id^goods_id^type|checkBuyStatus',
         'type'       => 'require|unique:BuyInfo,buy_id^project_id^goods_id^type|checkBuyStatus',
-        'price'      => 'float',
+        'price'      => 'float|>=:0',
         'supply_id'  => 'checkBuyStatus|checkType',
     ];
 
     protected $message = [
-        'num.float'          => '请输入正确的数字！',
+        'num'                => '请填写正确的数字<br>（不含负数，自动保留三位小数）！',
         'buy_id.unique'      => '请勿重复采购该材料！',
         'project_id.unique'  => '请勿重复采购该材料！',
         'goods_id.unique'    => '请勿重复采购该材料！',
+        'price'              => '请填写正确的价格<br>（不含负数，自动保留两位小数）！',
+
     ];
 
     protected $scene = [
@@ -68,7 +70,7 @@ class BuyInfoValidate extends BaseValidate
     {
         $max = $data['need_need'] - $data['need_buy'];
         if ($data['num'] > $max){
-            return "采购数量不得大于 未采购数量：{$max}";
+            return "采购数量 必须小于 未采购数量：{$max}";
         }
 
         return true;
@@ -79,7 +81,7 @@ class BuyInfoValidate extends BaseValidate
     {
         $list = BuyInfoModel::with(['project', 'goods' => ['unit', 'type']])->all(['buy_id' => $value])->toArray();
         if (!$list){
-            return "请先添加需要采购的工程！";
+            return "请先添加需要采购的材料！";
         }
 
         $buy = BuyModel::get($value);

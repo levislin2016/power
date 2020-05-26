@@ -12,7 +12,7 @@ class NeedValidate extends BaseValidate
         'goods_id'   => 'require|unique:Need,goods_id^project_id^type',
         'project_id' => 'require|unique:Need,goods_id^project_id^type|checkProjectStatus',
         'type'       => 'require|unique:Need,goods_id^project_id^type',
-        'need'       => 'number|checkProjectStatus',
+        'need'       => 'float|checkProjectStatus|>=:0',
     ];
 
     protected $message = [
@@ -20,7 +20,7 @@ class NeedValidate extends BaseValidate
         'goods_id.unique'   => '材料已经存在，请勿重复添加！',
         'project_id.unique' => '材料已经存在，请勿重复添加！',
         'type.unique'       => '材料已经存在，请勿重复添加！',
-        'need.number'       => '请填写数字（不含小数点）！',
+        'need'              => '请填写正确的数字<br>（不含负数，自动保留两位小数）！',
     ];
 
     protected $scene = [

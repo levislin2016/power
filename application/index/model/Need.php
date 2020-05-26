@@ -18,6 +18,12 @@ class Need extends Base{
 
     }
 
+    // [修改器] 对数字进行保留两位小数
+    public function setNeedAttr($value,$data)
+    {
+        return round(trim($value), 2);
+    }
+
     public function getTypeAttr($value){
         $arr = config('extra.buy_from');
         return $arr[$value];

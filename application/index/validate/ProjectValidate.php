@@ -49,7 +49,7 @@ class ProjectValidate extends BaseValidate
         }
         foreach ($need as $k => $v){
             if ($v['need'] <= 0){
-                return "材料：{$v['goods_name']} 数量未填写";
+                return "材料：{$v['goods_name']} 预算数量未填写";
             }
         }
 

@@ -67,6 +67,7 @@
 			};
 			$.post("{:url('buy/ajax_edit_buyInfo')}",form_data,function (ret) {
 				if (ret.code == 200){
+					window.parent.table_reload();
 					window.parent.layer.closeAll();
 				}else{
 					window.parent.layer.msg(ret.msg,function(){

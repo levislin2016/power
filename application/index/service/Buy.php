@@ -6,6 +6,7 @@ use app\index\model\Need as NeedModel;
 use app\index\model\Buy as BuyModel;
 use app\index\model\BuyInfo as BuyInfoModel;
 use app\index\model\Project as ProjectModel;
+use app\index\model\ContractSupply as ContractSupplyModel;
 
 use think\Db;
 
@@ -19,14 +20,14 @@ class Buy{
             $where[] = ['number', 'like', "%{$params['search']}%"];
         }
 
-        if (isset($params['search2']) && $params['search2']){
-            $where2[] = ['name', 'like', "%{$params['search2']}%"];
-            $project = ProjectModel::where($where2)->field('id')->all()->toArray();
-            $project_ids = array_column($project, 'id');
-            if ($project_ids){
-                $hasWhere[] = ['project_id', 'in', $project_ids];
-            }
-        }
+//        if (isset($params['search2']) && $params['search2']){
+//            $where2[] = ['name', 'like', "%{$params['search2']}%"];
+//            $project = ProjectModel::where($where2)->field('id')->all()->toArray();
+//            $project_ids = array_column($project, 'id');
+//            if ($project_ids){
+//                $hasWhere[] = ['project_id', 'in', $project_ids];
+//            }
+//        }
 
         if (isset($params['create_time']) && $params['create_time']){
             $time = explode('至', $params['create_time']);
@@ -37,11 +38,14 @@ class Buy{
             $where[] = ['status', '=', $params['status']];
         }
 
-        if (isset($params['search2']) && $params['search2']) {
-            $list = BuyModel::hasWhere('buyProject', $hasWhere)->with(['buyProject' => ['project2']])->where($where)->order('create_time desc')->paginate($limit);
-        }else{
-            $list = BuyModel::with(['buyProject' => ['project2']])->where($where)->order('create_time desc')->paginate($limit);
-        }
+        $list = BuyModel::where($where)->order('create_time desc')->paginate($limit);
+
+
+//        if (isset($params['search2']) && $params['search2']) {
+//            $list = BuyModel::hasWhere('buyProject', $hasWhere)->with(['buyProject' => ['project2']])->where($where)->order('create_time desc')->paginate($limit);
+//        }else{
+//            $list = BuyModel::with(['buyProject' => ['project2']])->where($where)->order('create_time desc')->paginate($limit);
+//        }
         return $list;
     }
 
@@ -82,16 +86,13 @@ class Buy{
         if(!$validate->scene('sure')->check($params)){
             return returnJson('', 201, $validate->getError());
         }
+        Db::startTrans();
 
-        $ret = BuyModel::update([
-            'id'     => $params['buy_id'],
-            'status' => 2,
-        ]);
-        if (!$ret){
-            return returnInfo('', 201, '生成错误！');
+        $buy_info_list = BuyInfoModel::all(['buy_id' => $params['buy_id']])->toArray();
+        if (!$buy_info_list){
+            return returnInfo('', 201, '请先添加需要采购的材料！');
         }
-
-        $buy_info_list = BuyInfoModel::all(['buy_id' => $params['buy_id']]);
+        // 修改工程材料对应的 [采购] 数量
         foreach ($buy_info_list as $k => $v){
             NeedModel::where([
                 'goods_id'   => $v['goods_id'],
@@ -99,6 +100,45 @@ class Buy{
                 'type'       => $v['type'],
             ])->setInc('buy', $v['num']);
         }
+        // 生成供应商对应的供应商合同
+        $supply_arr = [];
+        foreach ($buy_info_list as $k => $v){
+            $supply_arr[$v['supply_id']][] = $v;
+        }
+        dump($supply_arr);die;
+        foreach ($supply_arr as $k => $v){
+            // 生成供应商合同
+            $contract = ContractSupplyModel::create([
+                'number'    => create_order_no('S'),
+                'buy_id'    => $params['buy_id'],
+                'supply_id' => $k
+            ]);
+            if (!$contract){
+                Db::rollback();
+                return returnInfo('', 207, '生成供应商合同失败！');
+            }
+            foreach ($v as $k2 => $v2){
+                $ret = BuyInfoModel::update([
+                    'id'                 => $v2['id'],
+                    'contract_supply_id' => $contract['id'],
+                ]);
+                if (!$ret){
+                    Db::rollback();
+                    return returnInfo('', 208, '生成供应商合同失败！');
+                }
+            }
+        }
+
+        // 修改采购单状态为 [采购中]
+        $ret = BuyModel::update([
+            'id'     => $params['buy_id'],
+            'status' => 2,
+        ]);
+        if (!$ret){
+            Db::rollback();
+            return returnInfo('', 201, '生成错误！');
+        }
+        Db::commit();
 
         return returnInfo($ret, 200, '确认生成采购单成功, 采购单修改为 [采购中]！');
     }

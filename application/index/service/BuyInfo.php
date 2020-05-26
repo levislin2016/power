@@ -4,6 +4,7 @@ namespace app\index\service;
 use app\index\model\Buy as BuyModel;
 use app\index\model\BuyInfo as BuyInfoModel;
 use app\index\model\Project as ProjectModel;
+use app\index\model\Supply as SupplyModel;
 use app\index\model\Need as NeedModel;
 use think\Db;
 
@@ -47,8 +48,6 @@ class BuyInfo{
         $validate = validate('BuyInfoValidate');
 
         Db::startTrans();
-        // 获取工程项目对应的业主
-        $project = ProjectModel::with(['supply'])->get($params['project_id']);
 
         foreach ($params['json_arr'] as $k => $v){
             $data = [
@@ -62,6 +61,8 @@ class BuyInfo{
 
             // 如果是甲供材料，供应商直接为业主对应的供应商
             if ($v['type'] == '甲供'){
+                // 获取工程项目对应的业主
+                $project = ProjectModel::with(['contract', 'supply'])->get($v['project_id']);
                 $data['supply_id'] = $project['supply_id'];
             }
 
@@ -87,7 +88,7 @@ class BuyInfo{
         // 验证 登录 场景
         $validate = validate('BuyInfoValidate');
         if (!$validate->scene('edit')->check($params)){
-            return returnInfo('', 201, '修改错误 原因：' . $validate->getError());
+            return returnInfo('', 201, '修改错误!<br>原因：' . $validate->getError());
         }
         $data = [
             'id' => $params['id'],
@@ -124,6 +125,12 @@ class BuyInfo{
         }
 
         return returnInfo($ret, 200, '删除成功！');
+    }
+
+    // 获取采购详情对应工程列表
+    public function getProject($params){
+        $project = BuyInfoModel::with(['project'])->field('project_id')->distinct(true)->where(['buy_id' => $params['id']])->all()->toArray();
+        return $project;
     }
 
 

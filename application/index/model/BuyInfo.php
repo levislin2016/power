@@ -6,6 +6,19 @@ class BuyInfo extends Base{
         'num_ok' => 0
     ];
 
+    // [修改器] 对数字进行保留两位小数
+    public function setNumAttr($value,$data)
+    {
+        return round(trim($value), 2);
+    }
+
+    // [修改器] 对价格进行保留三位小数
+    public function setPriceAttr($value,$data)
+    {
+        return round(trim($value), 3);
+    }
+
+
 
     public function goods(){
         return $this->hasOne('Goods', 'id', 'goods_id')->bind([

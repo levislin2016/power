@@ -3,6 +3,7 @@ namespace app\index\service;
 
 use app\index\model\Need as NeedModel;
 use app\index\model\Project as ProjectModel;
+use app\index\model\BuyInfo as BuyInfoModel;
 use app\index\model\Goods as GoodsModel;
 use app\index\service\Type as TypeService;
 use app\lib\exception\BaseException;
@@ -31,6 +32,15 @@ class Need{
             $where[] = ['status', '=', $params['status']];
         }
 
+        // 解决如果是采购单进来的，已经在采购单添加的预算 不再显示
+        if (isset($params['buy_id']) && $params['buy_id']){
+            $buyinfo_ids = BuyInfoModel::field('need_id')->where(['buy_id' => $params['buy_id']])->all()->toArray();
+            if ($buyinfo_ids){
+                $buyinfo_ids = array_column($buyinfo_ids, 'need_id');
+                $where[] = ['Need.id', 'not in', $buyinfo_ids];
+            }
+        }
+
         if (isset($params['project_status']) && $params['project_status']){
             $project_ids = ProjectModel::field('id')->where(['status' => 2])->all()->toArray();
             $project_ids = array_column($project_ids, 'id');
@@ -39,7 +49,7 @@ class Need{
 
         if (isset($params['create_time']) && $params['create_time']){
             $time = explode('至', $params['create_time']);
-            $where[] = ['Need.create_time', 'between time', [trim($time[0]), trim($time[1])]];
+            $where[] = ['create_time', 'between time', [trim($time[0]), trim($time[1])]];
         }
 
         $list = NeedModel::hasWhere('goods', $hasWhere)->with(['goods' => ['unit', 'type'], 'project'])->where($where)->order('create_time desc')->paginate($limit);
@@ -88,8 +98,7 @@ class Need{
         if (!$ret){
             return returnInfo('', 201, '修改数量错误！');
         }
-
-        return returnInfo('', 200, "数量成功修改为{$params['need']}！");
+        return returnInfo($ret, 200, "数量成功修改为{$params['need']}！");
     }
 
     # 删除预算材料

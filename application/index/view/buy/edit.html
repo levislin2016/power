@@ -27,7 +27,7 @@
 								<select name="project_id" lay-search="" lay-filter="select1">
 									<option value="">全部</option>
 									{volist name="data.project" id="v"}
-									<option value="{$v.id}">{$v.name}</option>
+									<option value="{$v.project_id}">{$v.project_name}</option>
 									{/volist}
 								</select>
 							</div>
@@ -110,10 +110,6 @@
 	</div>
 </script>
 
-<script type="text/html" id="template_input">
-	<input value="{{d.num}}" class="layui-input input-num" type="text" lay-filter="checkNum" placeholder="采购数量" style="border: none;height:30px;color:#666;text-align:center;padding-right: 10px">
-</script>
-
 <script>
 	layui.use(['form', 'jquery', 'element', 'laydate', 'table'], function() {
 		var form = layui.form,
@@ -165,17 +161,18 @@
 			}
 			,cols: [[ //表头
 				{type:'numbers', title: '序号', align:'center', fixed:'left', sort:true,width:80}
+				,{field: 'id', title: 'ID', align:'center',sort:true, width:85}
 				,{field: 'project_name', title: '工程名称', align:'center',sort:true}
 				// ,{field: 'type_name', title: '分类', align:'center',sort:true}
 				,{field: 'goods_name', title: '名称', align:'center',sort:true}
 				,{field: 'goods_number', title: '编号', align:'center',sort:true, width:110}
-				,{field: 'num', title: '采购数量', align:'center',sort:true, width:120,  templet:'#template_input'}
-				,{field: 'num_ok', title: '已采购', align:'center',sort:true, width:120}
 				,{field: 'need_need', title: '预算数量', align:'center',sort:true, width:120}
 				,{field: 'need_buy', title: '累计采购', align:'center',sort:true, width:120}
-				,{field: 'unit_name', title: '单位', align:'center', width:100}
+				,{field: 'num_ok', title: '已采购', align:'center',sort:true, width:120}
+				,{field: 'num', title: '采购数量', align:'center',sort:true, width:120, edit:'text', event:'sel'}
+				,{field: 'price', title: '价格', sort:true, align:'center', width:100, edit:'text', event:'sel'}
 				,{field: 'supply_name', title: '供应商', align:'center', width:150, event:'supply'}
-				,{field: 'price', title: '价格', sort:true, align:'center', width:100, edit:'text'}
+				,{field: 'unit_name', title: '单位', align:'center', width:100}
 				,{field: 'need_type', title: '类型', align:'center',sort:true, templet:"#template_type", width:80}
 				,{field: 'number', title: '操作', templet:'#toolbar', fixed:'right', align:'center', width:100}
 			]],parseData: function(res){ //res 即为原始返回的数据
@@ -192,23 +189,28 @@
 
 		//监听单元格编辑
 		table.on('edit(table)', function(obj){
+			var checkStatus = table.checkStatus('347');
 			var value = obj.value //得到修改后的值
 					,data = obj.data //得到所在行所有键值
 					,field = obj.field; //得到字段
 			var form_data = obj.data;
 			var oldvalue = $(this).prev().text();
 			$.post("{:url('buy/ajax_edit_buyinfo')}", form_data, function(ret){
+				var objTemp = {};
+				$(obj.tr).find("[data-field="+ field +"] input").val(ret.data[field]);
 				if (ret.code == 200){
-					layer.msg('['+ data.goods_name +'] <br>更改为：'+ value,{offset:'t'});
+					$(obj.tr).find("[data-field="+ field +"] div").removeClass('error_td');
+					objTemp[field] = ret.data[field];
+					layer.msg('['+ data.goods_name +'] <br>更改为：'+ ret.data[field],{offset:'t'});
 				}else{
-					var objTemp = {};
+					$(obj.tr).find("[data-field="+ field +"] div").addClass('error_td');
+
 					objTemp[field] = oldvalue;
-					obj.update(objTemp);
 					layer.msg(ret.msg,function () {
 
 					});
-					return false;
 				}
+				obj.update(objTemp);
 			});
 		});
 
@@ -227,18 +229,17 @@
 						shadeClose: true,
 						anim: 5,
 						isOutAnim:true,
-						end:function(){
-							table_reload();
-						}
 					});
 				break;
 
 				// 确认生成采购单
 				case 'sure':
+					layer.load(2);
 					var form_data = {
 						buy_id: "{$Request.get.id}",
 					};
 					$.post("{:url('buy/ajax_sure')}", form_data, function (ret) {
+						layer.closeAll('loading');
 						if (ret.code == 200) {
 							layer.msg(ret.msg);
 						} else {
@@ -269,6 +270,7 @@
 
 		// 监听按钮
 		table.on('tool(table)', function(obj) {
+			console.log(obj.data)
 			switch(obj.event){
 				case 'delete':
 					layer.confirm('确定删除这条记录吗？', {icon: 3, title:'提示'}, function(index){
@@ -287,6 +289,12 @@
 					});
 					break;
 				case 'supply':
+					if (obj.data.need_type == '甲供'){
+						layer.msg('甲供材料不允许修改供应商！',function () {
+
+						});
+						return false;
+					}
 					layer.open({
 						type : 2,
 						content:"{:url('buy/supply')}" + "?buyinfo_id=" + obj.data.id + '&buy_id=' + obj.data.buy_id + '&goods_id=' + obj.data.goods_id,
@@ -298,10 +306,12 @@
 						closeBtn:0,
 						anim: 5,
 						isOutAnim:true,
-						end:function(){
-							table_reload();
-						}
 					});
+					break;
+
+				case 'sel':
+					$(obj.tr).find("[data-field=num] input").select();
+					$(obj.tr).find("[data-field=price] input").select();
 					break;
 			}
 		});

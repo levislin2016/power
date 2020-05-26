@@ -1,5 +1,6 @@
 <script src="__STATIC__/admin/layui/layui.all.js" type="text/javascript" charset="utf-8"></script>
 <script src="__STATIC__/admin/layui/layui.all.js" type="text/javascript" charset="utf-8"></script>
+<script src="__STATIC__/admin/layui/lay/modules/xm-select.js" type="text/javascript" charset="utf-8"></script>
 <script>
     // // 自定义模块，这里只需要开放soulTable即可
     // layui.config({
@@ -40,5 +41,38 @@
     //     if(event.keyCode ==13){
     //         $(".btn_search").trigger("click");
     //     }
+    // });
+
+    // 动态下拉框 demo
+    // var select_dom = xmSelect.render({
+    //     el: '#contract_list',
+    //     tips: '请选择要采购的合同编号',
+    //     radio: true,
+    //     autoRow: true,
+    //     filterable: true,
+    //     clickClose: true,
+    //     remoteSearch: true,
+    //     style: {
+    //         width: '80%',
+    //         margin:'10px auto',
+    //     },
+    //     remoteMethod: function(val, cb, show){
+    //         //这里如果val为空, 则不触发搜索
+    //         if(!val){
+    //             return cb([]);
+    //         }
+    //         //这里引入了一个第三方插件axios, 相当于$.ajax
+    //         var form_data = {
+    //             search : val,
+    //             limit  : 15,
+    //         };
+    //         $.get("{:url('contract/ajax_get_sel_list')}", form_data,function(ret){
+    //             if (ret.code == 200){
+    //                 cb(ret.data)
+    //             }else{
+    //                 cb([])
+    //             }
+    //         });
+    //     },
     // });
 </script>

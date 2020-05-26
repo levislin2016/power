@@ -36,11 +36,9 @@ class Buy extends Base{
     // 显示采购单编辑
     public function edit(){
         $data['id'] = input('id');
-        $data['list'] = model('buyProject', 'service')->getList($data, 20);
+        $data['list'] = model('buyInfo', 'service')->getList($data, 20);
         $data['contract'] = ContractModel::all();
-        $data['project'] = model('project', 'service')->getList([
-            'status' => 2
-        ]);
+        $data['project'] = model('buyInfo', 'service')->getProject($data);
 
         return view('edit', ['data' => $data]);
     }

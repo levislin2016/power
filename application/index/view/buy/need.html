@@ -50,6 +50,7 @@
 						</div>
 
 						<input type="hidden" name="project_status" value="2"/>
+						<input type="hidden" name="buy_id" value="{$Request.get.buy_id}"/>
 						<input type="hidden" name="status" value="1"/>
 
 						<div class="layui-inline">
@@ -270,7 +271,9 @@
 			};
 			$.post("{:url('buy/ajax_add_buyinfo')}", form_data, function (ret) {
 				if(ret.code == 200){
-					layer.msg(ret.msg)
+					layer.msg(ret.msg);
+					table_reload();
+					window.parent.table_reload();
 				}else{
 					layer.msg(ret.msg, function () {
 
