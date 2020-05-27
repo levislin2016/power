@@ -34,6 +34,7 @@ class Woker{
     }
 
     public function save_woker($id, $data){
+        $data['update_time'] = time();
         $res = WokerModel::where('id', $id)->update($data);
         if(!$res){ 
             throw new BaseException(

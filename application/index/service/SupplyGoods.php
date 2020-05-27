@@ -53,7 +53,7 @@ class SupplyGoods{
 
 
     public function getCateList(){
-        $list = CateModel::field('id, pid, name, create_time, lv')->order(['lv','create_time' => 'desc'])->select();
+        $list = CateModel::field('id,pid, name')->order(['lv','create_time' => 'desc'])->select();
         if($list) {
             $list = $list->toArray();
             $res = model('cate', 'service')->get_attr($list,0);

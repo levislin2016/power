@@ -97,6 +97,8 @@
 			click: function(d){
 				console.log(d.current.id);
 				$("#tree").attr("value",d.current.id);
+				table_reload();
+				return false;
 			},
 			// 加载完成后的回调函数
 			success: function (d) {
