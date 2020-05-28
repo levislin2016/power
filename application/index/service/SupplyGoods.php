@@ -53,12 +53,38 @@ class SupplyGoods{
 
 
     public function getCateList(){
-        $list = CateModel::field('id,pid, name')->order(['lv','create_time' => 'desc'])->select();
-        if($list) {
-            $list = $list->toArray();
-            $res = model('cate', 'service')->get_attr($list,0);
+        $list = CateModel::field('id,pid, name')->order(['lv','create_time' => 'desc'])->select()->toArray();
+        if(!$list) {
+            return $list;
         }
-        return $res;
+
+        $tree_list = $this->getCateTree($list);
+
+        return $tree_list;
+    }
+
+    // 获取树状结构分类
+    public function getCateTree($list, $pid =0){
+        $tree = [];
+        if ($pid == 0){
+            $tree[] = [
+                'id'       => '',
+                'name'     => '全部',
+                'checked'  => True,
+                'open'     => False,
+                'children' => [],
+            ];
+        }
+        foreach($list as $k => $v){
+            if($v['pid'] == $pid){
+                $v['children'] = $this->getCateTree($list, $v['id']);
+                $v['open'] = False;
+                $v['checked'] = False;
+                $tree[] = $v;
+                unset($list[$k]);
+            }
+        }
+        return $tree;
     }
 
     public function add_contract($data){
