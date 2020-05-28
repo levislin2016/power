@@ -114,7 +114,7 @@ class Cate extends Base
 
     	return [
                 'msg' => '操作成功',
-                'cate' => '200'
+                'code' => '200'
             ];
     }
 
