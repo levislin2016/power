@@ -158,7 +158,7 @@ class BuyInfo{
         }
 
         if ($fields){
-            return returnJson('', 201, '请检查！');
+            return returnJson($fields, 201, '请检查！');
         }else{
             return returnJson('', 200, '成功');
         }

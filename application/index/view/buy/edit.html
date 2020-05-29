@@ -112,7 +112,7 @@
 
 <script type="text/html" id="template_check">
 	<div class="layui-btn-container">
-		<button class="layui-btn layui-btn-sm layui-bg-gray" lay-event="check"><i class="layui-icon layui-icon-delete"></i>校验</button>
+		<button class="layui-btn layui-btn-sm layui-bg-gray btn-check" lay-event="check"><i class="layui-icon layui-icon-delete"></i>校验</button>
 	</div>
 </script>
 
@@ -169,21 +169,20 @@
 			}
 			,cols: [[ //表头
 				{type:'numbers', title: '序号', align:'center', fixed:'left', sort:true,width:80}
-				,{field: 'id', title: 'ID', align:'center',sort:true, width:85}
-				,{field: 'project_name', title: '工程名称', align:'center',sort:true}
-				,{field: 'cate_name', title: '分类', align:'center',sort:true}
-				,{field: 'goods_name', title: '名称', align:'center',sort:true}
+				,{field: 'project_name', title: '工程名称', fixed:'left', align:'center',sort:true, width:200}
+				,{field: 'cate_name', title: '分类', align:'center',sort:true, width:150}
+				,{field: 'goods_name', title: '名称', align:'center',sort:true, width:200}
 				,{field: 'goods_number', title: '编号', align:'center',sort:true, width:110}
 				,{field: 'need_need', title: '预算数量', align:'center',sort:true, width:120}
 				,{field: 'need_buy', title: '累计采购', align:'center',sort:true, width:120}
 				,{field: 'num_ok', title: '已采购', align:'center',sort:true, width:120}
-				,{field: 'num', title: '采购数量', align:'center',sort:true, width:120, edit:'text', event:'sel'}
-				,{field: 'price', title: '价格', sort:true, align:'center', width:100, edit:'text', event:'sel'}
-				,{field: 'supply_name', title: '供应商', align:'center', width:150, event:'supply'}
-				,{field: 'unit_name', title: '单位', align:'center', width:100}
+				,{field: 'num', title: '采购数量', align:'center', fixed:'right',sort:true, width:120, edit:'text', event:'sel'}
+				,{field: 'price', title: '价格', sort:true, align:'center', fixed:'right', width:100, edit:'text', event:'sel'}
+				,{field: 'unit_name', title: '单位', align:'center', fixed:'right', width:100}
+				,{field: 'supply_name', title: '供应商', align:'center', fixed:'right', width:150, event:'supply'}
 				,{field: 'need_type', title: '类型', align:'center',sort:true, templet:"#template_type", width:80}
 				,{field: 'number', title: '操作', templet:'#toolbar', fixed:'right', align:'center', width:100}
-				,{field: 'number', title: '操作', templet:'#template_check', fixed:'right', align:'center', width:100,hide:false}
+				,{field: 'number', title: '操作', templet:'#template_check', fixed:'right', align:'center', width:100,hide:true}
 			]],parseData: function(res){ //res 即为原始返回的数据
 				return {
 					"code": res.code, //解析接口状态
@@ -208,11 +207,11 @@
 				var objTemp = {};
 				$(obj.tr).find("[data-field="+ field +"] input").val(ret.data[field]);
 				if (ret.code == 200){
-					$(obj.tr).find("[data-field="+ field +"] div").removeClass('error_td');
+					$(obj.tr).find("[data-field="+ field +"]").css('border-bottom-color', '#e6e6e6');
 					objTemp[field] = ret.data[field];
 					layer.msg('['+ data.goods_name +'] <br>更改为：'+ ret.data[field],{offset:'t'});
 				}else{
-					$(obj.tr).find("[data-field="+ field +"] div").addClass('error_td');
+					$(obj.tr).find("[data-field="+ field +"]").css('border-bottom-color', 'red');
 
 					objTemp[field] = oldvalue;
 					layer.msg(ret.msg,function () {
@@ -243,6 +242,8 @@
 
 				// 确认生成采购单
 				case 'sure':
+					$('.btn-check').click();
+					return false;
 					layer.load(2);
 					var form_data = {
 						buy_id: "{$Request.get.id}",
@@ -330,10 +331,11 @@
 
 					$.post("{:url('buy/ajax_check_buyinfo')}", form_data, function(ret){
 						if (ret.code == 200){
-							$(obj.tr).find("[data-field="+ ret.data +"] div").removeClass('error_td');
+							$(obj.tr).find("div").css('border-bottom-color', '#e6e6e6');
 						}else{
-							layui.each(ret.data, fn)
-							$(obj.tr).find("[data-field="+ ret.data +"] div").addClass('error_td');
+							layui.each(ret.data, function(index, item){
+								$(obj.tr).find("[data-field="+ item +"]").css('border-bottom-color', 'red');
+							})
 						}
 					});
 					break;
