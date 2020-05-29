@@ -11,6 +11,8 @@ class Need extends Base{
         'adjust_out' => 0,
         'get'        => 0,
         'check'      => 1,
+
+        'buy_status' => 1,
     ];
 
     public static function init()

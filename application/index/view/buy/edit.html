@@ -34,7 +34,7 @@
 						</div>
 
 						<div class="layui-inline layui-form-pane">
-							<label class="layui-form-label">业主</label>
+							<label class="layui-form-label">材料名称|编号</label>
 							<div class="layui-input-inline">
 								<select name="contract_id" lay-search="" lay-filter="select1">
 									<option value="">全部</option>
@@ -125,6 +125,7 @@
 				laydate = layui.laydate,
 				table = layui.table;
 
+		var error = 0;
 		//日期范围
 		laydate.render({
 			elem: '#time'
@@ -160,7 +161,7 @@
 			,url: url//数据接口
 			,page: false //开启分页
 			,toolbar:'#template_toolbar'
-			,limit:100000
+			,limit:1000000
 			// ,height:'full-100'
 			,loading:true
 			,where:form.val("search-form")
@@ -175,14 +176,13 @@
 				,{field: 'goods_number', title: '编号', align:'center',sort:true, width:110}
 				,{field: 'need_need', title: '预算数量', align:'center',sort:true, width:120}
 				,{field: 'need_buy', title: '累计采购', align:'center',sort:true, width:120}
-				,{field: 'num_ok', title: '已采购', align:'center',sort:true, width:120}
+				,{field: 'num_ok', title: '已入库', fixed:'right', align:'center',sort:true, width:120}
 				,{field: 'num', title: '采购数量', align:'center', fixed:'right',sort:true, width:120, edit:'text', event:'sel'}
 				,{field: 'price', title: '价格', sort:true, align:'center', fixed:'right', width:100, edit:'text', event:'sel'}
 				,{field: 'unit_name', title: '单位', align:'center', fixed:'right', width:100}
 				,{field: 'supply_name', title: '供应商', align:'center', fixed:'right', width:150, event:'supply'}
-				,{field: 'need_type', title: '类型', align:'center',sort:true, templet:"#template_type", width:80}
+				,{field: 'need_type', title: '类型', align:'center',fixed:'right', sort:true, templet:"#template_type", width:80}
 				,{field: 'number', title: '操作', templet:'#toolbar', fixed:'right', align:'center', width:100}
-				,{field: 'number', title: '操作', templet:'#template_check', fixed:'right', align:'center', width:100,hide:true}
 			]],parseData: function(res){ //res 即为原始返回的数据
 				return {
 					"code": res.code, //解析接口状态
@@ -242,16 +242,46 @@
 
 				// 确认生成采购单
 				case 'sure':
-					$('.btn-check').click();
-					return false;
 					layer.load(2);
+					error = 0;
+					layui.each(table.cache.table,function(index,item){
+						// 判断供货商是否选择
+						if (item.supply_id == null){
+							$('tr[data-index='+ index +']').find("[data-field=supply_name]").css('border-bottom-color', 'red');
+							error += 1
+						}else{
+							$('tr[data-index='+ index +']').find("[data-field=supply_name]").css('border-bottom-color', '#e6e6e6');
+						}
+						// 判断采购数量是否填写
+						if (item.num == "0.00"){
+							$('tr[data-index='+ index +']').find("[data-field=num]").css('border-bottom-color', 'red');
+							error += 1
+						}else{
+							$('tr[data-index='+ index +']').find("[data-field=num]").css('border-bottom-color', '#e6e6e6');
+						}
+						// 判断价格是否填写
+						if (item.type == 1 && (item.price == "0.000" || item.price == null)){
+							$('tr[data-index='+ index +']').find("[data-field=price]").css('border-bottom-color', 'red');
+							error += 1
+						}else{
+							$('tr[data-index='+ index +']').find("[data-field=price]").css('border-bottom-color', '#e6e6e6');
+						}
+					});
+					if (error > 0){
+						layer.closeAll('loading');
+						layer.msg('生成采购单失败！请确认填写是否正确！');
+						return false;
+					}
+
 					var form_data = {
 						buy_id: "{$Request.get.id}",
 					};
 					$.post("{:url('buy/ajax_sure')}", form_data, function (ret) {
 						layer.closeAll('loading');
 						if (ret.code == 200) {
-							layer.msg(ret.msg);
+							window.parent.table_reload();
+							window.parent.layer.closeAll('iframe');
+							window.parent.layer.msg(ret.msg);
 						} else {
 							layer.msg(ret.msg, function () {
 
@@ -265,7 +295,7 @@
 					layer.open({
 						type : 2,
 						content:"{:url('buy/total')}" + '?buy_id={$Request.get.id}',
-						title:false,
+						title:'采购清单',
 						offset:'auto',
 						btnAlign: 'c',
 						area: ['90%', '90%'],
@@ -288,7 +318,7 @@
 						$.post("{:url('buy/ajax_del_buyinfo')}",form_data, function(ret){
 							if(ret.code == 200){
 								layer.msg(ret.msg);
-								table_reload();
+								obj.del();
 							}else{
 								layer.msg(ret.msg, function () {
 
@@ -322,22 +352,6 @@
 				case 'sel':
 					$(obj.tr).find("[data-field=num] input").select();
 					$(obj.tr).find("[data-field=price] input").select();
-					break;
-
-				case 'check':
-					var value = obj.value //得到修改后的值
-							,data = obj.data //得到所在行所有键值
-					var form_data = obj.data;
-
-					$.post("{:url('buy/ajax_check_buyinfo')}", form_data, function(ret){
-						if (ret.code == 200){
-							$(obj.tr).find("div").css('border-bottom-color', '#e6e6e6');
-						}else{
-							layui.each(ret.data, function(index, item){
-								$(obj.tr).find("[data-field="+ item +"]").css('border-bottom-color', 'red');
-							})
-						}
-					});
 					break;
 			}
 		});

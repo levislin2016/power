@@ -17,7 +17,11 @@ class BuyInfo{
         $where = [];
         $hasWhere = [];
         if (isset($params['search']) && $params['search']){
-            $hasWhere[] = ['Goods.name|number', 'like', "%{$params['search']}%"];
+            $hasWhere[] = ['name|number', 'like', "%{$params['search']}%"];
+        }
+
+        if (isset($params['cate_id']) && $params['cate_id']){
+            $hasWhere[] = ['cate_id', '=', $params['cate_id']];
         }
 
         if (isset($params['project_id']) && $params['project_id']){
@@ -117,7 +121,7 @@ class BuyInfo{
         # 验证规则
         $validate = validate('BuyInfoValidate');
         if(!$validate->scene('del')->check($params)){
-            return returnJson('', 201, $validate->getError());
+            return returnJson('', 201, '删除错误！ 原因：' . $validate->getError());
         }
 
         $ret = BuyInfoModel::destroy($params['id']);

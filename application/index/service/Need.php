@@ -28,8 +28,8 @@ class Need{
             $where[] = ['cate_id', '=', $params['cate_id']];
         }
 
-        if (isset($params['status']) && $params['status']){
-            $where[] = ['status', '=', $params['status']];
+        if (isset($params['buy_status']) && $params['buy_status']){
+            $where[] = ['buy_status', '=', $params['buy_status']];
         }
 
         // 解决如果是采购单进来的，已经在采购单添加的预算 不再显示

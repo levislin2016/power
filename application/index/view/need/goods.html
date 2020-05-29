@@ -194,6 +194,7 @@
 		});
 
 		table.on('toolbar(table)', function(obj) {
+			layer.load(2);
 			// 添加选中的材料(自购)
 			var checkStatus = table.checkStatus(obj.config.id);
 			var type = 1;
@@ -210,6 +211,7 @@
 			}
 			var data = checkStatus.data;
 			if (data.length <= 0){
+				layer.closeAll('loading');
 				layer.msg('请勾选要添加的材料！', function(){
 
 				});
@@ -221,6 +223,7 @@
 				'type'       : type,
 			};
 			$.post("{:url('need/ajax_add')}", form_data, function (ret) {
+				layer.closeAll('loading');
 				if(ret.code == 200){
 					layer.msg(ret.msg)
 				}else{

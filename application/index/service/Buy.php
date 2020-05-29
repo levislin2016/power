@@ -20,14 +20,14 @@ class Buy{
             $where[] = ['number', 'like', "%{$params['search']}%"];
         }
 
-//        if (isset($params['search2']) && $params['search2']){
-//            $where2[] = ['name', 'like', "%{$params['search2']}%"];
-//            $project = ProjectModel::where($where2)->field('id')->all()->toArray();
-//            $project_ids = array_column($project, 'id');
-//            if ($project_ids){
-//                $hasWhere[] = ['project_id', 'in', $project_ids];
-//            }
-//        }
+        if (isset($params['search2']) && $params['search2']){
+            $where2[] = ['name', 'like', "%{$params['search2']}%"];
+            $project = ProjectModel::where($where2)->field('id')->all()->toArray();
+            $project_ids = array_column($project, 'id');
+            if ($project_ids){
+                $hasWhere[] = ['project_id', 'in', $project_ids];
+            }
+        }
 
         if (isset($params['create_time']) && $params['create_time']){
             $time = explode('至', $params['create_time']);
@@ -82,25 +82,39 @@ class Buy{
     # 确认生成采购单
     public function sure($params){
         Db::startTrans();
-
-        $buy_info_list = BuyInfoModel::all(['buy_id' => $params['buy_id']])->toArray();
+        $buy = BuyModel::get(['id' => $params['buy_id']])->getData();
+        if ($buy['status'] == 2){
+            return returnInfo('', 201, '采购单已生成，请勿重复生成！！');
+        }
+        $buy_info_list = BuyInfoModel::with(['need'])->all(['buy_id' => $params['buy_id']])->toArray();
         if (!$buy_info_list){
             return returnInfo('', 201, '请先添加需要采购的材料！');
         }
         // 修改工程材料对应的 [采购] 数量
         foreach ($buy_info_list as $k => $v){
-            NeedModel::where([
+            $data = [
+                'id'         => $v['need_id'],
                 'goods_id'   => $v['goods_id'],
                 'project_id' => $v['project_id'],
                 'type'       => $v['type'],
-            ])->setInc('buy', $v['num']);
+                'buy'        => $v['num'],
+            ];
+            // 判断本次是否采购完成
+            if ($v['need_need'] == $v['num'] + $v['need_buy']){
+                $data['buy_status'] = 2;
+            }
+            $ret_inc = NeedModel::update($data);
+            if (!$ret_inc){
+                Db::rollback();
+                return returnInfo('', 209, '确认生成采购单失败！');
+            }
         }
         // 生成供应商对应的供应商合同
         $supply_arr = [];
         foreach ($buy_info_list as $k => $v){
             $supply_arr[$v['supply_id']][] = $v;
         }
-        dump($supply_arr);die;
+
         foreach ($supply_arr as $k => $v){
             // 生成供应商合同
             $contract = ContractSupplyModel::create([
@@ -145,7 +159,7 @@ class Buy{
         if (isset($param['supply_id']) && $param['supply_id']){
             $where[] = ['supply_id', '=', $param['supply_id']];
         }
-        $ret = BuyInfoModel::with(['goods' => ['type', 'unit'], 'need', 'project', 'supply'])->where($where)->paginate($param['limit']);
+        $ret = BuyInfoModel::with(['goods' => ['cate', 'unit'], 'need', 'project', 'supply'])->where($where)->paginate($param['limit']);
         if (!$ret){
             return returnInfo([], 200, '获取成功');
         }
@@ -160,7 +174,7 @@ class Buy{
                     'goods_number' => $v['goods_number'],
                     'price'        => $v['price'],
                     'unit_name'    => $v['unit_name'],
-                    'type_name'    => $v['type_name'],
+                    'cate_name'    => $v['cate_name'],
                     'need_type'    => $v['need_type'],
                     'supply_name'  => $v['supply_name']
                 ];
