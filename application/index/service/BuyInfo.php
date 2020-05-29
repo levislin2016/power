@@ -7,6 +7,7 @@ use app\index\model\Project as ProjectModel;
 use app\index\model\Supply as SupplyModel;
 use app\index\model\Need as NeedModel;
 use think\Db;
+use think\Validate;
 
 
 class BuyInfo{
@@ -36,7 +37,7 @@ class BuyInfo{
             $where[] = ['Need.create_time', 'between time', [trim($time[0]), trim($time[1])]];
         }
 
-        $list = BuyInfoModel::hasWhere('goods', $hasWhere)->with(['goods' => ['unit', 'type'], 'need', 'supply', 'project'])->where($where)->order('create_time desc')->paginate($limit);
+        $list = BuyInfoModel::hasWhere('goods', $hasWhere)->with(['goods' => ['unit', 'cate'], 'need', 'supply', 'project'])->where($where)->order('create_time desc')->paginate($limit);
         return $list;
     }
 
@@ -131,6 +132,36 @@ class BuyInfo{
     public function getProject($params){
         $project = BuyInfoModel::with(['project'])->field('project_id')->distinct(true)->where(['buy_id' => $params['id']])->all()->toArray();
         return $project;
+    }
+
+    // 验证是否有值，用于采购单确认判断
+    public function check($params){
+        $fields = [];
+        $validate = Validate::make([
+            'num' => 'float|min:0',
+        ],[
+            'num.number' => '请输入不含负号、特殊符号、大于0 的数字！',
+        ]);
+
+        if (!$validate->check(input('post.'))) {
+            $fields[] = 'num';
+        }
+
+        if ($params['type'] == 1){
+            if (!$params['price']){
+                $fields[] = 'price';
+            }
+        }
+
+        if (!$params['supply_id']){
+            $fields[] = 'supply_name';
+        }
+
+        if ($fields){
+            return returnJson('', 201, '请检查！');
+        }else{
+            return returnJson('', 200, '成功');
+        }
     }
 
 

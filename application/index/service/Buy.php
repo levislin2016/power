@@ -81,11 +81,6 @@ class Buy{
 
     # 确认生成采购单
     public function sure($params){
-        # 验证规则
-        $validate = validate('BuyInfoValidate');
-        if(!$validate->scene('sure')->check($params)){
-            return returnJson('', 201, $validate->getError());
-        }
         Db::startTrans();
 
         $buy_info_list = BuyInfoModel::all(['buy_id' => $params['buy_id']])->toArray();

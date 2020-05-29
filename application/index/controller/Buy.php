@@ -155,6 +155,12 @@ class Buy extends Base{
         return returnJson($list['data'], $list['code'], $list['msg']);
     }
 
+    // 修改 采购材料的数量
+    public function ajax_check_buyInfo(){
+        $list = model('buyInfo', 'service')->check(input('post.'));
+
+        return returnJson($list['data'], $list['code'], $list['msg']);
+    }
 
     // 检查是否为正整数
     public function ajax_check_num(){

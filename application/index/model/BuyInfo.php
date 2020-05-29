@@ -25,7 +25,7 @@ class BuyInfo extends Base{
             'goods_number' => 'number',
             'goods_name'   => 'name',
             'unit_name'    => 'unit_name',
-            'type_name'    => 'type_name',
+            'cate_name'    => 'cate_name',
         ]);
     }
 

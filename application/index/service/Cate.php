@@ -88,13 +88,13 @@ class Cate{
     public function getCateTree($list, $pid =0){
         $tree = [];
         if ($pid == 0){
-//            $tree[] = [
-//                'id'       => '',
-//                'name'     => '全部',
-//                'checked'  => True,
-//                'open'     => False,
-//                'children' => [],
-//            ];
+            $tree[] = [
+                'id'       => '',
+                'name'     => '全部',
+                'checked'  => True,
+                'open'     => False,
+                'children' => [],
+            ];
         }
         foreach($list as $k => $v){
             if($v['pid'] == $pid){

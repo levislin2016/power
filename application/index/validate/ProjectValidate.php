@@ -43,7 +43,7 @@ class ProjectValidate extends BaseValidate
     // 验证开始工程项目 预算设定
     protected function checkStart($value,$rule,$data=[])
     {
-        $need = NeedModel::with(['goods' => ['unit', 'type']])->order('create_time desc')->all(['project_id' => $value])->toArray();
+        $need = NeedModel::with(['goods' => ['unit', 'cate']])->order('create_time desc')->all(['project_id' => $value])->toArray();
         if (!$need){
             return '请先添加预算材料！';
         }

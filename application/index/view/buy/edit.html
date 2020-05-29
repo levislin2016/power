@@ -110,6 +110,14 @@
 	</div>
 </script>
 
+<script type="text/html" id="template_check">
+	<div class="layui-btn-container">
+		<button class="layui-btn layui-btn-sm layui-bg-gray" lay-event="check"><i class="layui-icon layui-icon-delete"></i>校验</button>
+	</div>
+</script>
+
+
+
 <script>
 	layui.use(['form', 'jquery', 'element', 'laydate', 'table'], function() {
 		var form = layui.form,
@@ -163,7 +171,7 @@
 				{type:'numbers', title: '序号', align:'center', fixed:'left', sort:true,width:80}
 				,{field: 'id', title: 'ID', align:'center',sort:true, width:85}
 				,{field: 'project_name', title: '工程名称', align:'center',sort:true}
-				// ,{field: 'type_name', title: '分类', align:'center',sort:true}
+				,{field: 'cate_name', title: '分类', align:'center',sort:true}
 				,{field: 'goods_name', title: '名称', align:'center',sort:true}
 				,{field: 'goods_number', title: '编号', align:'center',sort:true, width:110}
 				,{field: 'need_need', title: '预算数量', align:'center',sort:true, width:120}
@@ -175,6 +183,7 @@
 				,{field: 'unit_name', title: '单位', align:'center', width:100}
 				,{field: 'need_type', title: '类型', align:'center',sort:true, templet:"#template_type", width:80}
 				,{field: 'number', title: '操作', templet:'#toolbar', fixed:'right', align:'center', width:100}
+				,{field: 'number', title: '操作', templet:'#template_check', fixed:'right', align:'center', width:100,hide:false}
 			]],parseData: function(res){ //res 即为原始返回的数据
 				return {
 					"code": res.code, //解析接口状态
@@ -312,6 +321,21 @@
 				case 'sel':
 					$(obj.tr).find("[data-field=num] input").select();
 					$(obj.tr).find("[data-field=price] input").select();
+					break;
+
+				case 'check':
+					var value = obj.value //得到修改后的值
+							,data = obj.data //得到所在行所有键值
+					var form_data = obj.data;
+
+					$.post("{:url('buy/ajax_check_buyinfo')}", form_data, function(ret){
+						if (ret.code == 200){
+							$(obj.tr).find("[data-field="+ ret.data +"] div").removeClass('error_td');
+						}else{
+							layui.each(ret.data, fn)
+							$(obj.tr).find("[data-field="+ ret.data +"] div").addClass('error_td');
+						}
+					});
 					break;
 			}
 		});

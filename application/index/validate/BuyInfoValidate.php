@@ -35,14 +35,6 @@ class BuyInfoValidate extends BaseValidate
         'del'  => ['id'],
     ];
 
-    // 设定确认生成采购单验证场景
-    public function sceneSure(){
-        return $this->only(['buy_id'])
-            ->remove('buy_id', 'require')
-            ->remove('buy_id', 'unique')
-            ->append('buy_id', 'checkSure');
-    }
-
     // 判断采购单的状态， 判断是否为待确认状态
     protected function checkBuyStatus($value,$rule,$data=[])
     {
