@@ -35,8 +35,8 @@ class SupplyGoods{
             $where[] = ['name|number', 'like', "%{$params['search']}%"];
         }
 
-        if (isset($params['type_id']) && $params['type_id']){
-            $where[] = ['cate_id', '=', $params['type_id']];
+        if (isset($params['cate_id']) && $params['cate_id']){
+            $where[] = ['cate_id', '=', $params['cate_id']];
         }
         $goods_ids = SupplyGoodsModel::field('id')->where(['supply_id' => $params['supply_id']])->column('goods_id');
 
@@ -47,44 +47,8 @@ class SupplyGoods{
             $time = explode('至', $params['create_time']);
             $where[] = ['create_time', 'between time', [trim($time[0]), trim($time[1])]];
         }
-        $list = GoodsModel::with(['unit', 'type', 'cate'])->where($where)->order('create_time desc')->paginate($limit);
+        $list = GoodsModel::with(['unit', 'cate'])->where($where)->order('create_time desc')->paginate($limit);
         return $list;
-    }
-
-
-    public function getCateList(){
-        $list = CateModel::field('id,pid, name')->order(['lv','create_time' => 'desc'])->select()->toArray();
-        if(!$list) {
-            return $list;
-        }
-
-        $tree_list = $this->getCateTree($list);
-
-        return $tree_list;
-    }
-
-    // 获取树状结构分类
-    public function getCateTree($list, $pid =0){
-        $tree = [];
-        if ($pid == 0){
-//            $tree[] = [
-//                'id'       => '',
-//                'name'     => '全部',
-//                'checked'  => True,
-//                'open'     => False,
-//                'children' => [],
-//            ];
-        }
-        foreach($list as $k => $v){
-            if($v['pid'] == $pid){
-                $v['children'] = $this->getCateTree($list, $v['id']);
-                $v['open'] = False;
-                $v['checked'] = False;
-                $tree[] = $v;
-                unset($list[$k]);
-            }
-        }
-        return $tree;
     }
 
     public function add_contract($data){

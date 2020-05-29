@@ -17,7 +17,7 @@
 						<div class="layui-inline layui-form-pane">
 							<label class="layui-form-label">分类</label>
 							<div class="layui-input-inline">
-								<input type="text" id="tree" lay-filter="tree" class="layui-input" name="type_id">
+								<input type="text" id="tree" lay-filter="tree" class="layui-input" name="cate_id">
 							</div>
 						</div>
 
@@ -69,7 +69,7 @@
 			// 选择器
 			elem: '#tree',
 			// 数据
-			data: "{:url('supply_goods/ajax_goods_list')}",
+			data: "{:url('cate/ajax_get_list')}",
 			// 请求头
 			headers: {},
 			// 异步加载方式：get/post，默认get
@@ -152,7 +152,7 @@
 			,cols: [[ //表头
 				{type:'checkbox', fixed: 'left'}
 				,{field: 'id', title: 'ID', width:100, sort: true, align:'center'}
-				,{field: 'type_name', title: '分类', align:'center',sort:true}
+				,{field: 'cate_name', title: '分类', align:'center',sort:true}
 				,{field: 'name', title: '名称', align:'center',sort:true}
 				,{field: 'number', title: '编号', align:'center',sort:true}
 				,{field: '', title: '进货价', align:'center',sort:true, edit:'text'}

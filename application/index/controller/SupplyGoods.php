@@ -21,15 +21,9 @@ class SupplyGoods extends Base
     }
 
     public function goods(){
-        $data['types'] =  model('cate', 'service')->selectList(input('get.'), input('get.limit'))->toArray();
+        $data = [];
 
         return view('goods', ['data' => $data]);
-    }
-
-    public function ajax_goods_list(){
-        $res = model('supply_goods', 'service')->getCateList(input('get.'), input('get.limit'));
-        return $res;
-
     }
 
     // 获取供应商对应的材料
