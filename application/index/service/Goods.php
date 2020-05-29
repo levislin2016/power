@@ -16,11 +16,9 @@ class Goods{
             $where[] = ['name|number', 'like', "%{$params['search']}%"];
         }
 
-        if (isset($params['cate']) && $params['cate']){
-            $where[] = ['cate', '=', $params['cate']];
+        if (isset($params['cate_id']) && $params['cate_id']){
+            $where[] = ['cate_id', '=', $params['cate_id']];
         }
-
-
 
         if (isset($params['create_time']) && $params['create_time']){
             $time = explode('至', $params['create_time']);
