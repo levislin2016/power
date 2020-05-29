@@ -75,7 +75,8 @@
 					return false;
 				}
 				layer.msg(data.msg, {icon: 1, shade: 0.1, time: 1000}, function () {
-					parent.refresh();
+					window.parent.table_reload();
+					window.parent.layer.closeAll();
 				});
 			});
 

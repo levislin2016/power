@@ -85,16 +85,16 @@ class Cate extends Base
         $data['pid'] = $id;
         $cateService = new CateService();
 
-        $find = CateModel::where('name', '=',$data['name'])->value('id');
-        if($find){
-            throw new BaseException(
-                [
-                    'msg' => '该分类已存在！',
-                    'errorCode' => 30016
-                ]);
-        }
+//        $find = CateModel::where('name', '=',$data['name'])->value('id');
+//        if($find){
+//            throw new BaseException(
+//                [
+//                    'msg' => '该分类已存在！',
+//                    'errorCode' => 30016
+//                ]);
+//        }
         $res = $cateService->son_add($data);
-        return $res;
+        return json($res);
 
     }
 
