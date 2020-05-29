@@ -21,8 +21,7 @@ class SupplyGoods extends Base
     }
 
     public function goods(){
-        $data['type'] = Type::all();
-//        $data['types'] =  model('cate', 'service')->selectList(input('get.'), input('get.limit'))->toArray();
+        $data['types'] =  model('cate', 'service')->selectList(input('get.'), input('get.limit'))->toArray();
 
         return view('goods', ['data' => $data]);
     }
