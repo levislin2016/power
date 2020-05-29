@@ -23,9 +23,4 @@ class Goods extends Base{
         return $this->hasOne('Unit', 'id', 'unit_id')->bind(['unit_name' => 'name',]);
     }
 
-    public function type(){
-        return $this->hasOne('Type', 'id', 'type_id')->bind(['type_name' => 'name',]);
     }
-
-
-}

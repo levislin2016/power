@@ -24,8 +24,8 @@ class Need{
             $where[] = ['project_id', '=', $params['project_id']];
         }
 
-        if (isset($params['type']) && $params['type']){
-            $where[] = ['type', '=', $params['type']];
+        if (isset($params['cate_id']) && $params['cate_id']){
+            $where[] = ['cate_id', '=', $params['cate_id']];
         }
 
         if (isset($params['status']) && $params['status']){
@@ -52,7 +52,7 @@ class Need{
             $where[] = ['create_time', 'between time', [trim($time[0]), trim($time[1])]];
         }
 
-        $list = NeedModel::hasWhere('goods', $hasWhere)->with(['goods' => ['unit', 'type'], 'project'])->where($where)->order('create_time desc')->paginate($limit);
+        $list = NeedModel::hasWhere('goods', $hasWhere)->with(['goods' => ['unit', 'cate'], 'project'])->where($where)->order('create_time desc')->paginate($limit);
         return $list;
     }
 

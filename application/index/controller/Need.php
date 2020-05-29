@@ -3,7 +3,7 @@ namespace app\index\controller;
 
 use app\index\service\Need as NeedService;
 use app\index\model\Need as NeedModel;
-use app\index\model\Type as TypeModel;
+use app\index\model\Cate as CateModel;
 use app\index\validate\NeedValidate;
 
 class Need extends Base
@@ -25,7 +25,7 @@ class Need extends Base
 
     // 显示材料列表
     public function goods(){
-        $data['type'] = TypeModel::all();
+        $data = [];
         return view('goods', ['data' => $data]);
     }
 

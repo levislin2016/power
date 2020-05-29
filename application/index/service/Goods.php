@@ -16,8 +16,8 @@ class Goods{
             $where[] = ['name|number', 'like', "%{$params['search']}%"];
         }
 
-        if (isset($params['type_id']) && $params['type_id']){
-            $where[] = ['type_id', '=', $params['type_id']];
+        if (isset($params['cate']) && $params['cate']){
+            $where[] = ['cate', '=', $params['cate']];
         }
 
 
@@ -27,7 +27,7 @@ class Goods{
             $where[] = ['create_time', 'between time', [trim($time[0]), trim($time[1])]];
         }
 
-        $list = GoodsModel::with(['unit', 'type', 'cate'])->where($where)->order('create_time desc')->paginate($limit);
+        $list = GoodsModel::with(['unit', 'cate'])->where($where)->order('create_time desc')->paginate($limit);
         return $list;
     }
 
