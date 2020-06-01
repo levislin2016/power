@@ -112,13 +112,16 @@
 
 	<script type="text/html" id="toolbar">
 		<div class="layui-btn-container">
+			{{# if(d.status != '已作废'){ }}
+				{{# if(d.status == '待确认'){ }}
+				<a class="layui-btn layui-btn-sm layui-bg-blue" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>采购</a>
+				{{# } }}
 
-			<a class="layui-btn layui-btn-sm layui-bg-blue" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>采购</a>
-			<a class="layui-btn layui-btn-sm layui-bg-blue" lay-event="list"><i class="layui-icon layui-icon-list"></i>清单</a>
-			{{# if(d.status == '采购中'){ }}
-			<a class="layui-btn layui-btn-sm layui-bg-cyan" lay-event="stock"><i class="layui-icon layui-icon-list"></i>入库</a>
-			<a class="layui-btn layui-btn-sm layui-bg-cyan" lay-event="stock_info"><i class="layui-icon layui-icon-form"></i>入库记录</a>
+				{{# if(d.status != '待确认'){ }}
+				<a class="layui-btn layui-btn-sm layui-bg-green" lay-event="list"><i class="layui-icon layui-icon-list"></i>清单</a>
+				{{# } }}
 			{{# } }}
+
 
 			{{# if(d.status == '待确认'){ }}
 			<button class="layui-btn layui-btn-sm layui-bg-gray" lay-event="cancel"><i class="layui-icon layui-icon-close-fill"></i>作废</button>

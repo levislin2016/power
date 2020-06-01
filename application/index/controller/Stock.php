@@ -1,10 +1,8 @@
 <?php
 namespace app\index\controller;
 
-use app\index\service\StockInfo as StockService;
-use app\index\model\StockInfo as StockModel;
-use app\lib\exception\BaseException;
-use app\index\validate\StockValidate;
+use app\index\model\Store as StoreModel;
+use think\Validate;
 
 class Stock extends Base
 {
@@ -12,58 +10,63 @@ class Stock extends Base
         'checkLogoin'
     ];
 
+    // 显示采购入库
     public function index(){
-        $params = input('get.');
-        $list = (new StockService)->select_list($params);
-        //dump($list->toArray());
-    	$this->assign('list', $list);
-        return $this->fetch();
+        $data['store'] = StoreModel::all();
+        return view('index', ['data' => $data]);
     }
 
-    public function add(){ 
-        $id = input('get.id', '');
-        if($id){
-            $list = StockModel::get($id);
-            if(!$list){ 
-                throw new BaseException(
-                [
-                    'msg' => '非法错误，请重试！',
-                    'errorCode' => 80001
-                ]);
-            }
-            $this->assign('list', $list);
+    // 进行采购入库
+    public function ajax_stock_in(){
+        $list = model('stock', 'service')->in(input('param.'));
+        return returnJson($list['data'], $list['code'], $list['msg']);
+    }
+
+    // 修改 采购材料的数量
+    public function ajax_check_buyInfo(){
+        $list = model('buyInfo', 'service')->check(input('post.'));
+
+        return returnJson($list['data'], $list['code'], $list['msg']);
+    }
+
+    // 显示采购入库的历史记录
+    public function stock_list(){
+        // 获取入库类别
+        $data['type'] = config('extra.stock_type');
+        return view('stock_list', ['data' => $data]);
+    }
+
+    // 获取入库单
+    public function ajax_get_stock(){
+        $list = model('stock', 'service')->getList(input('get.'), input('get.limit'))->toArray();
+        return returnJson($list, 200, '获取成功');
+    }
+
+    // 显示采购入库的详情
+    public function stock_info(){
+        $data = [];
+        return view('stock_info', ['data' => $data]);
+    }
+
+    // 获取入库单详情
+    public function ajax_get_stock_info(){
+        $list = model('stockInfo', 'service')->getList(input('get.'), input('get.limit'))->toArray();
+        return returnJson($list, 200, '获取成功');
+    }
+
+    // 检查是否为正整数
+    public function ajax_check_num(){
+        $validate = Validate::make([
+            'stock_num'  => 'float|>=:0',
+        ]);
+
+        if (!$validate->check(input('post.'))) {
+            return returnJson('', 201, '请输入不含负号、特殊符号、小于0 的数字');
         }
-        return $this->fetch();
-    }
 
-    public function save(){ 
-        $id = input('param.id', '');
-        $validate = new StockValidate();
-        $validate->goCheck();
-        $data = $validate->getDataByRule(input('post.'));
-        $stockService = new StockService();
-        if($id){ 
-            $res = $stockService->save_stock($id, $data);
-        }else{ 
-            $res = $stockService->add_stock($data);
-        }
-        return $res;
-    }
+        $stock_num = round(input('post.stock_num'), 2);
 
-    public function del($ids){
-    	$res = StockModel::destroy(rtrim($ids, ','));
-    		
-    	if(!$res){ 
-    		throw new BaseException(
-	            [
-	                'msg' => '删除仓库错误！',
-	                'errorCode' => 80006
-	            ]);
-    	}
-
-    	return [
-                'msg' => '操作成功',
-            ];
+        return returnJson($stock_num, 200, '成功');
     }
 
 

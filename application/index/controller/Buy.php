@@ -177,34 +177,4 @@ class Buy extends Base{
         return returnJson('', 200, '成功');
     }
 
-    // 显示采购入库的历史记录
-    public function stock_list(){
-        // 获取入库类别
-        $data['type'] = config('extra.stock_type');
-        return view('stock_list', ['data' => $data]);
-    }
-
-    // 获取入库单
-    public function ajax_get_stock(){
-        $list = model('stock', 'service')->getList(input('get.'), input('get.limit'))->toArray();
-        return returnJson($list, 200, '获取成功');
-    }
-
-    // 显示采购入库的详情
-    public function stock_info(){
-        $data = [];
-        return view('stock_info', ['data' => $data]);
-    }
-
-    // 获取入库单详情
-    public function ajax_get_stock_info(){
-        $list = model('stockInfo', 'service')->getList(input('get.'), input('get.limit'))->toArray();
-        return returnJson($list, 200, '获取成功');
-    }
-
-
-
-
-
-
 }

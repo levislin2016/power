@@ -3,9 +3,8 @@ namespace app\index\service;
 
 use app\index\model\Buy as BuyModel;
 use app\index\model\BuyInfo as BuyInfoModel;
+use app\index\model\ContractSupply as ContractSupplyModel;
 use app\index\model\Project as ProjectModel;
-use app\index\model\Supply as SupplyModel;
-use app\index\model\Need as NeedModel;
 use think\Db;
 use think\Validate;
 
@@ -32,6 +31,17 @@ class BuyInfo{
             $where[] = ['buy_id', '=', $params['buy_id']];
         }
 
+        if (isset($params['supply_number']) && $params['supply_number']){
+            if ($params['supply_number'] == 'none'){
+                $where[] = ['contract_supply_id', '=', 'none'];
+            }else{
+                $ret = ContractSupplyModel::field('id')->get(['number' => $params['supply_number']]);
+                if ($ret){
+                    $where[] = ['contract_supply_id', '=', $ret['id']];
+                }
+            }
+        }
+
         if (isset($params['type']) && $params['type']){
             $where[] = ['type', '=', $params['type']];
         }
@@ -41,7 +51,7 @@ class BuyInfo{
             $where[] = ['Need.create_time', 'between time', [trim($time[0]), trim($time[1])]];
         }
 
-        $list = BuyInfoModel::hasWhere('goods', $hasWhere)->with(['goods' => ['unit', 'cate'], 'need', 'supply', 'project'])->where($where)->order('create_time desc')->paginate($limit);
+        $list = BuyInfoModel::hasWhere('goods', $hasWhere)->with(['goods' => ['unit', 'cate'], 'need', 'supply', 'project'])->where($where)->order('stock_status asc,create_time desc')->paginate($limit);
         return $list;
     }
 

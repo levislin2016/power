@@ -3,8 +3,15 @@ namespace app\index\model;
 
 class BuyInfo extends Base{
     protected $insert = [
-        'num_ok' => 0
+        'num_ok'       => 0,
+        'stock_status' => 1,
     ];
+
+    // 入库状态
+    public function getStockStatusAttr($value,$data){
+        $statusName = config('extra.stock_status');
+        return $statusName[$data['stock_status']];
+    }
 
     // [修改器] 对数字进行保留两位小数
     public function setNumAttr($value,$data)
