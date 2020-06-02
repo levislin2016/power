@@ -247,6 +247,16 @@
 					error = 0;
 					$.each(table.cache.table,function(index,item){
 						var index_num = index+1;
+						// 判断价格是否填写
+						if (item.type == 1 && (item.price == "0.000" || item.price == null)){
+							$('tr[data-index='+ index +']').find("[data-field=price]").css('border-bottom-color', 'red');
+							error += 1;
+							layer.msg('序号：' + index_num + ' ' + item.goods_name +'<br>价格未填写！',function(){
+							});
+							return false;
+						}else{
+							$('tr[data-index='+ index +']').find("[data-field=price]").css('border-bottom-color', '#e6e6e6');
+						}
 						// 判断供货商是否选择
 						if (item.supply_id == null){
 							$('tr[data-index='+ index +']').find("[data-field=supply_name]").css('border-bottom-color', 'red');
@@ -269,16 +279,7 @@
 						}else{
 							$('tr[data-index='+ index +']').find("[data-field=num]").css('border-bottom-color', '#e6e6e6');
 						}
-						// 判断价格是否填写
-						if (item.type == 1 && (item.price == "0.000" || item.price == null)){
-							$('tr[data-index='+ index +']').find("[data-field=price]").css('border-bottom-color', 'red');
-							error += 1;
-							layer.msg('序号：' + index_num + ' ' + item.goods_name +'<br>价格未填写！',function(){
-							});
-							return false;
-						}else{
-							$('tr[data-index='+ index +']').find("[data-field=price]").css('border-bottom-color', '#e6e6e6');
-						}
+
 					});
 					if (error > 0){
 						layer.closeAll('loading');
@@ -358,6 +359,12 @@
 						closeBtn:0,
 						anim: 5,
 						isOutAnim:true,
+						end:function (layero, index) {
+							var body = layer.getChildFrame('body', index);
+							var supply_name = body.find('#supply_name').val();
+							console.log(body.find('#supply_name').val());
+							obj.update({'supply_name':supply_name})
+						}
 					});
 					break;
 

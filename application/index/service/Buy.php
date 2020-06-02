@@ -137,6 +137,11 @@ class Buy{
                 }
             }
         }
+        // 获取采购的工程的ids
+        $buy_info_list = BuyInfoModel::field('project_id')->distinct(true)->select(['buy_id' => $params['buy_id']])->toArray();
+        dump($buy_info_list);die;
+
+
 
         // 修改采购单状态为 [采购中]
         $ret = BuyModel::update([

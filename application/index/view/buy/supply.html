@@ -16,6 +16,8 @@
 
 		<!--- 头部搜索框 --->
 		<table id="table" lay-filter="table"></table>
+
+		<input id="supply_name" type="hidden">
 </div>
 {include file="public/script" /}
 
@@ -67,7 +69,10 @@
 			};
 			$.post("{:url('buy/ajax_edit_buyInfo')}",form_data,function (ret) {
 				if (ret.code == 200){
-					window.parent.table_reload();
+					$('#supply_name').val(obj.data.supply_name);
+					console.log($('#supply_name').val())
+					console.log(2)
+					// window.parent.table_reload();
 					window.parent.layer.closeAll();
 				}else{
 					window.parent.layer.msg(ret.msg,function(){

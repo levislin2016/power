@@ -101,7 +101,7 @@
             });
         };
 
-        var url = "{:url('buy/ajax_get_stock_info')}";
+        var url = "{:url('stock/ajax_get_stock_info')}";
         //第一个实例
         table.render({
             elem: '#table'
@@ -118,14 +118,14 @@
             }
             ,cols: [[ //表头
                 {type:'numbers', title: '序号', align:'center', fixed:'left', sort:true,width:90}
+                ,{field: 'supply_name', title: '供应商', align:'center'}
                 ,{field: 'project_name', title: '工程名称', align:'center',sort:true}
-                ,{field: 'type_name', title: '分类', align:'center',sort:true}
+                ,{field: 'cate_name', title: '分类', align:'center',sort:true}
                 ,{field: 'goods_name', title: '名称', align:'center',sort:true}
                 ,{field: 'goods_number', title: '编号', align:'center',sort:true}
                 ,{field: 'num', title: '入库数量', align:'center',sort:true, width:120}
-                ,{field: 'unit_name', title: '单位', align:'center', width:100}
                 ,{field: 'price', title: '价格', sort:true, align:'center', width:100}
-                ,{field: 'supply_name', title: '供应商', align:'center'}
+                ,{field: 'unit_name', title: '单位', align:'center', width:100}
             ]],parseData: function(res){ //res 即为原始返回的数据
                 return {
                     "code": res.code, //解析接口状态

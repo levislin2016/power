@@ -225,7 +225,8 @@
 			$.post("{:url('need/ajax_add')}", form_data, function (ret) {
 				layer.closeAll('loading');
 				if(ret.code == 200){
-					layer.msg(ret.msg)
+					layer.msg(ret.msg);
+					window.parent.table_reload();
 				}else{
 					layer.msg(ret.msg, function () {
 

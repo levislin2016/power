@@ -34,7 +34,7 @@
                             </div>
                         </div>
 
-                        <input type="hidden" name="buy_id" value="{$Request.get.id}"/>
+<!--                        <input type="hidden" name="buy_id" value="{$Request.get.id}"/>-->
 
                         <div class="layui-inline">
                             <div class="layui-input-inline">
@@ -46,7 +46,6 @@
                 </form>
 
             </div>
-
 
 
         </div>
@@ -67,6 +66,19 @@
     <div class="layui-btn-container">
         <button class="layui-btn layui-btn-sm layui-bg-green" lay-event="info"><i class="layui-icon layui-icon-search"></i>查看明细</button>
     </div>
+</script>
+
+<script type="text/html" id="template_status">
+    {{# if(d.type == '采购入库'){ }}
+    <span class="layui-badge layui-bg-green">{{d.type}}</span>
+    {{# } }}
+
+    {{# if(d.type == '盘库入库'){ }}
+    <span class="layui-badge layui-bg-cyan">{{d.type}}</span>
+    {{# } }}
+
+
+
 </script>
 
 <script>
@@ -126,16 +138,16 @@
             });
         };
 
-        var url = "{:url('buy/ajax_get_stock')}";
+        var url = "{:url('stock/ajax_get_stock')}";
         //第一个实例
         table.render({
             elem: '#table'
             ,id:'table'
             ,url: url//数据接口
-            ,page: false //开启分页
-            ,toolbar:false
-            ,limit:100000
-            // ,height:'full-100'
+            ,page: true //开启分页
+            ,toolbar:true
+            ,limit:20
+            ,height:'full-100'
             ,loading:true
             ,where:form.val("search-form")
             ,text:{
@@ -148,7 +160,7 @@
             ,cols: [[ //表头
                 {field: 'id', title: 'ID', width:100, sort: true, fixed: 'left', align:'center'}
                 ,{field: 'number', title: '入购单编号', align:'center'}
-                ,{field: 'type', title: '入库类型', sort:true, templet:'#template_status', align:'center'}
+                ,{field: 'type', title: '入库类型', sort:true, templet:'#template_status', align:'center', width:120}
                 ,{field: 'create_time', title: '创建时间', sort:true, align:'center'}
                 ,{field: 'number', title: '操作', templet:'#toolbar', fixed:'right', align:'center'}
             ]],parseData: function(res){ //res 即为原始返回的数据
@@ -178,15 +190,12 @@
                 case 'info':
                     layer.open({
                         type : 2,
-                        content:"{:url('buy/stock_info')}" + '?id=' + obj.data.id,
+                        content:"{:url('stock/stock_info')}" + '?id=' + obj.data.id,
                         title:['入购单编号：' + obj.data.number + '   创建时间：' + obj.data.create_time, 'font-weight:bold'],
                         btnAlign: 'c',
                         area: ['100%', '100%'],
                         anim: 5,
                         isOutAnim:true,
-                        end:function(){
-                            table_reload();
-                        }
                     });
                 break;
 
