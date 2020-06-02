@@ -36,7 +36,7 @@
                     <div class="layui-inline layui-form-pane">
                         <label class="layui-form-label">供应商合同</label>
                         <div class="layui-input-inline">
-                            <input type="text" name="supply_number" value="S2020052948575648" placeholder="请输入供应商合同编号..." autocomplete="off" class="layui-input search"/>
+                            <input type="text" name="supply_number" placeholder="请输入供应商合同编号..." autocomplete="off" class="layui-input search"/>
                         </div>
                     </div>
 
@@ -213,28 +213,55 @@
                 ,data = obj.data //得到所在行所有键值
                 ,field = obj.field; //得到字段
 
-            var form_data = obj.data;
             var oldvalue = $(this).prev().text();
 
-            $.post("{:url('stock/ajax_check_num')}", form_data, function(ret){
-                var objTemp = {};
-                $(obj.tr).find("[data-field="+ field +"] input").val(ret.data);
-                if (ret.code == 200){
-                    $(obj.tr).find("[data-field="+ field +"]").css('border-bottom-color', '#e6e6e6');
-                    objTemp[field] = ret.data;
-                    layer.msg('['+ data.goods_name +'] <br>更改为：'+ ret.data,{offset:'t'});
-                }else{
-                    $(obj.tr).find("[data-field="+ field +"]").css('border-bottom-color', 'red');
-
-                    objTemp[field] = oldvalue;
-                    layer.msg(ret.msg,function () {
-
-                    });
-                }
-                obj.update(objTemp);
-
-            });
+            checkNum(obj, field, value, oldvalue)
         });
+
+        // 校验数据格式
+        function checkNum(obj,field,value, oldvalue){
+            var num_no = parseFloat(obj.data.num) - parseFloat(obj.data.num_ok);
+            num_no = num_no.toFixed(2);
+            value = parseFloat(value).toFixed(2);
+
+            var objTemp = {};
+            objTemp[field] = oldvalue;
+
+            // 判断输入的数字的格式
+            var reg = new RegExp("^(([0-9]+\\.[0-9]*[1-9][0-9]*)|([0-9]*[1-9][0-9]*\\.[0-9]+)|([0-9]*[1-9][0-9]*))$");
+            if (!reg.test(value)){
+
+                setTimeout(function () {
+                    // 小于0回滚再次获得焦点打开
+                    obj.update(objTemp);
+                    $(obj.tr).find("[data-field="+ field +"]").css('border-bottom-color', 'red');
+                    layer.msg('请填写正确的数字<br>（不含负数，自动保留两位小数）！', {anim: 6});
+                }, 0);
+                return false
+            }
+
+            // 判断入库数量的大小
+            if (parseFloat(value) > parseFloat(num_no)) {
+                // 边框变红
+                $(obj.tr).find("[data-field="+ field +"]").css('border-bottom-color', 'red');
+                // 弹出错误信息
+                layer.msg(obj.data.goods_name + '<br>入库数量必须小于未入库数量：' + num_no + '！', {anim: 6});
+                setTimeout(function () {
+                    // 小于0回滚再次获得焦点打开
+                    obj.update(objTemp);
+                }, 0);
+                return false
+            }
+
+            $(obj.tr).find("[data-field="+ field +"]").css('border-bottom-color', '#e6e6e6');
+
+            setTimeout(function () {
+                objTemp[field] = value;
+                obj.update(objTemp);
+            }, 0);
+
+            return true;
+        }
 
         // 监听工具条
         table.on('toolbar(table)', function(obj) {
@@ -242,14 +269,16 @@
                 case 'stock_sure':
                     error = 0;
                     layui.each(table.cache.table,function(index,item){
+                        if (item.stock_status == '已入库'){
+                            return true;
+                        }
                         // 判断供货商是否选择
-                        var num_no = item.num - item.num_ok;
+                        var num_no = parseFloat(item.num) - parseFloat(item.num_ok);
                         num_no = num_no.toFixed(2);
-                        if (item.stock_num > num_no){
-                            $('tr[data-index='+ index +']').find("[data-field=stock_num]").css('border-bottom-color', 'red');
-                            layer.msg('入库失败！<br>'+ item.goods_name +'<br>入库数量必须小于未入库数量：'+ num_no +'！',function(){
 
-                            });
+                        if (parseFloat(item.stock_num) > parseFloat(num_no)){
+                            $('tr[data-index='+ index +']').find("[data-field=stock_num]").css('border-bottom-color', 'red');
+                            layer.msg('入库失败！<br>'+ item.goods_name +'<br>入库数量必须小于未入库数量：'+ num_no +'！', {anim: 6});
                             error += 1;
                             return false;
                         }else{
@@ -258,7 +287,6 @@
                     });
                     if (error > 0){
                         layer.closeAll('loading');
-                        // layer.msg('入库失败！请确认填写是否正确！');
                         return false;
                     }
                     var form_data = {
@@ -273,9 +301,7 @@
                             layer.msg(ret.msg);
                             table_reload();
                         }else{
-                            layer.msg(ret.msg,function () {
-
-                            });
+                            layer.msg(ret.msg,{anim: 6});
                         }
                     });
                 break;
@@ -294,8 +320,22 @@
                         layer.msg('该材料已完成入库！',function () {
 
                         });
+                        $(obj.tr).find('input').remove();
+
                         return false;
                     }
+
+                    if (obj.data.stock_num == 0 || obj.data.stock_num == null){
+                        var num_no = obj.data.num - obj.data.num_ok;
+                        num_no = num_no.toFixed(2);
+                        $(obj.tr).find("input").val(num_no);
+                        setTimeout(function () {
+                            // 小于0回滚再次获得焦点打开
+                            obj.update({'stock_num' : num_no});
+                        }, 100);
+                    }
+                    $(obj.tr).find("input").select();
+
                     break;
                 case 'supply':
 

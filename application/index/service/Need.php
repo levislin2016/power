@@ -28,6 +28,10 @@ class Need{
             $where[] = ['cate_id', '=', $params['cate_id']];
         }
 
+        if (isset($params['type']) && $params['type']){
+            $where[] = ['type', '=', $params['type']];
+        }
+
         if (isset($params['buy_status']) && $params['buy_status']){
             $where[] = ['buy_status', '=', $params['buy_status']];
         }

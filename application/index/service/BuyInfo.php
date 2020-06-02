@@ -40,6 +40,8 @@ class BuyInfo{
                     $where[] = ['contract_supply_id', '=', $ret['id']];
                 }
             }
+        }else{
+            $where[] = ['contract_supply_id', '=', 'none'];
         }
 
         if (isset($params['type']) && $params['type']){

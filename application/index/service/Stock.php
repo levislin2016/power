@@ -39,7 +39,8 @@ class Stock{
         if (!isset($params['json_data']) || !$params['json_data']){
             return returnInfo('', 201, '请先搜索需要入库的供货商合同！');
         }
-        $buy = BuyModel::field('status')->get($params['json_data'][0]['buy_id']);
+        $buy_id = $params['json_data'][0]['buy_id'];
+        $buy = BuyModel::field('status')->get($buy_id);
         if ($buy->getData('status') == 3){
             return returnInfo('', 201, '该合同已全部完成入库，请勿重复入库！');
         }
@@ -49,7 +50,6 @@ class Stock{
             return returnInfo('', 201, $validate->getError());
         }
         Db::startTrans();
-
 
         // 判断是否有填写采购数量
         $stock_data = [];
@@ -92,10 +92,11 @@ class Stock{
 
         // 生成入库单
         $stock = StockModel::create([
-            'buy_id' => $params['buy_id'],
+            'buy_id' => $buy_id,
             'number' => create_order_no('B'),
             'type'   => 1,
         ]);
+
         if (!$stock){
             Db::rollback();
             return returnInfo('', 201, '生成入库单失败！');
@@ -144,7 +145,7 @@ class Stock{
         }
 
         // 判断采购单是否全部采购完成，修改采购单状态
-        $buy_status = BuyInfoModel::field('id')->where(['buy_id' => $params['buy_id'], 'stock_status' => 1])->find();
+        $buy_status = BuyInfoModel::field('id')->where(['buy_id' => $buy_id, 'stock_status' => 1])->find();
         if (!$buy_status){
             $ret = BuyModel::update([
                 'id'     => $stock_data[0]['buy_id'],
@@ -155,7 +156,6 @@ class Stock{
                 return returnInfo('', 210, "材料入库失败！");
             }
         }
-
 
         Db::commit();
 

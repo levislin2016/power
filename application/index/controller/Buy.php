@@ -85,6 +85,11 @@ class Buy extends Base{
     // 获取采购工程的采购材料
     public function ajax_get_buyinfo_list(){
         $list = model('buyInfo', 'service')->getList(input('get.'), input('get.limit'));
+        if ($list){
+            foreach ($list as $k => $v){
+                $list[$k]['stock_num'] = 0;
+            }
+        }
         return returnJson($list, 200, '获取成功');
     }
 
