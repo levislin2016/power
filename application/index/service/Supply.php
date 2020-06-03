@@ -33,13 +33,16 @@ class Supply{
         $list = ContractSupplyModel::with(['supply'])->where($where)->whereOr($whereOr)->order('create_time desc')->paginate($limit);
         if ($list){
             foreach ($list as $k => $v){
-                $list[$k]['search_show'] = "时间：{$v['create_time']} 编号：{$v['number']} 供应商：{$v['supply_name']}";
+                if ($v['status'] == '未完成'){
+                    $list[$k]['status_dom'] = "<span class=\"layui-badge layui-bg-gray\">{$v['status']}</span>";
+                }else{
+                    $list[$k]['status_dom'] = "<span class=\"layui-badge layui-bg-green\">{$v['status']}</span>";
+                }
+                $list[$k]['search_show'] = "日期：{$v['create_time']} 编号：{$v['number']} 供应商：{$v['supply_name']}";
             }
         }
         return $list;
     }
-
-
 
     public function add_contract($data){
         $find = SupplyModel::field('id')->where(['name' => $data['name']])->find();

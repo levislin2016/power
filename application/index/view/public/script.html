@@ -166,6 +166,9 @@
                 show: true,
                 list: ['CLEAR']
             },
+            template({ item, sels, name, value }){
+                return name  + '<span style="position: absolute; right: 10px; color: #8799a3">'+item.status_dom+'</span>'
+            },
             style:{
                 'margin':'0px'
             },

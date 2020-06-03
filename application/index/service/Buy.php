@@ -120,7 +120,7 @@ class Buy{
             $contract = ContractSupplyModel::create([
                 'number'    => create_order_no('S'),
                 'buy_id'    => $params['buy_id'],
-                'supply_id' => $k
+                'supply_id' => $k,
             ]);
             if (!$contract){
                 Db::rollback();

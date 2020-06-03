@@ -1,6 +1,7 @@
 <?php
 namespace app\index\service;
 
+use app\index\model\ContractSupply as ContractSupplyModel;
 use app\index\model\Stock as StockModel;
 use app\index\model\StockInfo as StockInfoModel;
 use app\index\model\Need as NeedModel;
@@ -96,7 +97,6 @@ class Stock{
             'number' => create_order_no('B'),
             'type'   => 1,
         ]);
-
         if (!$stock){
             Db::rollback();
             return returnInfo('', 201, '生成入库单失败！');
@@ -142,6 +142,10 @@ class Stock{
                 'stock_status' => $v['stock_status']
             ]);
 
+            if (!$ret){
+                Db::rollback();
+                return returnInfo('', 211, "材料入库失败！");
+            }
         }
 
         // 判断采购单是否全部采购完成，修改采购单状态
@@ -156,6 +160,33 @@ class Stock{
                 return returnInfo('', 210, "材料入库失败！");
             }
         }
+
+        // 判断该采购单下对应的合同是否采购完成
+        $contract_ids = ContractSupplyModel::field('id')->where(['buy_id' => $buy_id])->distinct(true)->all()->toArray();
+        if ($contract_ids){
+            $contract_ids = array_column($contract_ids, 'id');
+            // 已经完成采购的供应商合同id
+            $ok_ids = [];
+            foreach ($contract_ids as $k => $v){
+                // 如果对应的供应商合同id查询查不到 采购中 说明已完成
+                $ret = BuyInfoModel::field('id')->where(['contract_supply_id' => $v, 'stock_status' => 1])->find();
+                if (!$ret){
+                    $ok_ids[] = $v;
+                }
+
+            }
+            // 修改对应的供应商合同已完成
+            if ($ok_ids){
+                $ret = ContractSupplyModel::where('id', 'in', $ok_ids)->update([
+                    'status' => 2,
+                ]);
+                if (!$ret){
+                    Db::rollback();
+                    return returnInfo('', 212, "材料入库失败！");
+                }
+            }
+        }
+
 
         Db::commit();
 
