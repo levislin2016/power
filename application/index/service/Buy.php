@@ -40,12 +40,6 @@ class Buy{
 
         $list = BuyModel::where($where)->order('create_time desc')->paginate($limit);
 
-
-//        if (isset($params['search2']) && $params['search2']) {
-//            $list = BuyModel::hasWhere('buyProject', $hasWhere)->with(['buyProject' => ['project2']])->where($where)->order('create_time desc')->paginate($limit);
-//        }else{
-//            $list = BuyModel::with(['buyProject' => ['project2']])->where($where)->order('create_time desc')->paginate($limit);
-//        }
         return $list;
     }
 
@@ -138,15 +132,15 @@ class Buy{
             }
         }
         // 获取采购的工程的ids
-        $buy_info_list = BuyInfoModel::field('project_id')->distinct(true)->select(['buy_id' => $params['buy_id']])->toArray();
-        dump($buy_info_list);die;
-
-
+        $buy_info_list = BuyInfoModel::field('project_id')->distinct(true)->all(['buy_id' => $params['buy_id']])->toArray();
+        $project_ids = array_column($buy_info_list, 'project_id');
+        $project_ids = implode(',', $project_ids);
 
         // 修改采购单状态为 [采购中]
         $ret = BuyModel::update([
-            'id'     => $params['buy_id'],
-            'status' => 2,
+            'id'          => $params['buy_id'],
+            'project_ids' => $project_ids,
+            'status'      => 2,
         ]);
         if (!$ret){
             Db::rollback();

@@ -26,7 +26,6 @@ class BuyInfo extends Base{
     }
 
 
-
     public function goods(){
         return $this->hasOne('Goods', 'id', 'goods_id')->bind([
             'goods_number' => 'number',

@@ -186,6 +186,12 @@
 				,{field: 'need_type', title: '类型', align:'center',sort:true, templet:"#template_type", width:80}
 				,{field: 'number', title: '操作', templet:'#toolbar', fixed:'right', align:'center', width:100}
 			]],parseData: function(res){ //res 即为原始返回的数据
+				// 解决由于 supply_name 没有值而导致dom无法修改的情况，初始化自动覆盖
+				layui.each(res.data.data,function (index, item) {
+					if (item.supply_name == null){
+						res.data.data[index]['supply_name'] = '';
+					}
+				});
 				return {
 					"code": res.code, //解析接口状态
 					"msg": res.msg, //解析提示文本
@@ -361,11 +367,12 @@
 						anim: 5,
 						isOutAnim:true,
 						end:function (layero, index) {
-							console.log(supply_name)
 							if (supply_name != 0){
-								console.log(supply_name)
-								obj.update({'supply_name':supply_name})
-								supply_name = 0
+								setTimeout(function () {
+									obj.update({'supply_name':supply_name, 'supply_id':supply_name});
+									layer.msg('[' + obj.data.goods_name + '] 供应商修改为：' + supply_name);
+									supply_name = 0
+								}, 0)
 							}
 						}
 					});
