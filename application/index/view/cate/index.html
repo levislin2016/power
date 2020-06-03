@@ -9,9 +9,9 @@
 
 					<div class="layui-form-item">
 						<div class="layui-inline layui-form-pane">
-							<label class="layui-form-label">单位名称</label>
+							<label class="layui-form-label">分类名称</label>
 							<div class="layui-input-inline">
-								<input type="text" name="search" placeholder="请输入单位名称..." autocomplete="off" class="layui-input search"/>
+								<input type="text" name="search" placeholder="请输入分类名称..." autocomplete="off" class="layui-input search"/>
 							</div>
 						</div>
 
@@ -59,7 +59,7 @@
 	layui.use(['form', 'element', 'laydate', 'table', 'treeTable', 'jquery'], function() {
 		var $ = layui.jquery;
 		var treeTable = layui.treeTable;
-		var url = "{:url('cate/ajax_get_list')}";
+		var url = "{:url('cate/ajax_get_list1')}";
 		var form = layui.form;
 
 		form.on('submit(search-form)',function (data) {

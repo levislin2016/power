@@ -22,6 +22,12 @@ class Cate extends Base
         return returnJson($list, 200, '获取成功！');
     }
 
+    // 获取材料对应的供应商列表
+    public function ajax_get_list1(){
+        $list = model('cate', 'service')->getList();
+        return returnJson($list, 0, '获取成功！');
+    }
+
     public function add(){ 
         $id = input('get.id', '');
         if($id){
