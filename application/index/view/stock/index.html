@@ -35,29 +35,17 @@
                 <div class="layui-form-item">
                     <div class="layui-inline layui-form-pane">
                         <label class="layui-form-label">供应商合同</label>
-                        <div class="layui-input-inline">
-                            <input type="text" name="supply_number" placeholder="请输入供应商合同编号..." autocomplete="off" class="layui-input search"/>
+                        <div class="layui-input-inline" style="width: 800px">
+                            <div id="contract_supply_select"></div>
                         </div>
                     </div>
 
-<!--                    <div class="layui-inline layui-form-pane">-->
-<!--                        <label class="layui-form-label">供应商名称</label>-->
-<!--                        <div class="layui-input-inline">-->
-<!--                            <input type="text" name="supply_number" placeholder="请输入供应商名称..." autocomplete="off" class="layui-input search"/>-->
-<!--                        </div>-->
-<!--                    </div>-->
+                    <input type="hidden" name="search_type" value="contract_supply">
 
-<!--                    <div class="layui-inline layui-form-pane">-->
-<!--                        <label class="layui-form-label">采购编号</label>-->
-<!--                        <div class="layui-input-inline">-->
-<!--                            <input type="text" name="buy_number" placeholder="请输入采购单编号..." autocomplete="off" class="layui-input search"/>-->
-<!--                        </div>-->
-<!--                    </div>-->
-
-                        <div class="layui-inline layui-form-pane">
-                            <button class="layui-btn layui-bg-blue btn_search"><i class="layui-icon layui-icon-search"></i>搜索</button>
-                            <button type="reset" class="layui-btn layui-btn-normal" id="empty"  lay-submit="" lay-filter="LAY-search">重置</button>
-                        </div>
+                    <div class="layui-inline layui-form-pane">
+                        <button class="layui-btn layui-bg-blue btn_search"><i class="layui-icon layui-icon-search"></i>搜索</button>
+                        <button type="reset" class="layui-btn layui-btn-normal" id="empty"  lay-submit="" lay-filter="LAY-search">重置</button>
+                    </div>
                 </div>
 
 <!--                <div class="layui-form-item">-->
@@ -172,7 +160,7 @@
             // ,height:'full-100'
             ,loading:true
             ,where:{
-                supply_number : 'none'
+                contract_supply_id : 'none'
             }
             ,text:{
                 none:'暂无相关数据'

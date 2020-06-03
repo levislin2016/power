@@ -30,15 +30,11 @@ class BuyInfo{
         if (isset($params['buy_id']) && $params['buy_id']){
             $where[] = ['buy_id', '=', $params['buy_id']];
         }
-
-        if (isset($params['supply_number']) && $params['supply_number']){
-            if ($params['supply_number'] == 'none'){
-                $where[] = ['contract_supply_id', '=', 'none'];
+        if (isset($params['search_type']) && $params['search_type'] == 'contract_supply'){
+            if (isset($params['contract_supply_id']) && $params['contract_supply_id']){
+                $where[] = ['contract_supply_id', '=', $params['contract_supply_id']];
             }else{
-                $ret = ContractSupplyModel::field('id')->get(['number' => $params['supply_number']]);
-                if ($ret){
-                    $where[] = ['contract_supply_id', '=', $ret['id']];
-                }
+                $where[] = ['contract_supply_id', '=', 'none'];
             }
         }
 

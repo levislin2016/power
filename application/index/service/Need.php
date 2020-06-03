@@ -25,7 +25,8 @@ class Need{
         }
 
         if (isset($params['cate_id']) && $params['cate_id']){
-            $where[] = ['cate_id', '=', $params['cate_id']];
+            $ids_arr = explode(',', $params['cate_id']);
+            $where[] = ['cate_id', 'in', $ids_arr];
         }
 
         if (isset($params['type']) && $params['type']){

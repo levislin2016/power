@@ -87,20 +87,9 @@ class Cate{
     // 获取树状结构分类
     public function getCateTree($list, $pid =0){
         $tree = [];
-        if ($pid == 0){
-            $tree[] = [
-                'id'       => '',
-                'name'     => '全部',
-                'checked'  => True,
-                'open'     => False,
-                'children' => [],
-            ];
-        }
         foreach($list as $k => $v){
             if($v['pid'] == $pid){
                 $v['children'] = $this->getCateTree($list, $v['id']);
-                $v['open'] = False;
-                $v['checked'] = False;
                 $tree[] = $v;
                 unset($list[$k]);
             }

@@ -119,6 +119,7 @@
 
 
 <script>
+	var supply_name = 0;
 	layui.use(['form', 'jquery', 'element', 'laydate', 'table'], function() {
 		var form = layui.form,
 				$ = layui.jquery,
@@ -360,10 +361,12 @@
 						anim: 5,
 						isOutAnim:true,
 						end:function (layero, index) {
-							var body = layer.getChildFrame('body', index);
-							var supply_name = body.find('#supply_name').val();
-							console.log(body.find('#supply_name').val());
-							obj.update({'supply_name':supply_name})
+							console.log(supply_name)
+							if (supply_name != 0){
+								console.log(supply_name)
+								obj.update({'supply_name':supply_name})
+								supply_name = 0
+							}
 						}
 					});
 					break;

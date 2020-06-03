@@ -13,7 +13,7 @@ class Project{
         $where = [];
         $hasWhere = [];
         if (isset($params['search']) && $params['search']){
-            $where[] = ['name', 'like', "%{$params['search']}%"];
+            $where[] = ['Project.name', 'like', "%{$params['search']}%"];
         }
 
         if (isset($params['search2']) && $params['search2']){

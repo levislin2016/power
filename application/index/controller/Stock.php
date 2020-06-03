@@ -69,5 +69,11 @@ class Stock extends Base
         return returnJson($stock_num, 200, '成功');
     }
 
+    // 显示库存列表
+    public function need(){
+        $data['type'] = config('extra.buy_from');
+        return view('need', ['data' => $data]);
+    }
+
 
 }

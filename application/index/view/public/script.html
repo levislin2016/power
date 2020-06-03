@@ -8,72 +8,221 @@
         //     version: 'v1.5.10' // 插件版本号
     }).extend({
         treeSelect: 'treeSelect',
+
         //     soulTable: 'soulTable/soulTable.slim',
     });
+    var $ = layui.jquery,
+    laydate = layui.laydate;
 
-    //
-    // var form = layui.form,
-    //     $ = layui.jquery,
-    //     laydate = layui.laydate,
-    //     soulTable = layui.soulTable,
-    //     table = layui.table;
-    //
-    //
-    // // 表格刷新方法 带form数据
-    // table_reload = function(){
-    //     var where = form.val("search-form");
-    //     //执行重载
-    //     table.reload('table', {
-    //         where: where
-    //     });
-    // };
-    //
-    // //日期范围
-    // laydate.render({
-    //     elem: '#time'
-    //     ,range: '至'
-    //     ,type:'datetime'
-    //
-    // });
+    // 工程项目搜索框
+    if ($('#project_select').length > 0){
+        var project_select = xmSelect.render({
+            el: '#project_select',
+            name: 'project_id',
+            tips: '请输入工程名称',
+            radio: true,
+            autoRow: true,
+            filterable: true,
+            clickClose: true,
+            remoteSearch: true,
+            size: 'medium',
+            style:{
+                'margin':'0px'
+            },
+            toolbar: {
+                show: true,
+                list: [{
+                    name: '全部',
+                    icon: 'layui-icon layui-icon-list',
+                    method(data){
+                        project_select.setValue([]);
+                        project_select.closed();
+                        setTimeout(function () {
+                            table_reload();
+                        }, 0)
+                    }
+                }]
+            },
+            model: {
+                label: {
+                    type: 'text',
+                    block: {
+                        //最大显示数量, 0:不限制
+                        showCount: 0,
+                        //是否显示删除图标
+                        showIcon: false,
+                    }
+                },
+            },
+            prop: {
+                name: 'name',
+                value: 'id',
+            },
+            remoteMethod: function(val, cb, show){
+                //这里如果val为空, 则不触发搜索
+                if(!val){
+                    return cb([]);
+                }
+                //这里引入了一个第三方插件axios, 相当于$.ajax
+                var form_data = {
+                    search : val,
+                    limit  : 15,
+                };
+                $.get("{:url('project/ajax_get_list')}", form_data,function(ret){
+                    if (ret.code == 200){
+                        cb(ret.data.data)
+                    }else{
+                        cb([])
+                    }
+                });
+            },
+            on: function(data){
+                if (data.isAdd && data.change.length > 0){
+                    setTimeout(function () {
+                        table_reload();
+                    }, 0)
+                }
+                if (!data.isAdd){
+                    setTimeout(function () {
+                        table_reload();
+                    }, 0)
+                }
+            },
+        });
+    }
+
+    // 材料分类搜索框
+    if ($('#cate_select').length > 0) {
+        var cate_select = xmSelect.render({
+            el: '#cate_select',
+            name: 'cate_id',
+            searchTips: '请输入分类名称',
+            toolbar: {
+                show: true,
+                list: [{
+                    name: '全部',
+                    icon: 'layui-icon layui-icon-list',
+                    method(data) {
+                        cate_select.setValue([]);
+                        cate_select.closed();
+                        setTimeout(function () {
+                            table_reload();
+                        }, 0)
+                    }
+                }]
+            },
+            height: '500px',
+            model: {label: {type: 'text'}},
+            prop: {
+                name: 'name',
+                value: 'id',
+            },
+            style: {
+                'margin': '0px'
+            },
+            filterable: true,
+            // clickClose: true,
+            tree: {
+                //是否显示树状结构
+                show: true,
+                //是否展示三角图标
+                showFolderIcon: true,
+                //是否显示虚线
+                showLine: true,
+                //间距
+                indent: 20,
+                //默认展开节点的数组, 为 true 时, 展开所有节点
+                expandedKeys: [32],
+                //是否严格遵守父子模式
+                strict: true,
+                //是否开启极简模式
+                simple: false,
+            },
+            on: function(data){
+                setTimeout(function () {
+                    table_reload();
+                }, 0)
+            },
+        });
+        $.get("{:url('cate/ajax_get_list')}",{},function (ret) {
+            cate_select.update(ret)
+        });
+    }
+
+    // 供应商合同搜索框
+    if ($('#contract_supply_select').length > 0){
+        var contract_supply_select = xmSelect.render({
+            el: '#contract_supply_select',
+            name: 'contract_supply_id',
+            searchTips: '请输入合同编号或供应商名称',
+            radio: true,
+            autoRow: true,
+            filterable: true,
+            clickClose: true,
+            remoteSearch: true,
+            size: 'medium',
+            height: '500px',
+            toolbar: {
+                show: true,
+                list: ['CLEAR']
+            },
+            style:{
+                'margin':'0px'
+            },
+            model: {
+                label: {
+                    type: 'text',
+                    block: {
+                        //最大显示数量, 0:不限制
+                        showCount: 0,
+                        //是否显示删除图标
+                        showIcon: false,
+                    }
+                },
+            },
+            prop: {
+                name: 'search_show',
+                value: 'id',
+            },
+            remoteMethod: function(val, cb, show){
+                //这里如果val为空, 则不触发搜索
+                if(!val){
+                    return cb([]);
+                }
+                //这里引入了一个第三方插件axios, 相当于$.ajax
+                var form_data = {
+                    search : val,
+                    limit  : 15,
+                };
+                $.get("{:url('supply/ajax_get_contract_list')}", form_data,function(ret){
+                    if (ret.code == 200){
+                        cb(ret.data.data)
+                    }else{
+                        cb([])
+                    }
+                });
+            },
+            on:function(data){
+                if (data.isAdd && data.change.length > 0){
+                    setTimeout(function () {
+                        table_reload();
+                    }, 0)
+                }
+            }
+        });
+    }
+
+    //日期范围
+    laydate.render({
+        elem: '#time'
+        ,range: '至'
+        ,type:'datetime'
+
+    });
 
 
 
-    // $(document).keyup(function(event){
-    //     if(event.keyCode ==13){
-    //         $(".btn_search").trigger("click");
-    //     }
-    // });
 
-    // 动态下拉框 demo
-    // var select_dom = xmSelect.render({
-    //     el: '#contract_list',
-    //     tips: '请选择要采购的合同编号',
-    //     radio: true,
-    //     autoRow: true,
-    //     filterable: true,
-    //     clickClose: true,
-    //     remoteSearch: true,
-    //     style: {
-    //         width: '80%',
-    //         margin:'10px auto',
-    //     },
-    //     remoteMethod: function(val, cb, show){
-    //         //这里如果val为空, 则不触发搜索
-    //         if(!val){
-    //             return cb([]);
-    //         }
-    //         //这里引入了一个第三方插件axios, 相当于$.ajax
-    //         var form_data = {
-    //             search : val,
-    //             limit  : 15,
-    //         };
-    //         $.get("{:url('contract/ajax_get_sel_list')}", form_data,function(ret){
-    //             if (ret.code == 200){
-    //                 cb(ret.data)
-    //             }else{
-    //                 cb([])
-    //             }
-    //         });
-    //     },
-    // });
+
+
 </script>

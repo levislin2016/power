@@ -22,6 +22,12 @@ class Supply extends Base
         return returnJson($list, 200, '获取成功');
     }
 
+    // 获取供应商合同编号对应的合同
+    public function ajax_get_contract_list(){
+        $list = model('supply', 'service')->getContractList(input('get.'), input('get.limit'))->toArray();
+        return returnJson($list, 200, '获取成功');
+    }
+
     public function add(){ 
         $id = input('get.id', '');
         if($id){
