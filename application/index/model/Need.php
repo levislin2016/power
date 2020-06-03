@@ -10,6 +10,8 @@ class Need extends Base{
         'adjust_in'  => 0,
         'adjust_out' => 0,
         'get'        => 0,
+        'freeze'     => 0,
+        'ok'         => 0,
         'check'      => 1,
 
         'buy_status' => 1,
