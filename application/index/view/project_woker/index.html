@@ -1,0 +1,266 @@
+{include file="public/header" /}
+<div class="layui-layer-content clearfix">
+	<div class="column-content-detail">
+		<!--- 头部搜索框 --->
+		<div class="layui-card">
+			<div class="layui-form">
+				<form class="layui-form" lay-filter="search-form">
+
+					<div class="layui-form-item">
+						<div class="layui-inline layui-form-pane">
+							<label class="layui-form-label">工程队名称/联系人</label>
+							<div class="layui-input-inline">
+								<input type="text" name="search" placeholder="请输入工程队名称或联系人..." autocomplete="off" class="layui-input search"/>
+							</div>
+						</div>
+
+						<input type="hidden" name="project_id" value="{$Request.get.id}"/>
+
+						<div class="layui-inline">
+							<div class="layui-input-inline">
+								<button class="layui-btn layui-bg-blue btn_search"><i class="layui-icon layui-icon-search"></i>搜索</button>
+								<button type="reset" class="layui-btn layui-btn-normal" id="empty"  lay-submit="" lay-filter="LAY-search">重置</button>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+
+		</div>
+		<!--- 头部搜索框 --->
+
+
+		<div class="layui-form" id="table-list">
+
+			<table id="table" lay-filter="table"></table>
+
+		</div>
+	</div>
+</div>
+{include file="public/script" /}
+
+
+
+<!--<script type="text/html" id="template_check">-->
+<!--	<input type="checkbox" name="xxx" lay-skin="switch" value="{{ d.id }}" lay-filter="check" lay-text="核对|关闭" {{ d.check == '2' ? 'checked' : '' }}>-->
+<!--</script>-->
+
+<script type="text/html" id="template_need">
+	<input type="text" name="xxx" >
+</script>
+
+<!--<script type="text/html" id="template_type">-->
+<!--	{{# if(d.type == '甲供'){ }}-->
+<!--	<span class="layui-badge layui-bg-black">{{d.type}}</span>-->
+<!--	{{# } }}-->
+<!--	{{# if(d.type == '自购'){ }}-->
+<!--	<span class="layui-badge layui-bg-blue">{{d.type}}</span>-->
+<!--	{{# } }}-->
+<!--</script>-->
+
+<script type="text/html" id="toolbar">
+	<div class="layui-btn-container">
+		{{# if(d.status != '已作废'){ }}
+		<button class="layui-btn layui-btn-sm layui-bg-gray" lay-event="delete"><i class="layui-icon layui-icon-delete"></i>删除</button>
+		{{# } }}
+
+	</div>
+</script>
+
+
+<script type="text/html" id="template_toolbar">
+	<button class="layui-btn layui-btn-sm layui-bg-green" lay-event="add"><i class="layui-icon layui-icon-add-1"></i>添加工程队</button>
+<!--	<button class="layui-btn layui-btn-sm layui-bg-blue" lay-event="start"><i class="layui-icon layui-icon-triangle-r"></i>开始工程</button>-->
+</script>
+
+<script>
+	var table_reload;
+	layui.use(['form', 'jquery', 'element', 'laydate', 'table'], function() {
+		var form = layui.form,
+				$ = layui.jquery,
+				laydate = layui.laydate,
+				table = layui.table;
+
+
+
+		//日期范围
+		laydate.render({
+			elem: '#time'
+			,range: '至'
+			,type:'datetime'
+
+		});
+
+		// 监听表单提交事件
+		form.on('submit(search-form)',function (data) {
+			table_reload();
+			return false;
+		});
+
+		// 监听下拉框选择
+		form.on('select(select1)', function(data){
+			table_reload();
+			return false;
+		});
+
+		//监听开关操作
+		form.on('switch(check)', function(obj){
+			var msg = '已核对';
+			var check = 2;
+			if (!obj.elem.checked){
+				msg = '已关闭';
+				check = 1;
+			}
+			var form_data = {
+				id    : this.value,
+				check : check,
+			};
+			$.post("{:url('need/ajax_check')}", form_data, function(ret){
+				if (ret.code == 200){
+					layer.tips(msg, obj.othis);
+				}else{
+					layer.msg(ret.msg,function () {
+
+					})
+				}
+			});
+		});
+
+
+		// 表格刷新方法 带form数据
+		table_reload = function(){
+			var where = form.val("search-form");
+			//执行重载
+			table.reload('table', {
+				where: where
+			});
+		};
+
+		var url = "{:url('project_woker/ajax_get_list')}";
+		//第一个实例
+		table.render({
+			elem: '#table'
+			,url: url//数据接口
+			,page: false //开启分页
+			,toolbar:'#template_toolbar'
+			,limit:100000
+			// ,height:'full-100'
+			,loading:true
+			,where:form.val("search-form")
+			,text:{
+				none:'暂无相关数据'
+			}
+			,cols: [[ //表头
+				{type:'numbers', title: '序号', align:'center', fixed:'left', sort:true,width:90}
+				,{field: 'woker_name', title: '工程队名称', align:'center',sort:true,}
+				,{field: 'woker_leader', title: '联系人', align:'center',sort:true}
+				,{field: 'number', title: '操作', templet:'#toolbar', fixed:'right', align:'center', width:100}
+			]],parseData: function(res){ //res 即为原始返回的数据
+				return {
+					"code": res.code, //解析接口状态
+					"msg": res.msg, //解析提示文本
+					"count": res.data.total, //解析数据长度
+					"data": res.data.data //解析数据列表
+				};
+			},response: {
+				statusCode: 200 //规定成功的状态码，默认：0
+			}
+		});
+
+		//监听单元格编辑
+		// table.on('edit(table)', function(obj){
+		// 	var value = obj.value //得到修改后的值
+		// 			,data = obj.data //得到所在行所有键值
+		// 			,field = obj.field; //得到字段
+		// 	var form_data = {
+		// 		id         : data.id,
+		// 		need 	   : value,
+		// 		project_id : "{$Request.get.id}",
+		// 	};
+		// 	var oldvalue = $(this).prev().text();
+		//
+		//
+		// 	$.post("{:url('need/ajax_edit')}", form_data, function(ret){
+		// 		var objTemp = {};
+		//
+		// 		if (ret.code == 200){
+		// 			objTemp[field] = ret.data.need;
+		//
+		// 			layer.msg('['+ data.goods_name +'] <br>数量更改为：'+ value,{offset:'t'});
+		// 		}else{
+		// 			objTemp[field] = oldvalue;
+		// 			layer.msg(ret.msg,function () {
+		//
+		// 			});
+		// 		}
+		// 		obj.update(objTemp);
+		//
+		// 	});
+		// });
+
+		// 监听工具条
+		table.on('toolbar(table)', function(obj) {
+			switch(obj.event){
+				case 'add':
+					layer.open({
+						type : 2,
+						content:"{:url('project_woker/woker')}" + "?id={$Request.get.id}",
+						title:'选择工程队',
+						btnAlign: 'c',
+						area: ['95%', '95%'],
+						shadeClose: true,
+						anim: 5,
+						isOutAnim:true,
+					});
+					break;
+
+				case 'start':
+					var form_data = {
+						'id' : "{$Request.get.id}",
+					};
+					$.post("{:url('project/ajax_start')}",form_data, function(ret){
+						if(ret.code == 200){
+							layer.msg(ret.msg)
+						}else{
+							layer.msg(ret.msg, function () {
+
+							})
+						}
+					});
+					break;
+
+
+			}
+
+		});
+
+		// 监听工具条
+		table.on('tool(table)', function(obj) {
+			switch(obj.event){
+				case 'delete':
+					layer.confirm('确定删除这条记录吗？', {icon: 3, title:'提示'}, function(index){
+						$.post("{:url('project_woker/ajax_del')}",obj.data, function(ret){
+							if(ret.code == 200){
+								layer.msg(ret.msg);
+								table_reload();
+							}else{
+								layer.msg(ret.msg, function () {
+
+								})
+							}
+						});
+						layer.close(index);
+					});
+				break;
+
+				case 'sel':
+					$(obj.tr).find("[data-field=need] input").select();
+				break;
+
+
+			}
+		});
+
+	})
+</script>
+{include file="public/footer" /}

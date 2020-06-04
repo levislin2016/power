@@ -103,6 +103,7 @@
     <div class="layui-btn-container">
         {{# if(d.status != '已作废'){ }}
         <a class="layui-btn layui-btn-sm layui-bg-green" lay-event="goods"><i class="layui-icon layui-icon-list"></i>材料</a>
+        <a class="layui-btn layui-btn-sm layui-bg-green" lay-event="project_work"><i class="layui-icon layui-icon-list"></i>工程队</a>
         <a class="layui-btn layui-btn-sm layui-bg-blue" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>编辑</a>
         <button class="layui-btn layui-btn-sm layui-bg-gray" lay-event="delete"><i class="layui-icon layui-icon-delete"></i>删除</button>
         {{# } }}
@@ -171,7 +172,7 @@
                 ,{field: 'status', title: '状态', sort:true, templet:'#template_status', align:'center', width:90}
                 ,{field: 'open_time', title: '开工时间', sort:true, align:'center', width:180}
                 ,{field: 'create_time', title: '创建时间', sort:true, align:'center', width:180}
-                ,{field: 'number', title: '操作', templet:'#toolbar', fixed:'right', align:'center', width:300}
+                ,{field: 'number', title: '操作', templet:'#toolbar', fixed:'right', align:'center', width:330}
             ]],parseData: function(res){ //res 即为原始返回的数据
                 return {
                     "code": res.code, //解析接口状态
@@ -216,7 +217,20 @@
                         }
                     });
                 break;
-
+                case 'project_work':
+                    layer.open({
+                        type : 2,
+                        content:"{:url('project_woker/index')}" + '?id=' + obj.data.id,
+                        title:'设定工程对应工程队',
+                        btnAlign: 'c',
+                        area: ['100%', '100%'],
+                        anim: 5,
+                        isOutAnim:true,
+                        end:function(){
+                            table_reload();
+                        }
+                    });
+                    break;
                 case 'edit':
                     layer.open({
                         type : 2,
