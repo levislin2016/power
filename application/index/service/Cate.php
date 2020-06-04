@@ -6,13 +6,13 @@ use app\lib\exception\BaseException;
 
 class Cate{
     //合同列表
-    public function getList(){
-        $list = CateModel::field('id,pid, name')->order(['lv','create_time' => 'desc'])->select()->toArray();
+    public function getList($type){
+        $list = CateModel::field('id,pid, name,lv')->order(['lv','create_time' => 'desc'])->select()->toArray();
         if(!$list) {
             return $list;
         }
 
-        $tree_list = $this->getCateTree($list);
+        $tree_list = $this->getCateTree($list, 0, $type);
 
         return $tree_list;
     }
@@ -85,11 +85,14 @@ class Cate{
     }
 
     // 获取树状结构分类
-    public function getCateTree($list, $pid =0){
+    public function getCateTree($list, $pid = 0, $type){
         $tree = [];
         foreach($list as $k => $v){
             if($v['pid'] == $pid){
-                $v['children'] = $this->getCateTree($list, $v['id']);
+                if ($type == 'radio' && $v['lv'] < 2){
+                    $v['disabled'] = true;
+                }
+                $v['children'] = $this->getCateTree($list, $v['id'], $type);
                 $tree[] = $v;
                 unset($list[$k]);
             }

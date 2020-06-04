@@ -149,6 +149,69 @@
         });
     }
 
+
+    // 材料分类搜索框(单选)用于添加商品之类使用
+    if ($('#cate_select_radio').length > 0) {
+        var cate_select_radio = xmSelect.render({
+            el: '#cate_select_radio',
+            name: 'cate_id',
+            searchTips: '请输入分类名称',
+            radio:true,
+            clickClose: true,
+            toolbar: {
+                show: true,
+                list: [{
+                    name: '全部',
+                    icon: 'layui-icon layui-icon-list',
+                    method(data) {
+                        cate_select_radio.setValue([]);
+                        cate_select_radio.closed();
+                        setTimeout(function () {
+                            table_reload();
+                        }, 0)
+                    }
+                }]
+            },
+            height: '200px',
+            model: {label: {type: 'text'}},
+            prop: {
+                name: 'name',
+                value: 'id',
+            },
+            style: {
+                'margin': '0px'
+            },
+            autoRow:true,
+            filterable: true,
+            tree: {
+                //是否显示树状结构
+                show: true,
+                //是否展示三角图标
+                showFolderIcon: true,
+                //是否显示虚线
+                showLine: true,
+                //间距
+                indent: 20,
+                //默认展开节点的数组, 为 true 时, 展开所有节点
+                expandedKeys:[32],
+                //是否严格遵守父子模式
+                strict: true,
+                //是否开启极简模式
+                simple: false,
+            },
+            on: function(data){
+                setTimeout(function () {
+                    table_reload();
+                }, 0)
+            },
+        });
+        $.get("{:url('cate/ajax_get_list')}",{type:'radio'},function (ret) {
+            cate_select_radio.update({data:ret.data, autoRow:true});
+        });
+    }
+
+
+
     // 供应商合同搜索框
     if ($('#contract_supply_select').length > 0){
         var contract_supply_select = xmSelect.render({
