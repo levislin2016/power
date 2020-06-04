@@ -69,6 +69,7 @@
 			$.post("{:url('buy/ajax_edit_buyInfo')}",form_data,function (ret) {
 				if (ret.code == 200){
 					parent.supply_name = obj.data.supply_name;
+					parent.supply_id = obj.data.supply_id;
 					window.parent.layer.closeAll();
 				}else{
 					window.parent.layer.msg(ret.msg,function(){

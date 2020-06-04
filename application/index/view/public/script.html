@@ -60,9 +60,9 @@
             },
             remoteMethod: function(val, cb, show){
                 //这里如果val为空, 则不触发搜索
-                if(!val){
-                    return cb([]);
-                }
+                // if(!val){
+                //     return cb([]);
+                // }
                 //这里引入了一个第三方插件axios, 相当于$.ajax
                 var form_data = {
                     search : val,
@@ -164,7 +164,21 @@
             height: '500px',
             toolbar: {
                 show: true,
-                list: ['CLEAR']
+                list: [{
+                    name: '点击获取最新合同',
+                    icon: 'layui-icon layui-icon-list',
+                    method(data) {
+                        layer.load(2);
+                        var form_data = {
+                            search : '',
+                            limit  : 15,
+                        };
+                        $.get("{:url('supply/ajax_get_contract_list')}", form_data,function(ret){
+                            layer.closeAll('loading');
+                            contract_supply_select.update(ret.data);
+                        });
+                    }
+                }]
             },
             template({ item, sels, name, value }){
                 return name  + '<span style="position: absolute; right: 10px; color: #8799a3">'+item.status_dom+'</span>'
@@ -189,9 +203,9 @@
             },
             remoteMethod: function(val, cb, show){
                 //这里如果val为空, 则不触发搜索
-                if(!val){
-                    return cb([]);
-                }
+                // if(!val){
+                //     return cb([]);
+                // }
                 //这里引入了一个第三方插件axios, 相当于$.ajax
                 var form_data = {
                     search : val,
@@ -211,8 +225,9 @@
                         table_reload();
                     }, 0)
                 }
-            }
+            },
         });
+
     }
 
     //日期范围

@@ -120,6 +120,7 @@
 
 <script>
 	var supply_name = 0;
+	var supply_id;
 	layui.use(['form', 'jquery', 'element', 'laydate', 'table'], function() {
 		var form = layui.form,
 				$ = layui.jquery,
@@ -369,7 +370,7 @@
 						end:function (layero, index) {
 							if (supply_name != 0){
 								setTimeout(function () {
-									obj.update({'supply_name':supply_name, 'supply_id':supply_name});
+									obj.update({'supply_name':supply_name, 'supply_id':supply_id});
 									layer.msg('[' + obj.data.goods_name + '] 供应商修改为：' + supply_name);
 									supply_name = 0
 								}, 0)

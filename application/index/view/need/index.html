@@ -266,10 +266,12 @@
 					break;
 
 				case 'start':
+					layer.load(2);
 					var form_data = {
 						'id' : "{$Request.get.id}",
 					};
 					$.post("{:url('project/ajax_start')}",form_data, function(ret){
+						layer.closeAll('loading');
 						if(ret.code == 200){
 							layer.msg(ret.msg)
 						}else{

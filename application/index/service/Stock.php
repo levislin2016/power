@@ -114,11 +114,11 @@ class Stock{
             }
 
             // 增加工程已采购数量
-            $ret = NeedModel::where([
+            $ret = Db::table('pw_need')->where([
                 'goods_id'   => $v['goods_id'],
                 'project_id' => $v['project_id'],
                 'type'       => $v['type'],
-            ])->setInc('in', $v['stock_num']);
+            ])->inc('in', $v['stock_num'])->inc('ok',$v['stock_num'])->update();
             if (!$ret){
                 Db::rollback();
                 return returnInfo('', 205, "材料入库失败！");
@@ -141,8 +141,7 @@ class Stock{
             ])->update([
                 'stock_status' => $v['stock_status']
             ]);
-
-            if (!$ret){
+            if ($ret === false){
                 Db::rollback();
                 return returnInfo('', 211, "材料入库失败！");
             }

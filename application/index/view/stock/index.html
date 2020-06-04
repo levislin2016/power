@@ -85,7 +85,7 @@
     {{# if(d.stock_status == '入库中'){ }}
     <span class="layui-badge layui-bg-orange">{{d.stock_status}}</span>
     {{# } }}
-    {{# if(d.stock_status == '已入库'){ }}
+    {{# if(d.stock_status == '已完成'){ }}
     <span class="layui-badge layui-bg-green">{{d.stock_status}}</span>
     {{# } }}
 
@@ -159,9 +159,7 @@
             ,limit:100000
             // ,height:'full-100'
             ,loading:true
-            ,where:{
-                contract_supply_id : 'none'
-            }
+            ,where:form.val("search-form")
             ,text:{
                 none:'暂无相关数据'
             }

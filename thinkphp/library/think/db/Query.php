@@ -1075,7 +1075,6 @@ class Query
     public function inc($field, $step = 1, $op = 'INC')
     {
         $fields = is_string($field) ? explode(',', $field) : $field;
-
         foreach ($fields as $field => $val) {
             if (is_numeric($field)) {
                 $field = $val;
