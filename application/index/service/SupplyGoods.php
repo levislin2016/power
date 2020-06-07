@@ -64,20 +64,14 @@ class SupplyGoods{
             if ($find){
                 return returnInfo('', 201, "材料：{$v['name']} 添加失败 <br>原因：材料已存在");
             }
-            if(!isset($v['5'])) {
-                return returnInfo('', 201, "材料：{$v['name']} 添加失败 <br>原因：请填写进货价");
-            }
 
             if(!isset($v['6'])) {
                 $v['6'] = '';
             }
-            if (!is_numeric($v['5'])) {
-                return returnInfo('', 201, "材料：{$v['name']} 添加失败 <br>原因：请填写正确的进货价");
-            }
+
             $data_add[] = [
                 'supply_id'  => $id,
                 'goods_id'   => $v['id'],
-                'price'      => $v['5'],
                 'note'      => $v['6'],
                 'create_time' => time(),
                 'update_time' => time(),

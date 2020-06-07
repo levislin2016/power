@@ -5,6 +5,7 @@ use app\index\model\Type;
 use app\index\service\SupplyGoods as SupplyGoodsService;
 use app\index\model\SupplyGoods as SupplyGoodsModel;
 use app\index\model\Supply as SupplyModel;
+use app\index\model\Need as NeedModel;
 use app\index\model\Goods as GoodsModel;
 use app\lib\exception\BaseException;
 use app\index\validate\SupplyGoodsValidate;
@@ -24,6 +25,12 @@ class SupplyGoods extends Base
         $data = [];
 
         return view('goods', ['data' => $data]);
+    }
+
+    // 获取预算列表
+    public function ajax_get_goods_list(){
+        $list = model('need', 'service')->getList(input('get.'), input('limit'));
+        return returnJson($list, 200, '获取成功!');
     }
 
     // 获取供应商对应的材料
@@ -78,6 +85,23 @@ class SupplyGoods extends Base
     }
 
     public function del($ids){
+        $arr_ids = array_filter(array_unique(explode(',', $ids)));
+        foreach ($arr_ids as $v){
+            $goods_id = '';
+            $goods_id = '';
+            $goods_id = SupplyGoodsModel::where('id', '=', $v)->value('goods_id');
+            if($goods_id){
+                $need_id = NeedModel::where('goods_id', '=', $goods_id)->value('id');
+                if($need_id){
+                    throw new BaseException(
+                        [
+                            'msg' => '该'.$v.'编号材料已被工程采购！',
+                            'errorCode' => 30007
+                        ]);
+                }
+            }
+
+        }
     	$res = SupplyGoodsModel::destroy(rtrim($ids, ','));
     		
     	if(!$res){ 

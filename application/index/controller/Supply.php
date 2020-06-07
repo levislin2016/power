@@ -3,6 +3,7 @@ namespace app\index\controller;
 
 use app\index\service\Supply as SupplyService;
 use app\index\model\Supply as SupplyModel;
+use app\index\model\SupplyGoods as SupplyGoodsModel;
 use app\lib\exception\BaseException;
 use app\index\validate\SupplyValidate;
 
@@ -59,6 +60,17 @@ class Supply extends Base
     }
 
     public function del($ids){
+        $arr_ids = array_filter(array_unique(explode(',', $ids)));
+        foreach ($arr_ids as $v){
+            $supply_id = SupplyGoodsModel::where('supply_id', '=', $v)->value('id');
+            if($supply_id){
+                throw new BaseException(
+                    [
+                        'msg' => '该'.$v.'编号供应商下存在材料！',
+                        'errorCode' => 30007
+                    ]);
+            }
+        }
     	$res = SupplyModel::destroy(rtrim($ids, ','));
     		
     	if(!$res){ 

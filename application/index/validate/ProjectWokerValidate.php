@@ -10,15 +10,18 @@ class ProjectWokerValidate extends BaseValidate
     protected $rule = [
         'id'         => 'checkProjectStatus',
         'woker_id'         => 'require|unique:ProjectWoker,woker_id^project_id',
+        'goods_id'         => 'require|unique:ProjectWokerInfo,goods_id^project_woker_id',
     ];
 
     protected $message = [
         'woker_id.require'  => '工程编号不能为空',
         'woker_id.unique'   => '工程队已经存在，请勿重复添加！',
+        'goods_id.unique'   => '预算材料已经存在，请勿重复添加！',
     ];
 
     protected $scene = [
         'add'  => ['woker_id', 'project_id'],
+        'addInfo'  => ['goods_id', 'project_woker_id'],
         'del'  => ['id'],
     ];
 

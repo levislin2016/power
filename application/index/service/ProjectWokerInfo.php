@@ -10,62 +10,31 @@ use app\lib\exception\BaseException;
 use app\index\model\Woker as WokerModel;
 
 
-class ProjectWoker{
+class ProjectWokerInfo{
 
 
     // 获取列表
-    public function getList($params, $limit = 15){
+    public function getGoodsList($params, $limit = 15){
         $where = [];
         $hasWhere = [];
         if (isset($params['search']) && $params['search']){
-            $hasWhere[] = ['name|leader', 'like', "%{$params['search']}%"];
-        }
-        if (isset($params['project_id']) && $params['project_id']){
-            $where[] = ['ProjectWoker.project_id', '=', $params['project_id']];
-        }
-        $list = ProjectWokerModel::hasWhere('woker', $hasWhere)->with(['woker'])->where($where)->paginate($limit);
-        $list = $list->toArray();
-        foreach ($list['data'] as &$v){
-            $data = [];
-            $v['goods_name'] = '';
-            $data = ProjectWokerInfoModel::with(['goods' => ['cate']])->where('project_woker_id', '=', $v['id'])->select();
-
-            if($data){
-                $data = $data->toArray();
-                foreach ($data as $va){
-                    $v['goods_name'] .= $va['goods_name'].'、';
-                }
-
-                $v['goods_name'] = trim($v['goods_name'], '、');
-            }
+            $hasWhere[] = ['name|number', 'like', "%{$params['search']}%"];
         }
 
-        return $list;
-    }
-
-    // 获取列表
-    public function getWokerList($params, $limit = 15){
-        $where = [];
         if (isset($params['search']) && $params['search']){
-            $where[] = ['name|leader', 'like', "%{$params['search']}%"];
+            $hasWhere[] = ['cate_id', '=', $params['cate_id']];
         }
-
-        $ids = array_filter(ProjectWokerModel::where('project_id', '=', $params['project_id'])->column('woker_id'));
-
-        $list = WokerModel::where(function ($query) use($params) {
-            if(!empty($params['search'])){
-                $query->where('name|leader|phone', 'like', '%'.$params['search'].'%');
-            }
-        })->whereNotIn('id', $ids)->field('id, company_id, name, leader, phone, create_time')
-            ->order('create_time', 'desc')
-            ->paginate($limit);
+        if (isset($params['project_woker_id']) && $params['project_woker_id']){
+            $where[] = ['project_woker_id', '=', $params['project_woker_id']];
+        }
+        $list = ProjectWokerInfoModel::hasWhere('goods', $hasWhere)->with(['goods' => ['cate']])->where($where)->paginate($limit);
         return $list;
     }
 
 
     # 删除工程对应工程队
     public function del($params){
-        $ret = ProjectWokerModel::destroy($params['id']);
+        $ret = ProjectWokerInfoModel::destroy($params['id']);
         if (!$ret){
             return returnInfo('', 201, '删除错误！');
         }
@@ -73,41 +42,32 @@ class ProjectWoker{
         return returnInfo($ret, 200, '删除成功！');
     }
 
+    // 添加工程队对应预算材料
+    public function addInfo($params){
 
-
-    // 修改预算材料
-    public function edit($params){
-        $ret = ProjectWokerInfoModel::update([
-            'num' => $params['num'],
-        ], ['id' => $params['id']]);
-        if (!$ret){
-            return returnInfo('', 201, '修改数量错误！');
-        }
-        return returnInfo($ret, 200, "数量成功修改为{$params['num']}！");
-    }
-    // 新增工程对应工程队
-    public function add($params){
-        if (!isset($params['woker_list']) || !$params['woker_list']){
+        if (!isset($params['goods_list']) || !$params['goods_list']){
             return returnInfo('', 201, '请勾选要添加的工程队！！');
         }
 
-        foreach ($params['woker_list'] as $k => $v){
+        foreach ($params['goods_list'] as $k => $v){
             $data = [
-                'project_id' => $params['project_id'],
-                'woker_id'   => $v['id'],
+                'project_woker_id' => $params['project_woker_id'],
+                'goods_id' => $v['goods_id'],
+                'type'     =>1,
+                'num'      =>0,
+                'note'     =>'',
             ];
             $validate = validate('ProjectWokerValidate');
-            if (!$validate->scene('add')->check($data)){
-                return returnInfo('', 201, "工程队：{$v['name']} 添加失败 <br>原因：" . $validate->getError());
+            if (!$validate->scene('addInfo')->check($data)){
+                return returnInfo('', 201, "材料：{$v['goods_name']} 添加失败 <br>原因：" . $validate->getError());
             }
-            $ret_add = ProjectWokerModel::create($data);
+            $ret_add = ProjectWokerInfoModel::create($data);
             if (!$ret_add){
-                return returnInfo('', 201, '添加工程队错误！');
+                return returnInfo('', 201, '添加材料错误！');
             }
         }
         return returnInfo($ret_add, 200, "添加成功！");
     }
-
 
 
 

@@ -28,6 +28,25 @@ class ProjectWoker extends Base
         return view('woker');
     }
 
+    // 显示工程 工程队选购材料列表
+    public function need(){
+
+        $data['type'] = config('extra.buy_from');
+        return view('need', ['data' => $data]);
+    }
+
+    // 显示工程 工程队选购材料列表
+    public function goods(){
+        $data['type'] = config('extra.buy_from');
+        return view('goods', ['data' => $data]);
+    }
+
+    // 获取工程队列表数据
+    public function ajax_get_goods_list(){
+        $list = model('ProjectWokerInfo', 'service')->getGoodsList(input('get.'), input('limit'));
+        return returnJson($list, 200, '获取成功!');
+    }
+
     // 获取工程队列表数据
     public function ajax_get_goods(){
         $list = model('ProjectWoker', 'service')->getWokerList(input('get.'), input('limit'));
@@ -40,15 +59,28 @@ class ProjectWoker extends Base
         return returnJson($list['data'], $list['code'], $list['msg']);
     }
 
+    // 删除工程对应工程队
+    public function ajax_goods_del(){
+        $list = model('ProjectWokerInfo', 'service')->del(input('post.'));
+        return returnJson($list['data'], $list['code'], $list['msg']);
+    }
+
     // 增加工程队
     public function ajax_add(){
         $list = model('ProjectWoker', 'service')->add(input('post.'));
         return returnJson($list['data'], $list['code'], $list['msg']);
     }
 
+
+    // 增加工程队预算材料
+    public function ajax_goods_add(){
+        $list = model('ProjectWokerInfo', 'service')->addInfo(input('post.'));
+        return returnJson($list['data'], $list['code'], $list['msg']);
+    }
+
     // 编辑预算的材料
     public function ajax_edit(){
-        $list = model('need', 'service')->edit(input('post.'));
+        $list = model('ProjectWoker', 'service')->edit(input('post.'));
         return returnJson($list['data'], $list['code'], $list['msg']);
     }
 

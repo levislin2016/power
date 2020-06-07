@@ -2,6 +2,7 @@
 namespace app\index\service;
 
 use app\index\model\Owner as OwnerModel;
+use app\index\model\Supply as SupplyModel;
 use app\lib\exception\BaseException;
 
 class Owner{
@@ -28,6 +29,10 @@ class Owner{
         }else {
             $data['company_id'] = session('power_user.company_id');
             $user = OwnerModel::create($data);
+            SupplyModel::create([
+                'contract_id'=>$user->toArray()['id'],
+                'name'=>$data['name'],
+            ]);
             if (!$user) {
                 throw new BaseException(
                     [

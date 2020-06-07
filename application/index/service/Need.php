@@ -4,6 +4,7 @@ namespace app\index\service;
 use app\index\model\Need as NeedModel;
 use app\index\model\Project as ProjectModel;
 use app\index\model\BuyInfo as BuyInfoModel;
+use app\index\model\ProjectWokerInfo as ProjectWokerInfoModel;
 use app\index\model\Goods as GoodsModel;
 use app\index\service\Type as TypeService;
 use app\lib\exception\BaseException;
@@ -43,6 +44,13 @@ class Need{
             if ($buyinfo_ids){
                 $buyinfo_ids = array_column($buyinfo_ids, 'need_id');
                 $where[] = ['Need.id', 'not in', $buyinfo_ids];
+            }
+        }
+
+        if (isset($params['project_woker_id']) && $params['project_woker_id']){
+            $project_woker_ids = ProjectWokerInfoModel::where(['project_woker_id' => $params['project_woker_id']])->column('goods_id');
+            if ($project_woker_ids){
+                $where[] = ['Need.goods_id', 'not in', $project_woker_ids];
             }
         }
 

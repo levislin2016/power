@@ -24,7 +24,7 @@ class Cate extends Base
 
     // 获取材料对应的供应商列表
     public function ajax_get_list1(){
-        $list = model('cate', 'service')->getList();
+        $list = model('cate', 'service')->getList(input('get.type', ''));
         return returnJson($list, 0, '获取成功！');
     }
 
@@ -108,12 +108,23 @@ class Cate extends Base
 
 
     public function del($ids){
+        $arr_ids = array_filter(array_unique(explode(',', $ids)));
+        foreach ($arr_ids as $v){
+            $pid = cateModel::where('pid', '=', $v)->value('id');
+            if($pid){
+                throw new BaseException(
+                    [
+                        'msg' => '该'.$v.'编号分类下存在子分类！',
+                        'errorCode' => 30007
+                    ]);
+            }
+        }
     	$res = cateModel::destroy(rtrim($ids, ','));
     		
     	if(!$res){ 
     		throw new BaseException(
 	            [
-	                'msg' => '删除业主错误！',
+	                'msg' => '删除分类错误！',
 	                'errorCode' => 30006
 	            ]);
     	}
